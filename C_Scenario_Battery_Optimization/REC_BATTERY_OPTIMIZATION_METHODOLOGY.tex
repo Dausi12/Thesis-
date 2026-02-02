@@ -1,0 +1,586 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{longtable}
+
+% Page geometry
+\geometry{margin=2.5cm}
+
+% Title information
+\title{\textbf{REC-Level Battery Optimization with Heterogeneous Distributed Storage}}
+\author{REC Optimization Team}
+\date{February 1, 2026\\
+\vspace{0.3cm}
+\textit{Document Version: 1.0}\\
+\textit{Scenario: C3 - Single Supplier with REC and Distributed Battery Optimization}\\
+\textit{Network: 1-LV-rural3--2-no\_sw (9 nodes, 3 prosumers with PV+Storage)}}
+
+\begin{document}
+
+\maketitle
+
+\section{Executive Summary}
+
+This document describes the Mixed-Integer Linear Programming (MILP) optimization model for coordinating \textbf{three heterogeneous battery storage systems} distributed across prosumer nodes in a Renewable Energy Community (REC). The optimizer operates at the REC level to minimize total community energy costs while respecting:
+
+\begin{itemize}
+    \item Individual battery technical specifications (capacity, power, efficiency)
+    \item Physical distribution of assets (batteries remain at prosumer locations)
+    \item Energy balance constraints at both node and REC levels
+    \item Grid interaction limits and market price signals
+\end{itemize}
+
+\textbf{Key Innovation:} Centralized REC-level optimization of heterogeneous distributed batteries (not a single centralized battery).
+
+\section{System Architecture}
+
+\subsection{REC Composition}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}cccccl@{}}
+\toprule
+\textbf{Node} & \textbf{Type} & \textbf{Load Profile} & \textbf{PV Profile} & \textbf{Storage Profile} & \textbf{Battery} \\ 
+\midrule
+1 & Consumer & G4 & -- & -- & No \\
+2 & Prosumer & G6 & PV4 & Storage\_PV4\_H0-G & \textbf{Yes} \\
+3 & Consumer & H0-L & -- & -- & No \\
+4 & Consumer & H0-L & -- & -- & No \\
+5 & Consumer & H0-G & -- & -- & No \\
+6 & Prosumer & H0-L & PV3 & Storage\_PV3\_H0-L & \textbf{Yes} \\
+7 & Consumer & G1 & -- & -- & No \\
+8 & Prosumer & H0-L & PV1 & Storage\_PV1\_H0-L & \textbf{Yes} \\
+9 & Consumer & H0-L & -- & -- & No \\
+\bottomrule
+\end{tabular}
+\caption{REC participant composition}
+\end{table}
+
+\textbf{Total REC Capacity:}
+\begin{itemize}
+    \item \textbf{Consumers:} 6 nodes (42,832 kWh/year)
+    \item \textbf{Prosumers:} 3 nodes (21,069 kWh/year load, 25,083 kWh/year PV)
+    \item \textbf{Net Annual Balance:} $\sim$3,900 kWh surplus (REC is net exporter)
+\end{itemize}
+
+\section{Heterogeneous Battery Specifications}
+
+\subsection{Node 2: Fire Fighting Station (Commercial)}
+
+\textbf{Rationale:} Large commercial PV system (17.68 kWp) requires substantial storage for load shifting and grid arbitrage.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Unit} & \textbf{Notes} \\ 
+\midrule
+Capacity & 40 & kWh & 2.3h at peak PV output \\
+Max Charge Power & 20 & kW & $1.13\times$ peak PV (17.68 kWp) \\
+Max Discharge Power & 20 & kW & Can supply full load + export \\
+Charge Efficiency & 95 & \% & Commercial-grade Li-ion \\
+Discharge Efficiency & 95 & \% & Round-trip: 90.25\% \\
+Self-Discharge Rate & 0.1 & \%/hour & 2.4\% per day \\
+SOC Min & 10 & \% & Deep discharge capable \\
+SOC Max & 100 & \% & Full capacity utilization \\
+Initial SOC & 50 & \% & Starting condition \\
+Usable Capacity & 36 & kWh & $(100\% - 10\%) \times 40$ kWh \\
+\bottomrule
+\end{tabular}
+\caption{Node 2 battery specifications}
+\end{table}
+
+\textbf{Strategic Role:} Primary grid arbitrage battery, handles bulk energy shifting, peak shaving for REC.
+
+\subsection{Node 6: Household (Medium Residential)}
+
+\textbf{Rationale:} Medium PV system (4.2 kWp) serving high residential load (14,094 kWh/year).
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Unit} & \textbf{Notes} \\ 
+\midrule
+Capacity & 10 & kWh & 2.4h at peak PV output \\
+Max Charge Power & 5 & kW & $1.19\times$ peak PV (4.2 kWp) \\
+Max Discharge Power & 5 & kW & Standard residential inverter \\
+Charge Efficiency & 92 & \% & Mid-tier residential battery \\
+Discharge Efficiency & 92 & \% & Round-trip: 84.64\% \\
+Self-Discharge Rate & 0.2 & \%/hour & 4.8\% per day \\
+SOC Min & 20 & \% & Battery protection threshold \\
+SOC Max & 100 & \% & Full capacity utilization \\
+Initial SOC & 50 & \% & Starting condition \\
+Usable Capacity & 8 & kWh & $(100\% - 20\%) \times 10$ kWh \\
+\bottomrule
+\end{tabular}
+\caption{Node 6 battery specifications}
+\end{table}
+
+\textbf{Strategic Role:} Evening residential peak support, local self-consumption optimization.
+
+\subsection{Node 8: Household (Small Residential)}
+
+\textbf{Rationale:} Small PV system (2.6 kWp) serving low residential load (1,804 kWh/year).
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Unit} & \textbf{Notes} \\ 
+\midrule
+Capacity & 6.5 & kWh & 2.5h at peak PV output \\
+Max Charge Power & 3.25 & kW & $1.25\times$ peak PV (2.6 kWp) \\
+Max Discharge Power & 3.25 & kW & Basic residential inverter \\
+Charge Efficiency & 90 & \% & Entry-level battery \\
+Discharge Efficiency & 90 & \% & Round-trip: 81\% \\
+Self-Discharge Rate & 0.3 & \%/hour & 7.2\% per day \\
+SOC Min & 20 & \% & Battery protection threshold \\
+SOC Max & 100 & \% & Full capacity utilization \\
+Initial SOC & 50 & \% & Starting condition \\
+Usable Capacity & 5.2 & kWh & $(100\% - 20\%) \times 6.5$ kWh \\
+\bottomrule
+\end{tabular}
+\caption{Node 8 battery specifications}
+\end{table}
+
+\textbf{Strategic Role:} Local self-consumption only, limited REC-level contribution due to low efficiency.
+
+\subsection{Aggregate Battery Fleet}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Metric} & \textbf{Total} & \textbf{Notes} \\ 
+\midrule
+Total Nominal Capacity & 56.5 kWh & Sum of all three batteries \\
+Total Usable Capacity & 49.2 kWh & Accounting for SOC limits \\
+Total Charge Power & 28.25 kW & Sum of max charge rates \\
+Total Discharge Power & 28.25 kW & Sum of max discharge rates \\
+Weighted Avg Efficiency & 87.8\% & Capacity-weighted round-trip \\
+\bottomrule
+\end{tabular}
+\caption{Aggregate battery fleet specifications}
+\end{table}
+
+\section{Mathematical Model Formulation}
+
+\subsection{Sets and Indices}
+
+\begin{itemize}
+    \item $\mathcal{N} = \{1, 2, 3, 4, 5, 6, 7, 8, 9\}$: All REC nodes
+    \item $\mathcal{B} = \{2, 6, 8\} \subset \mathcal{N}$: Nodes with batteries (prosumers)
+    \item $\mathcal{C} = \{1, 3, 4, 5, 7, 9\} \subset \mathcal{N}$: Nodes without batteries (consumers)
+    \item $\mathcal{T} = \{0, 1, \ldots, 95\}$: Time intervals (15-min resolution, 24 hours)
+\end{itemize}
+
+\subsection{Parameters}
+
+\subsubsection*{Time Series Data}
+\begin{itemize}
+    \item $L_{i,t}$: Load demand at node $i$, time $t$ [kW]
+    \item $\text{PV}_{i,t}$: PV generation at node $i$, time $t$ [kW] ($i \in \mathcal{B}$ only)
+    \item $\pi_t^{\text{DA}}$: Day-ahead market price at time $t$ [€/kWh]
+    \item $\pi_t^{\text{FI}}$: Feed-in tariff at time $t$ [€/kWh]
+\end{itemize}
+
+\subsubsection*{Battery Specifications (for $i \in \mathcal{B}$)}
+\begin{itemize}
+    \item $E_i^{\text{cap}}$: Battery capacity [kWh]
+    \item $P_i^{\text{ch,max}}$: Max charging power [kW]
+    \item $P_i^{\text{dch,max}}$: Max discharging power [kW]
+    \item $\eta_i^{\text{ch}}$: Charging efficiency [dimensionless]
+    \item $\eta_i^{\text{dch}}$: Discharging efficiency [dimensionless]
+    \item $\sigma_i$: Self-discharge rate [1/hour]
+    \item $\text{SOC}_i^{\min}$: Minimum state of charge [\% of $E_i^{\text{cap}}$]
+    \item $\text{SOC}_i^{\max}$: Maximum state of charge [\% of $E_i^{\text{cap}}$]
+    \item $\text{SOC}_i^{\text{init}}$: Initial state of charge [\% of $E_i^{\text{cap}}$]
+\end{itemize}
+
+\subsubsection*{Economic Parameters}
+\begin{itemize}
+    \item $\pi^{\text{grid}}$: Grid fee [€/kWh] = 0.02
+    \item $\Delta t$: Time interval duration [hours] = 0.25 (15 minutes)
+\end{itemize}
+
+\subsection{Decision Variables}
+
+\subsubsection*{Power Flows (Continuous, $\geq 0$)}
+\begin{itemize}
+    \item $P_{i,t}^{\text{grid,import}}$: Power imported from grid at node $i$, time $t$ [kW]
+    \item $P_{i,t}^{\text{grid,export}}$: Power exported to grid at node $i$, time $t$ [kW]
+    \item $P_{i,t}^{\text{rec,import}}$: Power imported from REC at node $i$, time $t$ [kW]
+    \item $P_{i,t}^{\text{rec,export}}$: Power exported to REC at node $i$, time $t$ [kW]
+\end{itemize}
+
+\subsubsection*{Battery Variables ($i \in \mathcal{B}$ only)}
+\begin{itemize}
+    \item $P_{i,t}^{\text{ch}}$: Charging power [kW] (Continuous, $\geq 0$)
+    \item $P_{i,t}^{\text{dch}}$: Discharging power [kW] (Continuous, $\geq 0$)
+    \item $E_{i,t}^{\text{SOC}}$: State of charge [kWh] (Continuous, $\geq 0$)
+\end{itemize}
+
+\subsubsection*{Binary Variables}
+\begin{itemize}
+    \item $b_{i,t}^{\text{ch}}$: Battery charging indicator (1 = charging, 0 = not)
+    \item $b_{i,t}^{\text{grid}}$: Grid flow direction (1 = import, 0 = export)
+\end{itemize}
+
+\subsection{Objective Function}
+
+Minimize Total REC Cost over 24 hours:
+
+\begin{equation}
+\begin{split}
+\min Z = \sum_{i \in \mathcal{N}} \sum_{t \in \mathcal{T}} \Big[
+    &P_{i,t}^{\text{grid,import}} \cdot \pi_t^{\text{DA}} \cdot \Delta t \\
+    &+ (P_{i,t}^{\text{grid,import}} + P_{i,t}^{\text{grid,export}}) \cdot \pi^{\text{grid}} \cdot \Delta t \\
+    &- P_{i,t}^{\text{grid,export}} \cdot \pi_t^{\text{FI}} \cdot \Delta t
+\Big]
+\end{split}
+\end{equation}
+
+\textbf{Note:} Internal REC transactions ($P^{\text{rec,import}}$ and $P^{\text{rec,export}}$) cancel out in total cost calculation since one member's export is another's import at the same price (€0.08/kWh).
+
+\subsection{Constraints}
+
+\subsubsection{Energy Balance -- Consumers ($i \in \mathcal{C}$)}
+
+\begin{equation}
+L_{i,t} = P_{i,t}^{\text{grid,import}} + P_{i,t}^{\text{rec,import}} - P_{i,t}^{\text{grid,export}} - P_{i,t}^{\text{rec,export}} \quad \forall i \in \mathcal{C}, \forall t \in \mathcal{T}
+\end{equation}
+
+Consumers have no local generation or storage, so load must equal net imports.
+
+\subsubsection{Energy Balance -- Prosumers ($i \in \mathcal{B}$)}
+
+\begin{equation}
+\begin{split}
+\text{PV}_{i,t} + P_{i,t}^{\text{dch}} + P_{i,t}^{\text{grid,import}} + P_{i,t}^{\text{rec,import}} \\
+- L_{i,t} - P_{i,t}^{\text{ch}} - P_{i,t}^{\text{grid,export}} - P_{i,t}^{\text{rec,export}} = 0 \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T}
+\end{split}
+\end{equation}
+
+Prosumers have \textbf{load consumption} ($L_{i,t}$), \textbf{PV generation}, and \textbf{battery storage}. Energy balance: all sources (PV + battery discharge + imports) must equal all sinks (load + battery charge + exports).
+
+\subsubsection{REC Energy Balance (Community-Wide)}
+
+\begin{equation}
+\sum_{i \in \mathcal{N}} P_{i,t}^{\text{rec,export}} = \sum_{i \in \mathcal{N}} P_{i,t}^{\text{rec,import}} \quad \forall t \in \mathcal{T}
+\end{equation}
+
+Total energy exported within REC must equal total energy imported (conservation of energy within community).
+
+\subsubsection{Battery State of Charge Dynamics ($i \in \mathcal{B}$)}
+
+\textbf{Initial Condition ($t = 0$):}
+\begin{equation}
+E_{i,0}^{\text{SOC}} = E_i^{\text{cap}} \cdot \text{SOC}_i^{\text{init}} \quad \forall i \in \mathcal{B}
+\end{equation}
+
+\textbf{Evolution ($t > 0$):}
+\begin{equation}
+\begin{split}
+E_{i,t}^{\text{SOC}} = &E_{i,t-1}^{\text{SOC}} \cdot (1 - \sigma_i \cdot \Delta t) \\
+                       &+ P_{i,t-1}^{\text{ch}} \cdot \eta_i^{\text{ch}} \cdot \Delta t \\
+                       &- P_{i,t-1}^{\text{dch}} / \eta_i^{\text{dch}} \cdot \Delta t 
+\quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T} \setminus \{0\}
+\end{split}
+\end{equation}
+
+\textbf{Physical Interpretation:}
+\begin{itemize}
+    \item Battery loses energy over time due to self-discharge ($\sigma$)
+    \item Charging adds energy with efficiency loss ($\eta^{\text{ch}} < 1$)
+    \item Discharging removes more energy than delivered ($1/\eta^{\text{dch}} > 1$)
+\end{itemize}
+
+\subsubsection{Battery State of Charge Limits ($i \in \mathcal{B}$)}
+
+\begin{equation}
+E_i^{\text{cap}} \cdot \text{SOC}_i^{\min} \leq E_{i,t}^{\text{SOC}} \leq E_i^{\text{cap}} \cdot \text{SOC}_i^{\max} \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T}
+\end{equation}
+
+\textbf{Node-Specific Limits:}
+\begin{itemize}
+    \item Node 2: $4 \text{ kWh} \leq E_{2,t}^{\text{SOC}} \leq 40 \text{ kWh}$ (10\% -- 100\%)
+    \item Node 6: $2 \text{ kWh} \leq E_{6,t}^{\text{SOC}} \leq 10 \text{ kWh}$ (20\% -- 100\%)
+    \item Node 8: $1.3 \text{ kWh} \leq E_{8,t}^{\text{SOC}} \leq 6.5 \text{ kWh}$ (20\% -- 100\%)
+\end{itemize}
+
+\subsubsection{Battery Charging Power Limits ($i \in \mathcal{B}$)}
+
+\begin{equation}
+0 \leq P_{i,t}^{\text{ch}} \leq \min(P_i^{\text{ch,max}}, E_i^{\text{cap}} \cdot 1.0) \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T}
+\end{equation}
+
+\textbf{Node-Specific Limits:}
+\begin{itemize}
+    \item Node 2: $0 \leq P_{2,t}^{\text{ch}} \leq 20$ kW
+    \item Node 6: $0 \leq P_{6,t}^{\text{ch}} \leq 5$ kW
+    \item Node 8: $0 \leq P_{8,t}^{\text{ch}} \leq 3.25$ kW
+\end{itemize}
+
+\subsubsection{Battery Discharging Power Limits ($i \in \mathcal{B}$)}
+
+\begin{equation}
+0 \leq P_{i,t}^{\text{dch}} \leq \min(P_i^{\text{dch,max}}, E_i^{\text{cap}} \cdot 1.0) \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T}
+\end{equation}
+
+\textbf{Node-Specific Limits:}
+\begin{itemize}
+    \item Node 2: $0 \leq P_{2,t}^{\text{dch}} \leq 20$ kW
+    \item Node 6: $0 \leq P_{6,t}^{\text{dch}} \leq 5$ kW
+    \item Node 8: $0 \leq P_{8,t}^{\text{dch}} \leq 3.25$ kW
+\end{itemize}
+
+\subsubsection{No Simultaneous Charge/Discharge ($i \in \mathcal{B}$)}
+
+\begin{align}
+P_{i,t}^{\text{ch}} &\leq P_i^{\text{ch,max}} \cdot b_{i,t}^{\text{ch}} \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T} \\
+P_{i,t}^{\text{dch}} &\leq P_i^{\text{dch,max}} \cdot (1 - b_{i,t}^{\text{ch}}) \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T} \\
+b_{i,t}^{\text{ch}} &\in \{0, 1\} \quad \forall i \in \mathcal{B}, \forall t \in \mathcal{T}
+\end{align}
+
+\textbf{Physical Interpretation:} Battery cannot charge and discharge simultaneously. Binary variable $b_{i,t}^{\text{ch}}$ enforces this logical constraint.
+
+\subsubsection{No Simultaneous Grid Import/Export ($i \in \mathcal{N}$)}
+
+\begin{align}
+P_{i,t}^{\text{grid,import}} &\leq M \cdot b_{i,t}^{\text{grid}} \quad \forall i \in \mathcal{N}, \forall t \in \mathcal{T} \\
+P_{i,t}^{\text{grid,export}} &\leq M \cdot (1 - b_{i,t}^{\text{grid}}) \quad \forall i \in \mathcal{N}, \forall t \in \mathcal{T} \\
+b_{i,t}^{\text{grid}} &\in \{0, 1\} \quad \forall i \in \mathcal{N}, \forall t \in \mathcal{T}
+\end{align}
+
+\textbf{Physical Interpretation:} Node cannot import from and export to grid simultaneously. $M$ is a sufficiently large constant (e.g., 1000 kW).
+
+\section{Optimization Strategy and Expected Behavior}
+
+\subsection{Charging Priority (Morning/Midday)}
+
+When REC has PV surplus, the optimizer charges batteries in this order:
+
+\begin{enumerate}
+    \item \textbf{Node 2 (40 kWh, 90.25\% efficiency):}
+        \begin{itemize}
+            \item Highest capacity $\rightarrow$ can absorb most surplus
+            \item Best efficiency $\rightarrow$ minimizes energy loss
+            \item Lowest SOC limit (10\%) $\rightarrow$ more usable capacity
+            \item \textbf{Target fill time:} 2 hours at 20 kW = full charge
+        \end{itemize}
+    
+    \item \textbf{Node 6 (10 kWh, 84.64\% efficiency):}
+        \begin{itemize}
+            \item Medium capacity $\rightarrow$ residential load matching
+            \item Good efficiency $\rightarrow$ acceptable losses
+            \item \textbf{Target fill time:} 2 hours at 5 kW = full charge
+        \end{itemize}
+    
+    \item \textbf{Node 8 (6.5 kWh, 81\% efficiency):}
+        \begin{itemize}
+            \item Small capacity $\rightarrow$ limited absorption
+            \item Lower efficiency $\rightarrow$ use sparingly
+            \item \textbf{Target fill time:} 2 hours at 3.25 kW = full charge
+        \end{itemize}
+\end{enumerate}
+
+\textbf{Rationale:} Fill largest and most efficient batteries first to maximize REC-level energy arbitrage opportunities.
+
+\subsection{Discharging Priority (Evening Peak)}
+
+When REC has load deficit (evening), the optimizer discharges batteries in this order:
+
+\begin{enumerate}
+    \item \textbf{Node 8 (small, low efficiency):}
+        \begin{itemize}
+            \item Discharge early $\rightarrow$ preserve Node 2 for bigger arbitrage
+            \item Limited capacity $\rightarrow$ won't sustain long discharge
+            \item \textbf{Target:} Local self-consumption only
+        \end{itemize}
+    
+    \item \textbf{Node 6 (medium, good efficiency):}
+        \begin{itemize}
+            \item Support residential evening peak (18:00--21:00)
+            \item Moderate capacity $\rightarrow$ 2--3 hours discharge at 5 kW
+            \item \textbf{Target:} Residential load support
+        \end{itemize}
+    
+    \item \textbf{Node 2 (large, high efficiency):}
+        \begin{itemize}
+            \item Reserve for highest-value discharge periods
+            \item Large capacity $\rightarrow$ 4+ hours discharge at 20 kW
+            \item \textbf{Target:} Grid arbitrage, peak demand reduction
+        \end{itemize}
+\end{enumerate}
+
+\textbf{Rationale:} Preserve high-capacity, high-efficiency battery (Node 2) for maximum-value discharge opportunities (highest grid prices or peak demand charges).
+
+\subsection{Daily Cycle Example}
+
+\textbf{Typical Summer Day (High PV):}
+
+\begin{table}[h]
+\centering
+\tiny
+\begin{tabular}{@{}p{2.5cm}p{2.5cm}p{2cm}p{2cm}p{2cm}p{2cm}@{}}
+\toprule
+\textbf{Time} & \textbf{REC Net} & \textbf{Node 2} & \textbf{Node 6} & \textbf{Node 8} & \textbf{Grid} \\ 
+\midrule
+00:00--06:00 & Deficit (consumers) & Idle (preserve) & Idle & Idle & Import ($\sim$15 kW) \\
+06:00--09:00 & Small surplus (PV) & \textbf{Charging} (0$\to$20 kW) & \textbf{Charging} (0$\to$5 kW) & \textbf{Charging} (0$\to$3 kW) & Minimal \\
+09:00--12:00 & Large surplus (peak PV) & \textbf{Charging} (full by 11:00) & \textbf{Charging} (full by 11:00) & \textbf{Charging} (full by 11:00) & Export surplus \\
+12:00--15:00 & Max surplus & Idle (full) & Idle (full) & Idle (full) & Export ($\sim$25 kW) \\
+15:00--17:00 & Declining surplus & Idle & Idle & Idle & Minimal \\
+17:00--19:00 & Deficit (no PV) & Idle (reserve) & \textbf{Discharging} (5 kW) & \textbf{Discharging} (3 kW) & Import ($\sim$7 kW) \\
+19:00--21:00 & High deficit (peak) & \textbf{Discharging} (20 kW) & \textbf{Discharging} (5 kW) & Empty & Import ($\sim$10 kW) \\
+21:00--24:00 & Moderate deficit & \textbf{Discharging} (10 kW) & Empty & Empty & Import ($\sim$5 kW) \\
+\bottomrule
+\end{tabular}
+\caption{Daily battery operation cycle}
+\end{table}
+
+\textbf{Key Metrics:}
+\begin{itemize}
+    \item Total Battery Charged: $\sim$56 kWh (accounting for efficiency losses)
+    \item Total Battery Discharged: $\sim$50 kWh delivered to loads
+    \item Round-trip Energy Loss: $\sim$6 kWh (10--15\% depending on battery mix)
+    \item Peak Grid Import Reduction: $\sim$25 kW (batteries discharge during peak)
+    \item Peak Grid Export Reduction: $\sim$15 kW (batteries charge during surplus)
+\end{itemize}
+
+\section{Expected Outcomes}
+
+\textbf{Baseline (No Batteries):}
+\begin{itemize}
+    \item Total daily cost: $\sim$€X (grid purchases -- feed-in revenue)
+    \item Peak grid import: $\sim$40 kW
+    \item Peak grid export: $\sim$30 kW
+\end{itemize}
+
+\textbf{With Optimized Batteries:}
+\begin{itemize}
+    \item Total daily cost: $\sim$€Y (expect 15--25\% reduction)
+    \item Peak grid import: $\sim$20 kW (50\% reduction via discharge)
+    \item Peak grid export: $\sim$20 kW (33\% reduction via charge)
+    \item Self-consumption ratio: +20--30\% (PV $\rightarrow$ battery $\rightarrow$ load)
+\end{itemize}
+
+\section{Limitations and Assumptions}
+
+\subsection{Model Assumptions}
+
+\begin{enumerate}
+    \item \textbf{Perfect Foresight:} Model assumes perfect day-ahead forecasts (unrealistic)
+        \begin{itemize}
+            \item \textbf{Mitigation:} Re-optimize with updated forecasts at intraday stage
+        \end{itemize}
+    
+    \item \textbf{Linear Efficiency:} Battery efficiency constant regardless of SOC or power level
+        \begin{itemize}
+            \item \textbf{Reality:} Efficiency varies with temperature, SOC, and C-rate
+            \item \textbf{Impact:} $\pm$2--5\% energy throughput error
+        \end{itemize}
+    
+    \item \textbf{No Battery Degradation:} Model doesn't account for capacity fade over time
+        \begin{itemize}
+            \item \textbf{Reality:} Capacity decreases $\sim$2\% per year (500--1000 cycles)
+            \item \textbf{Mitigation:} Reduce $E^{\text{cap}}$ by 2\% annually in multi-year simulations
+        \end{itemize}
+    
+    \item \textbf{No Network Constraints:} Assumes unlimited power transfer within REC
+        \begin{itemize}
+            \item \textbf{Reality:} Distribution lines have thermal limits
+            \item \textbf{Mitigation:} Add line capacity constraints if critical
+        \end{itemize}
+    
+    \item \textbf{Single Price Signal:} Uses day-ahead prices only
+        \begin{itemize}
+            \item \textbf{Reality:} Intraday prices, imbalance prices also relevant
+            \item \textbf{Enhancement:} Multi-stage stochastic optimization
+        \end{itemize}
+\end{enumerate}
+
+\section{References}
+
+\subsection{Technical Standards}
+
+\begin{enumerate}
+    \item \textbf{IEC 61850:} Communication networks for substations (battery control protocols) \\
+    \href{https://webstore.iec.ch/publication/6028}{https://webstore.iec.ch/publication/6028}
+    
+    \item \textbf{IEEE 1547:} Interconnection of distributed energy resources \\
+    \href{https://standards.ieee.org/standard/1547-2018.html}{https://standards.ieee.org/standard/1547-2018.html}
+    
+    \item \textbf{VDE-AR-N 4110:} Technical requirements for DER grid connection (Germany) \\
+    \href{https://www.vde.com/en/fnn/topics/technical-connection-rules}{https://www.vde.com/en/fnn/topics/technical-connection-rules}
+\end{enumerate}
+
+\subsection{Academic Literature}
+
+\begin{enumerate}
+    \item Peng, W., et al. (2018). ``Optimizing rooftop photovoltaic distributed generation with battery storage for peer-to-peer energy trading.'' \textit{Applied Energy}, 228, 2567--2580. \\
+    DOI: \href{https://doi.org/10.1016/j.apenergy.2018.07.012}{10.1016/j.apenergy.2018.07.012}
+    
+    \item Castillo, A., \& Gayme, D. F. (2014). ``Grid-scale energy storage applications in renewable energy integration: A survey.'' \textit{Energy Conversion and Management}, 87, 885--894. \\
+    DOI: \href{https://doi.org/10.1016/j.enconman.2014.07.063}{10.1016/j.enconman.2014.07.063}
+    
+    \item BDEW (Bundesverband der Energie- und Wasserwirtschaft). Standard load profiles documentation (Germany). \\
+    \href{https://www.bdew.de/energie/standardlastprofile-strom/}{https://www.bdew.de/energie/standardlastprofile-strom/}
+\end{enumerate}
+
+\subsection{Software Tools}
+
+\begin{enumerate}
+    \item \textbf{Pyomo:} Python optimization modeling language \\
+    \href{http://www.pyomo.org/}{http://www.pyomo.org/} | Documentation: \href{https://pyomo.readthedocs.io/}{https://pyomo.readthedocs.io/}
+    
+    \item \textbf{GLPK:} GNU Linear Programming Kit (open-source solver) \\
+    \href{https://www.gnu.org/software/glpk/}{https://www.gnu.org/software/glpk/}
+    
+    \item \textbf{SimBench:} Benchmark datasets for power system analysis \\
+    \href{https://simbench.de/en/}{https://simbench.de/en/} | Code: \href{https://github.com/e2nIEE/simbench}{https://github.com/e2nIEE/simbench}
+\end{enumerate}
+
+\section*{Document Control}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Changes} \\ 
+\midrule
+1.0 & 2026-02-01 & REC Optimization Team & Initial release \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Approval:}
+\begin{itemize}
+    \item Technical Review: $\checkmark$ Pending
+    \item Economic Analysis: $\checkmark$ Pending
+    \item Regulatory Compliance: $\checkmark$ Pending
+\end{itemize}
+
+\textbf{Next Review Date:} 2026-05-01
+
+\vspace{1cm}
+\begin{center}
+\textbf{--- END OF DOCUMENT ---}
+\end{center}
+
+\end{document}

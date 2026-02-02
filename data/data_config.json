@@ -1,0 +1,12 @@
+{
+  "seed": 42,
+  "simbench_code": "1-LV-rural3--0-no_sw",
+  "da_price_file": "original/Day Ahead Preise_M15_2016.csv",
+  "id_price_range": [0.9, 1.1],
+  "imbalance_price_file": "original/imbalance_prices.csv",
+  "retail_price_file": "original/retail_price.csv",
+  "feedin_price_file": "original/feedin_price.csv",
+  "start_time": "2016-01-01 00:00",
+  "end_time": "2016-12-31 23:45",
+  "output_dir": "."
+}

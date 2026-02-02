@@ -1,0 +1,1376 @@
+===PAGE 1===
+Mixed-integer linear programming based optimization strategies for
+renewable energy communities
+Armin Cosica, Michael Stadlera,c, Muhammad Mansoora,b,*, Michael Zellingera
+aBEST - Bioenergy and Sustainable Technologies GmbH, Inffeldgasse 21b, A-8010, Graz, Austria
+bEnergy Economics Group, Institute of Energy Systems and Electrical Drives, Vienna University of Technology, Gußhausstraße 25 e29/E37003, 1040,
+Vienna, Austria
+cXendee Corporation, 6540 Lusk Blvd., Suite C225, San Diego, CA 92121, USA
+article info
+Article history:Received 5 February 2021
+Received in revised form9 July 2021Accepted 20 July 2021Available online 23 July 2021
+Keywords:
+Energy CommunitiesRenewable EnergyMicrogridsMILPOptimal Planning
+Decarbonizationabstract
+Local and renewable energy communities show a high potential for the ef ﬁcient use of distributed energy
+technologies at regional levels according to the Clean Energy Package of the European Union. However,
+until now there are only limited possibilities to bring such energy communities into reality because of
+several limitation factors. Challenges are already encountered during the planning phase since a largenumber of decision variables have to be considered depending on the number and type of communityparticipants and distributed technologies. This paper overcomes these challenges by establishing a
+mixed-integer linear programming based optimal planning approach for renewable energy communities.
+A real case study is analyzed by creating an energy community testbed with a leading energy serviceprovider in Austria. The case study considers nine energy community members of a municipality in
+Austria, distributed photovoltaic systems, energy storage systems, different electricity tariff scenarios and
+market signals including feed-in tariffs. The key results indicate that renewable energy communities cansigniﬁcantly reduce the total energy costs by 15% and total carbon dioxide emissions by 34% through an
+optimal selection and operation of the energy technologies. In all the optimization scenarios considered,
+each community participant can bene ﬁt both economically and ecologically.
+©2021 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND
+license ( http://creativecommons.org/licenses/by-nc-nd/4.0/ ).
+1. Introduction
+The decarbonization of the energy sector requires renewable
+energy measures to enable a clean energy transition [ 1]. While
+there are different actions and strategies undergoing, renewable
+energy based microgrids are on the rise to contribute to affordable
+and clean energy [ 2]. The renewable energy based microgrids
+provide extensive opportunities in terms of different perspectives.
+The environmental perspective of such microgrids has been pro-
+vided by Tabar et al. [ 3] by proposing the sustainable planning of
+hybrid microgrids towards minimizing the environmental pollu-
+tion. The economic perspective of renewable energy based micro-
+grids has been addressed by Basu et al. [ 4] by providing a
+comprehensive survey of the microgrids. The social perspective of
+renewable energy based microgrids has been highlighted bySchwaegerl and Tao [ 5] together with technical bene ﬁts of the
+microgrid operation. The concept of energy sharing among
+different actors of microgrids to reduce carbon emissions and
+economic costs for infrastructure and services compared to a
+business as usual case is one of the major advantages of renewable
+energy based microgrids. This concept of energy sharing is
+deployed through the setup of an Energy Community (EC) [ 6]. The
+energy sharing in communities turns individual consumers into
+prosumers, sharing the surplus energy with other members of the
+microgrid.
+1.1. Motivation and current status of energy communities in Austria
+and EU
+ECs hold a signi ﬁcant role in the clean energy transition pre-
+sented by the Clean Energy Package (CEP) [ 7]. There are two types
+of energy communities presented in CEP based on two different
+directives. The Directive 2018/2001 [ 8] presents the Renewable
+Energy Community (REC). The Directive 2019/944 [ 9] presents the
+Citizen Energy Community (CEC). This research work is focused on*Corresponding author. BEST - Bioenergy and Sustainable Technologies GmbH,
+Inffeldgasse 21b, A-8010, Graz, Austria.
+E-mail address: muhammad.mansoor@best-research.eu (M. Mansoor).
+Contents lists available at ScienceDirect
+Energy
+journal homepage: www.elsevier.com/locate/energy
+https://doi.org/10.1016/j.energy.2021.121559
+0360-5442/ ©2021 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND license ( http://creativecommons.org/licenses/by-nc-nd/4.0/
+).Energy 237 (2021) 121559
+
+===PAGE 2===
+a real case study of a microgrid based REC in Austria. For many EU
+countries, the concept of energy sharing in communities is still new
+from a legislative point of view [ 10]. In order to promote decen-
+tralized energy supply and strengthen regional supply concepts,
+RECs receive increased attention in Austria currently. Energy
+communities are legally de ﬁned and anchored in the Erneuerbaren
+Ausbaugesetzes (EAG) [ 11]. According to EAG x74 paragraph 1, a REC
+can produce energy from renewable sources and consume, store or
+sell the produced energy. Therefore, for each community member it
+is possible to exchange energy from renewable sources (such as PV,
+wind power, combined heat and power systems, fuel cells and
+energy storage systems) within the de ﬁned community. The
+membership is open to private individuals, small and medium-
+sized enterprises (SMEs), public authorities (including municipal-
+ities), climate and energy model regions, e5-communities (a com-
+munity which ful ﬁlls certain rules to be more ef ﬁcient) and tourism
+regions. To create a ﬁnancial incentive for the participants, a
+reduced distribution grid tariff is introduced for the electricity
+exchanged within the REC, as well as other ﬁnancial advantages
+such as the cancellation of all electricity taxes and green electricity
+fees.1.2. State-of-the-art literature review
+The state-of-the-art literature review consists of the following
+subjects: energy sharing in RECs, the current state of different
+optimization models of RECs in microgrids and the application of
+these models to the optimal planning of RECs in microgrids.
+Energy sharing has been discussed extensively in the literature
+recently, with a special focus on Peer-to-Peer (P2P) local markets
+where energy surplus is traded. Park and Yong [ 12] have provided a
+comprehensive review on the P2P electricity trading with a focus
+on providing potential development and future challenges for
+governments and private corporations that are interested in energy
+sharing. A comprehensive review of existing P2P energy trading
+projects has been provided by Zhang et al. in [ 13] with a focus on
+their use in local energy microgrids. Recently, P2P energy sharing
+has also been researched using decentralized models via bilateral
+contracts, auction models and blockchain based models. The
+Brooklyn Microgrid [ 14] considers a blockchain based microgrid
+energy market to satisfy the request of the energy management.
+Leong et al. [ 15] propose an auction based P2P energy trading
+mechanism via a Bayesian game bidding strategy. Morstyn et al.Nomenclature
+Abbreviations
+DER distributed energy resources
+DER-CAM distributed energy resources - customer adoption
+model
+DR demand rates
+ESS energy storage system
+HH household tariff
+HWB hot water boiler tariff
+LA local authority tariff
+MILP mixed-integer linear programming
+OC optimization case
+P2P peer-to-peer
+PV photovoltaic system
+RC reference case
+REC renewable energy community
+SOC state of charge
+Mathematical Symbols
+d binary variable or parameter
+h efﬁciency parameter
+g cost constraint parameter
+P annuity rate of the technology
+r parameter for the state of the charge
+Q loss factor
+z energy rate associated with the electricity, V/kW or
+V/kWh
+C costs,V
+Cap capacity of the technology, kW for PV and kWh for
+ESS
+E variable associated with the electricity, kW or kWh
+ESS variable associated with the energy storage system
+electricity, kW or kWh
+FixC ﬁxed capital cost, V
+N arbitrary large number
+PV normalized photovoltaic performance, kW/kW p
+VarC variable capital cost, V/kW or V/kWh
+f charging or discharging rate of the storageSuperscript
+gc grid connection
+in input for storage
+loss loss of stored energy
+out output from storage
+perf performance
+ps purchase or sale
+RecExp electricity related to the renewable energy
+community export
+RecPur electricity related to the renewable energy
+community purchase
+ref reference
+stored state of the energy in the storage
+trans transfer
+UtExp electricity related to the utility export
+UtFix ﬁxed utility fee
+UtMax electricity related to the maximum utility purchase
+UtPur electricity related to the utility purchase
+XOR binary variable
+ESSin electricity input to the energy storage system
+ESSons onsite usage of the electricity related to the energy
+storage system
+ESSout electricity output of the energy storage system
+ESSRecExp exported energy storage system electricity to the
+renewable energy community
+Subscripts
+char charge rate of the storage
+dis discharge rate of the storage
+invest annualized investment
+lim limit on the costs
+O&M operation and maintenance
+tech technologies
+up upfront
+d daytypes
+h hours
+m months
+n,n0nodes: n and n0are aliases
+t timeA. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+2
+
+===PAGE 3===
+[16] propose P2P energy trading via bilateral contracts for a new
+scalable market design. Long et al. [ 17] have investigated energy
+sharing for different Distributed Energy Resource (DER) producers
+in a community microgrid with PV and battery systems. Reihani
+et al. [ 18] propose a framework to consider energy sharing that
+allows energy buyers to reduce their energy costs by exchanging
+energy with neighbouring peers and local utility. Cui et al. [ 19]
+present an ef ﬁcient energy sharing mechanism for various pro-
+sumers in an energy community. A recent study by Lin et al. [ 20]
+considers the optimal energy sharing of solar PV, wind power and
+battery among different residential houses with a time resolution
+of only 24-hours. The studies mentioned above consider the
+renewable and battery energy sharing among the microgrid par-
+ticipants based only on the operation phenomenon, neglecting the
+optimal investment of the DER technologies. It is completely
+different to optimally design a microgrid with DER investments and
+optimal energy sharing than just operate the already established
+microgrids. It is because of the fact that the ﬁxed sizing of the DER
+technologies of the already established microgrids can pose certain
+limitations on the energy sharing among participants. Moreover,
+the variability of renewable energy technologies such as solar PVand wind power can affect the energy sharing among microgrid
+participants in different times of the year. Hence, an optimal
+renewable energy sharing mechanism can not be guaranteed.
+Therefore, it is important to develop certain models which consider
+both the optimal planning of microgrids and the optimal energy
+sharing from DER technologies in an energy community setup with
+at least a yearly time horizon.
+Microgrids connect various renewable energy resources and
+create a dynamic and complex integrated energy system [ 21]. The
+optimal planning of such microgrids within the REC infrastructure
+requires advanced modeling techniques that can bring such sys-
+tems into reality. It is mainly due to the large number of decision
+variables related to the number of community participants and the
+distributed technologies involved. Huang et al. [ 22] propose a
+Mixed-Integer Linear Programming (MILP) based peer-to-peer en-
+ergy trading mechanism in a microgrid with a distributed PV and
+battery energy storage system. The objective function considered is
+the minimization of the total energy costs of all individual partic-
+ipants of the microgrid. The capacities of the technologies were
+assumed to be ﬁxed in the case study. Although the previously
+mentioned study contributes towards renewable energy based
+microgrids, it can not be applied to the optimal planning of such
+microgrids in RECs. Fleischhacker et al. [ 23] use an open source
+model to perform portfolio optimization to establish an energy
+community in a city district. Although the complex multi-energy
+system proposed in [ 23] considers the minimization of the costs
+and carbon emissions on a district level, it is limited in providing an
+optimal planning of RECs with different utility tariffs, demand rates
+and market signals including feed-in-tariffs for a microgrid. Also,
+different clustering techniques have been used to disaggregate the
+time-series input data, which makes the optimization models
+vulnerable with respect to time series connectivity of technologies.
+To overcome this disadvantage, full-scale yearly optimization
+techniques based on 8760-hours have been used recently for the
+planning of renewable energy microgrids such as the optimalplanning of a thermal energy system with a seasonal storage in [ 24],
+a performance comparison of two different MILP-based models
+including 8760-hours for 13 different microgrid case studies in [ 25]
+and the use of a 8760-hours modeling approach for the optimal
+planning of microgrid technologies including hydrogen electro-
+lyzer, hydrogen seasonal storage and hydrogen mobility for a case
+study in Austria in [ 26]. Zwickl-Bernhard and Auer [ 27]h a v e
+recently examined a cost minimizing energy technology portfolio
+using an open source energy model with MILP for an energycommunity in Vienna, Austria. Although the study reported in [ 27]
+supports sustainable urban energy planning in the community
+structure, it is limited in not using the full-scale optimization and
+also not considering the yearly operational energy scheduling of
+the technology portfolio.
+The mechanism of renewable energy sharing within the com-
+munity participants can be pro ﬁtable if the self-consumption of
+renewable electricity generated is increased. The aggregation of the
+load of different prosumers can also increase the pro ﬁtability. Fina
+et al. [ 28] have analyzed the sharing of rooftop PV generation in
+multi-apartment buildings. The maximization of the value of PV in
+apartment buildings with different arrangements have been stud-
+ied in [ 29]. Fleischhacker et al. [ 30] have proposed a game theoretic
+model with a welfare maximization for the shared use of a solar PV
+and energy storage system in a multi-apartment building. These
+previously mentioned studies only consider the application of
+renewable energy transfer in apartment buildings. It is necessary to
+diversify the application of the optimization models and include
+different kind of end users to have a genuine concept of a com-
+munity setup. It is also important to have a mixture of prosumers
+and consumers inside an energy community to realize differentenergy sharing mechanisms. A recent study by Perger et al. [ 31]
+considers a linear optimization model with different prosumers
+(apartments, businesses, etc.) in an energy community concept for
+energy sharing under willingness-to-pay criteria. The energy tariffs
+considered by Perger et al. [ 31] for the purchase and sale of the
+energy to the grid and within the community are ﬁxed retail
+electricity prices. Another recent study by Jiang et al. [ 32] considers
+a two-stage optimization model for renewable energy sharing
+among prosumers and consumers of an energy community setup.
+The optimization model considered by Jiang et al. [ 32] is based on a
+single day i.e.24-hours time horizon and considers time-of-use
+tariffs only. Both Perger et al. [ 31] and Jiang et al. [ 32] assume
+same energy prices for all participants (prosumers and consumers)
+and do not consider demand charges and variable market signals
+including feed-in tariffs. Therefore, the applications of such opti-
+mization models are limited and different electricity tariff scenarios
+and market signals including feed-in tariffs should be considered to
+realize the real-life renewable energy based community microgrid
+setups.
+1.3. Contribution beyond the state-of-the-art
+This research work overcomes the above mentioned gaps in the
+state-of-the-art and goes beyond it. The main contribution of this
+research work relative to the already existing studies is provided
+below:
+A key difference to the existing literature is the development of
+an advanced MILP framework for the optimal planning and the
+optimal operation dispatch with the option of transferring
+renewable energy between the energy community participants
+(nodes), combined with newly introduced node-speci ﬁc time-of-
+use electricity rates and market signals using a full-scale optimi-
+zation horizon. A real case study is analyzed for both the optimalinvestment and operation dispatch planning of a renewable energy
+community testbed in a microgrid setup with a leading energy
+service provider in Austria. Although other technologies can be
+considered, this REC considers multiple PV and Energy Storage
+System (ESS) as decentralized and centralized technologies in the
+community. The REC testbed considers nine diversi ﬁed community
+participants (three households, three apartments, a government
+institution, a ﬁreﬁghting station and a bank) connected to the
+utility grid. The developed MILP model considers each participant
+as a separate node of the microgrid system with a full-scale time
+horizon i.e.8760-hours. Three different reference and optimizationA. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+3
+
+===PAGE 4===
+cases are analyzed and considered with the corresponding MILP
+model using different electricity tariff scenarios and market signals
+including feed-in tariffs.
+The presented MILP model considers three different reference
+cases without renewable energy transfer. The ﬁrst reference case
+represents the current status of the participants and considers the
+existing PV systems without demand rates. The second and third
+reference cases are green ﬁeld scenarios and consider only the
+utility purchase (no existing PV) without demand rates (second
+reference case) and with demand rates (third reference case). After
+setting up the reference cases, the optimization is performed
+relative to each reference case, where the renewable energy
+transfer is enabled among the community participants and further
+investment options are enabled. For all cases, the total annual en-
+ergy costs and the total annual CO 2emissions of the energy com-
+munity are calculated through a cost minimization of the MILP
+model. The results include the optimal sizing and the full-year
+operational dispatch of the technologies. Furthermore, the results
+also include the comparisons with the reference cases in terms of
+the energy costs and CO 2savings, the total annual energy costs per
+node and the distributed renewable energy to each node for thedifferent tariff scenarios.
+This paper is structured as follows: Section 2describes the
+detailed formulation of the optimization problem. Section 3pro-
+vides the detailed information of the case study and its testing.
+Section 4discusses the detailed results followed by the conclusion
+in Section 5.
+2. Mathematical formulation of the optimization problem
+The methodology considers an optimization model using a MILP
+framework based on the Distributed Energy Resources - Customer
+Adoption Model (DER-CAM) [ 33] and further developed within this
+research to include the additional decision variables for the surplus
+energy at a single node, the energy transfer between multiple
+nodes with the corresponding ﬁnancial constraints and different
+electricity tariff scenarios with a yearly time horizon. A major dif-
+ference to the existing literature is the new option for the renew-
+able energy transfer between the nodes (community members)
+combined with the newly introduced node-speci ﬁc time-of-use
+electricity rates using a full-scale optimization horizon (i.e. a full
+linked year). With this time horizon, volatile energy supply systems
+as well as seasonal energy transfer can be considered directly and
+hourly based electricity rates can be considered in the optimization.
+Therefore, this MILP framework considers the full-scale optimiza-
+tion i.e.8760-hours by extending the previously MILP framework
+(with time series in terms of 24-hours based three representative
+daytypes for each month) having months m2{1, 2,…, 12}, day-
+types d2{1, 2, 3} and hours h2{1, 2,…, 24} [ 34] with t2{1, 2,…,
+8760}.
+2.1. Objective function
+The MILP optimization framework minimizes the total energy
+costs, the total CO
+2emissions of a REC and it considers different
+utility rates of the individual participants. In this case, the optimi-
+zation is performed from the perspective of the operator of a REC
+and thus according to the community total energy costs. The
+simpli ﬁed objective function related to the total annual energy
+costs Ccan be represented by eq. (1).
+C¼X
+nCn¼X
+n X
+techDERinvest þX
+tCutility þX
+tCO&M!
+(1)
+where Cnis the annual energy cost per node, DER invest is theannualized investment cost per technology tech and Cutility is
+related to the electrical purchase minus sales to the utility grid or to
+the community members. The CO&Mvariable is related to the
+operation and maintenance costs.
+DER invest can be further described as shown in eq. (2)and eq. (3).
+DER invest ¼X
+techðCupPtechÞ (2)
+Cup¼VarCtechCaptechþFixCtech (3)
+where Cupare the upfront capital costs of the technology, Ptechis
+the annuity rate of the technology, which gives the present value of
+the technology in terms of the annuity, the interest rate, and the
+number of annuities i.e.lifetime of the technology, VarC techare the
+variable capital costs of the technology, Cap techis the technology
+capacity to be invested and FixC techare the ﬁxed capital costs of the
+technology. The variable capital costs vary with the amount of ca-
+pacity that is invested, while the ﬁxed capital costs are independent
+of the size of the technology and can cover engineering costs.
+To accurately re ﬂect the additional cost possibilities for the
+renewable energy transfer within a REC, two new cost variables
+have been added to the total Cutility costs, which are further
+described in eq. (4). Furthermore, all electricity rates related to the
+utility purchase are node-speci ﬁc in this model, so that different
+tariff scenarios for each node and customer can be tracked
+explicitly.
+X
+n;tCutility ¼X
+n;tEUtPur
+n;tzUtPur
+n;t/C0X
+n;tEUtExp
+n;tzUtExp
+t þX
+nCUtFix
+n
+þX
+n;tEUtMax
+n;tzUtMax
+n;tþX
+n;tERecPur
+n;tzRecPur
+/C0X
+n;tERecExp
+n;tzRecExp(4)
+where EUtPur
+n;tis the purchased electricity from the utility at node
+n,zUtPur
+n;tis the node-speci ﬁc TOU-rate for the electricity purchase
+from the utility, EUtExp
+n;tis the exported electricity to the utility at
+node nandzUtExp
+t is the rate for the electricity export. CUtFix
+n is the
+yearly utility fee at node n,EUtMax
+n;t is the maximum purchased
+electricity from the utility during the whole year at node nand
+zUtMax
+n;tis the node-speci ﬁc yearly power demand rate. Note that the
+REC-based electricity purchase and export prices are different as
+described in the case study below addressed in section 3.
+ERecPur
+n;t is the newly introduced purchased electricity from other
+REC members at node n,zRecPuris the energy community rate for
+the REC-based electricity purchase de ﬁned by the community
+operator, ERecExp
+n;t is the exported electricity to the REC at node nand
+zRecExpis the de ﬁned rate for the electricity export to the REC.
+Furthermore, in order to avoid higher individual costs for each
+participant (node) in a community setup, the total annual energy
+costs per node Cncan also be limited in the optimization by the cost
+constraint of Clim
+naccording to the eq. (5)and eq. (6)so that the
+individual costs per node/client in the REC are not exceeding the
+individual reference costs.
+Clim
+n¼ð1þgÞCref
+n (5)
+Cn/C20Clim
+n (6)
+where Cref
+nare the costs associated with the reference case at
+node nand gis the cost constraint parameter responsible forA. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+4
+
+===PAGE 5===
+limiting the total annual energy costs per node.
+The simpli ﬁed objective function related to the total annual
+carbon dioxide emissions can be represented by eq. (7). It is the
+summation of the carbon dioxide emissions occurred in providing
+the electricity from the grid at each node n. Carbon dioxide emis-
+sions from other technologies such as a combined heat and power
+system running on natural gas can be considered in principle, but
+only electricity from grid is considered as a source of carbon dioxide
+emissions in this study.
+CO2¼X
+n;tCO2grid (7)
+2.2. Technology constraints
+The case study addressed in sub-section 3considers mainly two
+distributed energy technologies for the production and storage of
+renewable energy shared within the REC, including the photovol-
+taic (PV) technology and the energy storage system (ESS), since this
+is the major focus of the current legislation.
+The electricity provided by the PV technology is given by eq. (8).
+Esolar
+n;t¼CapPV
+nPVperf
+n;t(8)
+where Esolar
+n;tis the electricity provided by the solar PV technol-
+ogy at node n,CapPV
+nis the capacity of the solar PV technology at
+node nand PVperf
+n;tis the normalized solar PV performance at the
+corresponding location, which depends on the location, orienta-
+tion, temperature and panel types.
+The energy storage system (ESS) can be represented by eq. (9).
+ESSstored
+n;t¼ESSstored
+n;t/C01þESSin
+n;t/C0ESSout
+n;t/C0ESSloss
+n;t (9)
+where ESSstored
+n;trepresents the State of Charge (SoC) of the ESS at
+node n,ESSin
+n;tis the input for ESS, ESSout
+n;tis the output from the
+energy storage, ESSloss
+n;tis the energy lost in the ESS. The energy
+losses can be represented by eq. (10).
+ESSloss
+n;t¼ESSstored
+n;t/C01QESS (10)
+where QESSis the coef ﬁcient of loss for the ESS. The energy
+storage constraints are given by eq. (11-16) .
+ESSstored
+n;t/C20CapESS
+n (11)
+CapESS
+nrmin
+SoC/C20ESSstored
+n;t/C20CapESS
+nrmax
+SoC (12)
+ESSin
+n;t¼EESSin
+n;thchar/C20CapESS
+nfmax
+char(13)
+ESSout
+n;t¼EESSout
+n;thdis/C20CapESS
+nfmax
+dis(14)
+ESSin
+n;t/C20ESSXOR
+n;tN (15)
+ESSout
+n;t/C20ð1/C0ESSXOR
+n;tÞN (16)
+where CapESS
+nis the capacity of the ESS at node n,rmin
+SoCandrmaxSoC
+are the minimum and maximum SOCs of the ESS, hcharandhdisare
+the charging and discharging ef ﬁciencies of the ESS, fmax
+charandfmax
+disare the maximum charging and discharging rates of the ESS, ESSXOR
+n;t
+is the binary input for avoiding simultaneous charging and dis-
+charging of the ESS at node nand Nis an arbitrary large number.
+2.3. Energy balance and constraints
+In a REC constellation the electricity provided by the solar PV
+technology at node nEsolar
+n;tcan be divided into three PV electricity
+components, corresponding to three decision variables given by eq.
+(17)
+Esolar
+n;t¼Eonsite
+n;tþEUtExp
+n;tþERecExp
+n;t(17)
+where Eonsite
+n;tis the onsite usage of the electricity provided by
+the PV technology at node n, which can be used to satisfy the de-
+mand or charge the onsite battery at node n,if one exists. EExpUt
+n;tis
+the exported PV electricity to the utility and ERecExp
+n;t is the exported
+PV electricity to the REC participants at node nwhen there is a
+demand for electricity.
+The constraints given by eqs. (18) and (19) serve to prevent
+simultaneous import and export to/from the utility if a grid
+connection exists, i.e. binary parameter dgcs0, otherwise both
+EUtPur
+n;tand EUtExp
+n;twill be ﬁxed at zero.
+EUtPur
+n;t/C20/C16
+dps
+n;tdgc/C17
+N (18)
+EUtExp
+n;t/C20/C16/C16
+1/C0dps
+n;t/C17
+dgc/C17
+N (19)
+where dps
+n;tis related to the binary electricity purchase or sell
+decision variable at node nand Nis an arbitrary large number.
+Moreover, the electricity which is stored and provided by the
+ESS technology at node ncan also be divided into two ESS com-
+ponents, corresponding to two decision variables given by eq. (20)
+EESSout
+n;t¼EESSons
+n;tþEESSRecExp
+n;t(20)
+where EESSons
+n;t is the onsite usage of the electricity provided by
+the ESS at node nand EESSRecExp
+n;t is the exported ESS electricity to the
+REC. Note that in this REC model also centralized community PV
+and ESS technologies are possible as long as a node nfor a
+“centralized ”technology location has been speci ﬁed. Thus, the
+model can make decisions on decentralized individual PV and ESS
+technologies at each node/building and also provide electricity
+from PV and ESS for the entire REC in one location.
+For the renewable energy transfer option within the REC a new
+transfer variable has been introduced given by eq. (21)
+X
+n0Etrans
+n;n0;t¼ERecExp
+n;tþEESSRecExp
+n;t(21)
+where Etrans
+n;n0;tis related to the renewable energy transfer from
+node nto node n0and is given by the sum of the total exported
+electricity from the PV and ESS technology within the REC. This is
+also the total electricity amount that can be purchased by other
+community members from a node n.
+The higher level energy balance equation for the overall model
+is given by eq. (22).
+EUtPur
+n;tþX
+n0Etrans
+n;n0;tþEonsite
+n;tþEESSons
+n;tþEUtExp
+n;t
+¼Eload
+n;tþEESSin
+n;tþEsales
+n;t(22)A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+5
+
+===PAGE 6===
+where Eload
+n;tis the electrical load demand at node nand Esales
+n;tare
+the total remaining electricity sales to the utility at node n.
+3. Case study
+This section includes the details and the approach of designing
+the real case study for a small-scale REC testbed with nine com-
+munity participants in a village in Carinthia, Austria of which six are
+consumers and three are prosumers with an existing PV system. It
+also includes the time series data analysis, the technical and
+economical details of the technologies, assumptions and the opti-
+mization strategy.
+3.1. Renewable energy community
+The setup of the testbed is based on the characteristics of a
+typical REC aiming to share the renewable energy produced within
+the community at a local level. In addition to the necessary tech-
+nical setup of the REC, the project focuses on the active participa-
+tion of citizens, community and local initiatives in order to create a
+solution that fully exploits the positive effects of a REC.
+In the municipality of this village in Carinthia, a total of nine
+project participants have agreed to participate in a REC consisting
+of the local authority, a ﬁre department, a bank, a residential
+building (two households and one electrical hot water boiler pro-
+ﬁle) and three single-family households. In addition, the ﬁre
+department has an existing PV system with a peak power of 17.68
+kW pand two of the single-family households have already a PV
+system with a peak power of 4.2 kW pand 2.6 kW p, where the
+surplus PV electricity is sold to the utility at a certain feed-in tariff
+in the reference case. By transferring to an REC, the surplus PV
+electricity produced by the individual participants can be distrib-
+uted to the community members (nodes) at a reduced network
+tariff, which means that less electricity has to be purchased from
+the public grid, thus saving costs and carbon emissions. Moreover,
+green ﬁeld scenarios without existing PV technologies are also
+considered in order to ﬁnd the optimal investment decisions for
+this REC and whether the total energy costs can be further reduced
+through the expansion of renewable energies. Furthermore, allparticipants are located on one network level (low voltage distri-
+bution network). The current network topology of the REC testbedwith the existing technologies is shown in Fig. 1 . Although the in-
+vestments in PV and ESS are considered in a centralized approach
+in this topology, further decentralized investments in PV and ESS
+are also possible in each individual node together with the existing
+decentralized technologies.
+3.2. Time series input data analysis and assumptions
+The responsible Distribution System Operator (DSO) in this re-
+gion is the KNG-K €arnten Netz GmbH, who are co-initiators of this
+REC project and provided the electrical load pro ﬁle data of the
+community. The electrical load pro ﬁles of the individual partici-
+pants are synthetically generated load pro ﬁles based on real smart-
+meter measurements in a 15 min time interval for a whole year. The
+hourly based electric load data are shown in Figs. 2e3.
+Moreover, the corresponding histograms for each demand are
+shown in Fig. 4 to provide a visual representation of the electrical
+Fig. 1. The network topology of the renewable energy community testbed at a village in Carinthia (Austria) with central investment options and other existin g technologies.
+Fig. 2. The hourly electrical demand pro ﬁle of node 1 e4.A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+6
+
+===PAGE 7===
+load data distributions in relation to the number of hours.
+Furthermore, the maximum power and yearly electricity con-
+sumption for each community participant (node) and type are re-
+ported in Table 1 . The total annual consumption of the whole REC is
+approximately 63,902 kWh/a with an hourly peak load of 18.32kW pwhen the individual electricity consumptions are aggregated
+to a total load.
+For the determination of the electricity provided by the existing
+PV technologies at the location the solar PV performance is
+required at the site. The solar PV performance is retrieved from
+Meteonorm [ 35] with an hourly time horizon. Meteonorm explic-
+itly provides the hourly values of the PV performance of a typical
+medium sized plant with crystalline silicon modules and an ef ﬁ-
+cient inverter for a whole year. These data are shown in Fig. 5 . The
+technological and economical parameters of the PV technology are
+addressed in sub-section 3.3.
+In order to assess the CO 2emissions correctly, the CO 2content of
+the purchased electricity from the utility also needs to be consid-
+ered. The marginal CO 2emissions rate of the purchased electricity
+is considered in kg/kWh in this study and is shown in Fig. 6 [36]o n
+hourly basis for the whole year. The marginal CO 2emissions rate is
+based on the Austrian-mix and import-mix electricity sources. The
+marginal CO 2emissions only consider the direct emissions of the
+fuel while generating the electricity and do not include the indirect
+emissions related to the fuel production and transportation.
+3.3. Techno-economical parameters
+The economical parameters for the solar PV and ESS include the
+investment parameters like ﬁxed capital costs, variable capital
+costs, ﬁxed maintenance costs and lifetime. These parameters are
+Fig. 3. The hourly electrical demand pro ﬁle of node 5 e9.
+Fig. 4. The corresponding histograms for each electrical demand.A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+7
+
+===PAGE 8===
+given in Table 2 [37,38]. For the ESS a Lithium-ion based battery is
+considered. The lifetime of such Lithium-based batteries results
+from the stated manufacturer's warranty of ten years at a discharge
+depth of 100% [ 39]. In order to minimize battery degradation and
+prolong the usage of the stored renewable energy, the ESS is only
+operated in a SOC range of 20 e100%, which according to [ 40] can
+increase the lifetime (more precisely the number of charge cycles)
+by 50%. Therefore a lifetime of 15 years is assumed for the ESS in
+this study. The interest rate is considered as 2%, which is needed for
+the calculation of the annuity rate for each technology.
+The technical parameters for the energy storage system include
+the charging and discharging ef ﬁciencies, the maximum charge and
+discharge rates, the minimum and maximum SOC and the self-
+discharge rate (losses) of a typical Lithium-Ion ESS. These param-
+eters are given in Table 3 [39,41].
+In Austria, the total electricity tariff is divided into three main
+components consisting of an energy, a grid and a fees component
+with the last two components regulated by law and dependent on
+the respective region [ 42e44]. Furthermore, the Austrian sales tax
+of 20% must also be taken into account. The energy component of
+the electricity tariff for the utility purchase is based on the KELAG
+Home Basic tariff [ 45], which is commonly used for households
+(HH) at this site, and a special tariff for the local authority (LA) and
+the electrical hot water boiler (HWB) de ﬁned by the local energy
+supplier. Furthermore, in this case study a distinction is made be-
+tween two different tariff scenarios. The ﬁrst scenario refers to a
+pure consumption tariff without variable power demand rates for
+all REC members and is therefore called “Scenario Without-DR ”in
+this study. In the second scenario there is a variable power demand
+rate in the grid tariff component, which refers to the yearly peakTable 1
+The maximum hourly power and annual electrical load of each community participant.
+Node Type Maximum Hourly Power
+[kW]Annual Energy
+[kWh] per year
+1 Local Authority 10.52 19,972.69
+2 Fire Fighting Station 1.98 5,171.553 Apartment 1.26 378.104 Apartment 1.65 1,395.145 Apartment (Hot Water Boiler) 2.84 1,816.81
+6 Household 5.03 14,093.83
+7 Bank 3.13 9,452.838 Household 2.23 1,803.639 Household 3.25 9,817.13
+Table 2The economic parameters of the microgrid technologies [ 37,38].
+Technology Fixed Costs Variable Costs Fixed Maintenance Costs Lifetime
+[V][ V/kW or kWh for ESS] [ V/kW or kWh for ESS] per year [Years]
+PV 0 842 9 25
+ESS 0 434 0 15
+Fig. 5. The solar PV performance data on hourly basis at the site [ 35].
+Fig. 6. The hourly marginal CO 2emissions of the utility electricity [ 36].Table 3
+The technical parameters of the Li-ion based ESS [ 39,41].
+Parameter Value
+Charging Ef ﬁciency of ESS [%] 95
+Discharging Ef ﬁciency of ESS [%] 95
+Maximum Charge Rate [% per hour] 34Maximum Discharge Rate [% per hour] 34Minimum SOC of ESS [%] 20Maximum SOC of ESS [%] 100Self-Discharge Rate of ESS [% per hour] 0.2A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+8
+
+===PAGE 9===
+load of each REC participant, and thus is called “Scenario With-DR ”.
+The tariffs are summarized into a variable ( Vc/kWh), a ﬁxed (V/a)
+and a peak load-related ( V/kW p/a) cost component for the opti-
+mization, which results in the following cost breakdown for the
+different tariff scenarios and participant types given in Table 4 .
+According to the current status of the negotiations surrounding
+the EAG, it can be assumed that the variable part of the grid
+component for the shared electricity within the REC will be
+reduced by at least 60% in order to create additional ﬁnancial in-
+centives for community members in Austria. In addition, the vari-
+able part of the fees cost component is also to be abolished. The
+energy price is determined by the operator of the REC or by the
+community participants. In this study, energy rates of 4 Vc/kWh are
+considered, which is equal to the ﬁxed feed-in tariff to the utility of
+4Vc/kWh and corresponds to the current community situation
+with the existing PV technologies. For the green ﬁeld investment
+scenarios it is assumed that no energy rates have to be paid and are
+therefore considered to be 0 Vc/kWh. The cost structure and the
+summarized variable energy community tariff for the purchased
+electricity from the REC is given in Table 5 .
+In addition to the ﬁxed feed-in tariff zUtExp
+t of 4Vc/kWh, also
+time-variable rates for the PV surplus electricity sales to the utility
+are considered in other green ﬁeld optimization scenarios. This is
+signiﬁcantly important to show how the REC reacts with differentmarket signals. For this the Austrian spot market prices on an
+hourly basis are used. This market price history is shown in Fig. 7
+[46].
+3.4. Optimization framework and strategy
+The case study considers three different reference cases (RC) and
+three different optimization cases (OC) in a REC constellation
+related to the corresponding reference case and where the
+renewable energy transfer among the community participants is
+enabled. The different scenarios are reported in Table 6 . For all
+cases, the total annual energy costs and the total annual CO 2
+emissions are calculated through a cost minimization of the opti-mization model. The energy costs include the investment costs
+related to the PV and ESS technologies together with the electricity
+purchase or sales from the utility or the REC. The CO
+2emissions
+include the total marginal carbon dioxide emissions of the elec-
+tricity purchase from the utility.
+Theﬁrst reference case RC-Without-DR-PV represents the cur-
+rent status of the participants and considers the three existing PV
+systems using the technical and economical parameters reported in
+sub-section 3.3. In this reference case, the tariff scenario without
+demand rates is considered for the utility purchase, which is giveninTable 4 . Furthermore, in this reference case, the PV surplus can
+only be fed into the grid at a ﬁxed feed-in tariff of 4 Vc/kWh. The
+associated optimization case OC-Without-DR-PV determines by
+how much the total PV self-consumption of the REC can be
+increased and thus how much total annual energy costs and total
+annual CO
+2emissions can be saved with the prevailing tariff sce-
+nario when the renewable energy transfer between the partici-
+pants is enabled.
+The second and third reference cases i.e. RC-Without-DR and
+RC-With-DR are so-called green ﬁeld scenarios with different tariff
+schemes in each case (one without and one with demand rates),
+where no existing PV technologies are considered. The corre-
+sponding investment and optimization cases OC-Without-DR and
+OC-With-DR determine how much is invested in new PV and ESSTable 4
+The individual and summarized electricity tariff components in the REC.
+Tariff Component Unit Without-DR With-DR
+HH LA HWB HH LA HWB
+Energy V/a 39 8 0 39 8 0
+Vc/kWh 6.79 4.53 6.25 6.79 4.53 6.25
+Grid V/a 65.21 65.21 65.21 27.96 27.96 27.96
+V/kW p/a 0 0 0 13.79 13.79 13.79
+Vc/kWh 6.53 6.53 6.53 6.07 6.07 6.07
+Fees V/a 37.35 37.35 37.35 37.35 37.35 37.35
+Vc/kWh 3.49 3.49 3.49 3.49 3.49 3.49
+Sales Tax % 20 20 20 20 20 20
+zUtPur
+n;t- Variable Cost Incl. Tax Vc/kWh 20.17 17.46 19.52 19.62 16.91 18.97
+zUtMax
+n;t- Peak Load Cost Incl. Tax V/kW p/a 0 0 0 16.55 16.55 16.55
+CUtFix
+n - Fixed Cost Incl. Tax V/a 169.87 131.17 121.57 125.17 87.97 78.37
+Table 5
+The energy community tariff components and the summarized variable cost for thepurchased electricity from the REC.
+REC tariff component Unit Without-DR With-DR
+HH, LA, HWB HH, LA, HWB
+Energy Vc/kWh 0 or 4 0 or 4
+Grid Vc/kWh 2.61 2.43
+Fees Vc/kWh 0 0
+Sales Tax % 20 20
+zRECPur- Variable Cost Incl. Tax Vc/kWh 3.13 or 7.93 2.92 or 7.72
+Table 6
+Different scenarios for the optimization and testing framework.
+Scenario Description
+RC-Without-DR-PV Reference case: existing PV and without demand rates
+RC-Without-DR Reference case: no existing PV; only utility purchase and without demand rates
+RC-With-DR Reference case: no existing PV; only utility purchase and with demand ratesOC-Without-DR-PV Optimization: existing PV and without demand rates; no additional investmentsOC-Without-DR Optimization: enabled investments and without demand ratesOC-With-DR Optimization: enabled investments and with demand ratesA. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+9
+
+===PAGE 10===
+technologies, and thus how much energy costs and CO 2emissions
+can be saved in a REC with the optimally chosen technology ca-
+pacities and enabling the renewable energy transfer. In both
+green ﬁeld investment optimization cases, the spot market prices
+given in Fig. 7 are used for the PV surplus sales to the utility. The
+assumptions for all optimization scenarios are summarized in
+Table 7 .
+For all cases, the total annual energy costs and the total annual
+CO2emissions are calculated through a cost minimization of the
+optimization model. The results include the optimal sizing and the
+full-year operational dispatch of the technologies. Furthermore, the
+results also include the comparisons with the reference cases in
+terms of the energy cost and CO 2savings, the total annual energy
+costs per node and the distributed renewable energy to each node
+for the different tariff scenarios. The optimality gap of the optimi-
+zation solver was set to 0.2% for all scenarios. The MILP optimiza-
+tion was performed on a server with a Common KVM processor
+CPU 3.7 GHz and 224 GB of RAM.
+4. Results
+This section provides the results of the reference cases and the
+corresponding optimization scenarios for each node based on the
+different electricity tariff scenarios.4.1. Current status with existing technologies
+First, the current status of the community participants is
+determined with the reference case scenario RC-Without-DR-PV.
+For this, the total electricity purchase from the grid, the produced
+PV electricity provided by the existing PV technologies and the
+respective share of the onsite PV usage, the total annual energy
+costs and the total annual CO 2emissions are calculated for each
+node through a cost minimization using the time series input data
+and techno-economical parameters given in sub-sections 3.2and
+3.3respectively.
+The calculated total annual energy costs per node of the RC-
+Without-DR-PV reference case scenario are used as node-speci ﬁc
+cost constraints for the optimization scenario OC-Without-DR-PV,
+where the renewable electricity transfer between the participants
+is possible. The REC participants who provide the renewable elec-
+tricity to the REC ( zRECExp) get the same energy rate as if they sold
+the electricity to the grid ( zUtExp), i.e. 4 Vc/kWh. This means that the
+participants who sell the electricity to the other community
+members are not economically disadvantaged in the new REC
+setup. The results for the whole REC obtained from the reference(RC-Without-DR-PV) and optimization scenario (OC-Without-DR-
+PV) are given in Table 8 . The node-speci ﬁc results can be found in
+theAppendix A (Tables A1 and A2).
+In total, an average annual PV generation of 25,083.21 kWh/a is
+available for the entire REC, where the existing PV systems have an
+aggregated peak power of 24.48 kW
+p. In the reference scenario,
+only 6,648.19 kWh/a of the total PV generation is used for own
+demand (PV-Onsite), which corresponds to an average, percentage
+own demand coverage of approx. 26.5%. This means that the ma-
+jority of the produced PV electricity is available as surplus and in
+this case must be fed into the grid. Through a transition to a REC,
+the PV own use of the community can be further increased, since in
+this case, the renewable electricity transfer between the commu-
+nity participants is enabled. Fig. 8 shows how the renewable energy
+is optimally distributed within the REC according to the cost
+minimization and how much each participant can purchase from
+the REC with the corresponding cost savings.
+The optimization results show that the total PV own use of the
+REC can be increased from 6,648.19 kWh/a (26.5%) to
+16,342.9 kWh/a (65.2%) as a result of the additional REC-Purchase
+within the community. This is due to the introduced possibility of
+the renewable electricity transfer between nodes, so that the
+electricity demand of each community participant can be satis ﬁed
+with the provided renewable electricity of the PV surplus. Through
+this additional possibility to purchase renewable electricity from
+the REC, the total annual energy costs can be reduced by 8.73% as
+Fig. 7. The hourly EPEX spot market prices for the year 2019 in Austria [ 46].
+Table 7
+The assumptions made regarding the REC-Purchase and Utility Sales for all optimization scenarios.
+Scenario zRECPur- REC-Purchase
+[Vc/kWh]zRECExp- REC-Export
+[Vc/kWh]zUtExp
+t - Utility Sales
+[Vc/kWh]
+OC-Without-DR-PV 7.93 4 4
+OC-Without-DR 3.13 0 Market PricesOC-With-DR 2.92 0 Market Prices
+Table 8The results of the reference and optimization scenarios (RC-Without-DR-PV and OC-Without-DR-PV) calculated through a cost minimization.
+Scenario PV
+[kW]PV-Onsite
+[kWh/a]REC-Purchase
+[kWh/a]Community Energy Costs
+[V/a]Cost Savings
+[%]Community CO
+2Emissions
+[kg-CO 2/a]CO2Savings
+[%]
+RC-Without-DR-PV 24.48 6,648.19 e 12,976.25 e 13,879.25 e
+OC-Without-DR-PV 24.48 6,648.19 9,694.71 11,843.70 8.73 11,839.45 14.70A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+10
+
+===PAGE 11===
+the renewable electricity is purchased at a reduced energy com-
+munity tariff rate (see Table 5 ). Moreover, since renewable elec-
+tricity is purchased, the total annual CO 2emissions can be reduced
+by 14.7% within the REC at the same time. Note that this only ap-
+plies to CO 2emissions within the local network and not the wider
+distribution grid. Furthermore, it can be seen from Fig. 8 that node 2
+is exporting more PV electricity than any other node since it has the
+biggest PV capacity installed and, accordingly, the largest PV sur-
+plus is generated on this node, which is exported and distributed to
+the participants in the most cost-optimal way. Therefore, the total
+electricity transfer from node 2 to other nodes can be analyzed in
+terms of an operational dispatch through Figure A1 in the Appendix
+A.
+4.2. Green ﬁeld investment scenarios
+In addition to the current community status, reference cases
+without existing PV technologies are also considered, i.e. RC-
+Without-DR and RC-With-DR. These scenarios correspond to the
+green ﬁeld scenarios, where the whole electricity demand is
+satisﬁed by the purchase from the grid with the different tariff
+scenarios given in Table 4 . The calculated total annual energy costs
+per node of both RC-Without-DR and RC-With-DR reference case
+scenarios are again used as cost constraints for the investment
+scenarios OC-Without-DR and OC-With-DR, where the renewable
+electricity transfer among the participants is enabled if a renewable
+generation system is selected through the performed cost optimi-
+zations. In these optimization scenarios, investments in PV gener-
+ation system and ESS are considered in a centralized node. All the
+community nodes are connected with each other, also with thiscentral investment node and utility grid for electricity sharing. Thecentralized investment node provides advantage over enabling the
+decentralized investments because the community can avoid the
+building retro ﬁt costs and reduce the technology installation costs.
+Moreover, the centralized PV and ESS are much easier to maintain
+and monitor on the community level. The produced surplus elec-
+tricity is sold to the utility at time-variable market prices on an
+hourly basis, which are shown in Fig. 7 . The total results of the
+reference cases (RC-Without-DR and RC-With-DR) together with
+the investment decisions and objective function savings obtained
+from the optimization scenarios (OC-Without-DR and OC-With-
+DR) are given in Table 9 . The node-speci ﬁc results can be found in
+theAppendix A (Tables A3 eA5).
+Based on the obtained results given in Table 9 , it can be seen that
+for both optimization scenarios, the cost minimization invests in PV
+technologies. In the OC-With-DR scenario, the PV capacity is being
+selected even larger than in the OC-Without-DR scenario. This is
+due to the fact that in this OC-With-DR scenario, investments are
+also made in a ESS technology, which means that additional PV
+electricity can be stored, resulting in a larger PV capacity invest-
+ment and allowing more renewable electricity to be shared within
+the REC. Moreover, the reason for also investing in an additional ESS
+in the OC-With-DR scenario is that power demand rates are
+considered in this scenario and that power peaks can be absorbed
+through the use of an ESS (peak-shaving), resulting in lower peakload-related costs for each community participant. This is illus-
+trated in Fig. 9 , where the optimized electricity purchase of the ﬁrst
+10 days is shown. Fig. 9 shows that the Grid-Purchase is cut off by
+the REC-Purchase and thus ﬂattened.
+In this study, the annualized investment and maintenance costs
+are allocated to the community participants weighted by the
+amount of electricity purchased from the REC per node. This means
+that if a participant purchases more electricity relative to the total
+REC-Purchase, its investment and maintenance costs share in the
+Fig. 8. The annual electricity demand of each REC participant satis ﬁed by the calcu-
+lated Grid-Purchase, PV-Onsite usage and the REC-Purchase together with the cost
+savings for the optimization scenario OC-Without-DR-PV. The dashed bars show how
+much renewable PV electricity was exported to other community participants.
+Table 9The results of the green ﬁeld reference (RC-Without-DR and RC-With-DR) and investment scenarios (OC-Without-DR and OC-With-DR) calculated through a cost minimization.
+Scenario PV
+[kW]ESS
+[kWh]REC-Purchase
+[kWh/a]Community Energy Costs
+[V/a]Cost Savings
+[%]Community CO
+2Emissions
+[kg-CO 2/a]CO2Savings
+[%]
+RC-Without-DR ee e 13,778.50 e 15,281.18 e
+RC-With-DR ee e 13,554.91 e 15,281.18 e
+OC-Without-DR 46.37 e 20,129.30 11,831.10 14.13 10,899.84 28.67
+OC-With-DR 52.22 14.15 23,929.76 11,481.03 15.30 10,076.12 34.06
+Fig. 9. The calculated electricity purchase from the grid and the REC of Node 2
+determined via the optimization scenario OC-With-DR.A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+11
+
+===PAGE 12===
+technologies will also be correspondingly higher. The optimization
+results of each node together with the objective function savings
+obtained from the investment scenarios OC-Without-DR and OC-
+With-DR are shown in Fig. 10 and Fig. 11 respectively.
+The calculated results show that with the invested technologies,
+the total annual community energy costs can be reduced by 14.13%
+and the total annual CO 2emissions can be reduced by 28.67%
+within the REC in the OC-Without-DR investment scenario. More-
+over, the results show that each participant in a REC constellation
+can bene ﬁt with a signi ﬁcant cost reduction of at least approx. 6% to
+a maximum of over 18%. In the OC-With-DR scenario with demand
+tariffs, the optimization results show an even higher total annual
+energy cost reduction of 15.3% and total annual CO 2reduction of
+34.06% within the community. This is due to the larger capacity of
+the invested PV technology and the additional ESS where the PV
+electricity can be stored, allowing more renewable electricity to be
+shared within the REC. This ESS allows to reduce the peak load-
+related costs in a targeted manner through the additional, time-
+limited renewable power supply of the community participants
+from the ESS (peak-shaving) when demand rates are used.Furthermore, this additionally increases the total renewable energy
+share in the overall electricity supply of the REC, resulting in even
+lower CO 2emissions when investing in a ESS. Thus, the results
+show that renewable energy communities can signi ﬁcantly reduce
+both energy costs and CO 2emissions with the presented MILP-
+based planning approach, especially when demand-based tariffs
+are used for the utility purchase.
+5. Conclusion
+This research work addresses the decarbonization of the
+regional sector via targeted, MILP-based optimal planning of
+renewable energy communities in a microgrid constellation. It ex-
+amines and analyzes a real case study, where an energy community
+testbed was created by a leading Austrian energy service provider
+in a village in Carinthia, Austria. The study considers the develop-
+ment of a MILP-based optimization framework, where distributed
+PV generation systems, energy storage systems, different electricity
+tariff scenarios and market signals are taken into account, so that a
+real REC setup can be mapped mathematically accurately and
+optimally planned. The case study considers in total three differentreference cases and three corresponding optimization and invest-
+ment scenarios in a REC setup, where the renewable energy
+transfer between nine community participants is enabled.
+Theﬁrst reference case RC-Without-DR-PV represents the cur-
+rent status of the participants and considers the three existing PV
+systems where the PV surplus can only be fed into the grid. The
+associated optimization case OC-Without-DR-PV determines by
+how much the total PV self-consumption of the REC can be
+increased and thus how much total annual energy costs and total
+annual CO
+2emissions can be saved with the prevailing tariff sce-
+nario when the renewable energy transfer between the partici-
+pants is enabled. The second and third reference cases RC-Without-
+DR and RC-With-DR are green ﬁeld scenarios with different tariff
+schemes in each case (one without and one with demand rates),
+where no existing PV technologies are considered. The corre-
+sponding investment and optimization cases OC-Without-DR and
+OC-With-DR determine how much is invested in new PV and ESS
+technologies, and thus how much energy costs and CO 2emissions
+can be saved with the optimally chosen technology capacities. For
+all cases, the total annual energy costs and the total annual CO 2
+emissions are calculated through a cost minimization of the opti-mization model.
+In summary, the optimization results of the ﬁrst OC-Without-
+DR-PV case show that the total PV own use of the REC can be
+increased from 26.5% to 65.2% only by enabling the renewable
+energy transfer between the participants. Through the additional
+possibility to purchase renewable electricity from the REC at a
+lower tariff, the total annual energy costs can be reduced by 8.73%
+and the total annual CO
+2emissions can be reduced by 14.7% within
+the REC at the same time. For the green ﬁeld optimization scenario
+OC-Without-DR, the cost minimization only invests in central PV
+technologies, resulting in the total annual energy cost savings of
+14.13% and the total annual CO 2savings of 28.67%. However, the
+greatest savings are achieved in the green ﬁeld optimization sce-
+nario OC-With-DR with demand rates. In this case, investments are
+also made in central ESS technologies, which are primarily used for
+peak shaving and thus further reducing the peak load-related costs
+for each community participant. Here the optimization results
+show a total annual energy cost reduction of 15.3% and a total
+annual CO 2reduction of 34.06% within the community.
+Overall, the key results of this work indicate that REC can
+signiﬁcantly reduce the total annual energy costs and CO 2emis-
+sions through an optimal selection and operation of the distributed
+energy technologies if the renewable energy is transferred and
+Fig. 10. The annual electricity demand of each REC participant satis ﬁed by the
+calculated Grid-Purchase and the REC-Purchase together with the cost savings for the
+optimization scenario OC-Without-DR.
+Fig. 11. The annual electricity demand of each REC participant satis ﬁed by the calcu-
+lated Grid-Purchase and the REC-Purchase together with the cost savings for theoptimization scenario OC-With-DR.A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+12
+
+===PAGE 13===
+shared between the community participants. Moreover, all opti-
+mization scenarios performed via the presented MILP-based plan-
+ning approach show that each community participant can bene ﬁt
+both economically and ecologically with the optimal sizing and
+full-year operational dispatch of the corresponding technologies,
+regardless of the electricity tariff scenario selected. However, the
+greatest cost bene ﬁt can be achieved if investments in additional
+technologies or energy storage systems are enabled. This allows to
+reduce the peak load-related costs in a targeted manner through
+the additional, time-limited renewable power supply of the com-
+munity participants from the ESS (peak-shaving) when demand
+rates are used.
+The future research work will include the extension of this study
+and consider the game theoretic concepts to distribute the total
+cumulative cost savings and CO 2savings among different com-
+munity participants individually based on their cooperative
+participation. This will also help energy system planners to
+consider various energy sharing strategies in the ﬁeld of coopera-
+tive optimization.
+Credit author statement
+Armin Cosic: Conceptualization, Methodology, Software, Data
+curation, Visualization, Writing ereview &editing. Michael Sta-
+dler: Conceptualization, Methodology, Supervision, Resources,
+Writing ereview &editing. Muhammad Mansoor: Conceptuali-
+zation, Methodology, Data curation, Writing ereview &editing.Michael Zellinger: Resources, Visualization, Project
+administration.
+Declaration of competing interest
+The authors declare that they have no known competing
+ﬁnancial interests or personal relationships that could have
+appeared to in ﬂuence the work reported in this paper.
+Acknowledgements
+The authors would like to acknowledge Esther Fellinger from
+KELAG, a leading energy service provider in Austria, and Georg
+Wurzer from KNG-K €arnten Netz GmbH, the main electricity grid
+operator in Carinthia, for the valuable discussions on this topic and
+partially funding this project. Major funding was provided by the
+Austrian Research and Promotion Agency (FFG) under the project
+OptEnGrid (grant no. 858815), the province of Lower Austria under
+the project Grundlagenforschung Smart und Microgrids (grant no.
+K3-F-755/001-2017) and the COMET program 2019 e2023 of BEST -
+Bioenergy and Sustainable Technologies GmbH under the projects
+C-52-076-0-OptInvest ,C-52-080-0-OptControl and C-52-077-0-
+SEBA/KELAG .
+Appendix A. Node-speci ﬁc results
+Table A1
+RC-Without-DR-PV results of each node.
+Node Grid-Purchase
+[kWh/a]PV-Production
+[kWh/a]PV-Onsite
+[kWh/a]Total Energy Costs
+[V/a]Total CO 2Emissions
+[kg-CO 2/a]
+1 19,972.69 0 0 3,618.40 4,707.04
+2 2,651.8 18,115.65 2,519.75 (13.9%) 1,002.63 656.19
+3 378.09 0 0 246.24 88.514 1,395.14 0 0 451.38 326.115 1,816.81 0 0 476.21 437.946 10,736.24 4,303.49 3,357.59 (78%) 2,516.58 2,729.557 9,452.83 0 0 2,076.61 2,300.868 1,032.78 2,664.07 770.85 (28.9%) 438.09 256.319 9,817.13 0 0 2,150.10 2,376.74
+Total 57,253.51 25,083.21 6,648.19 (26.5%) 12,976.25 13,879.25
+Table A2
+OC-Without-DR results of each node.
+Node Grid-Purchase
+[kWh/a]REC-Purchase
+[kWh/a]PV-REC-Export
+[kWh/a]Total Energy Costs
+[V/a]Cost Savings
+[%]Total CO 2Emissions
+[kg-CO 2/a]CO2Savings
+[%]
+1 18,085.91 1,886.77 0 3,438.59 4.97 4,351.51 7.55
+2 2,651.66 0.14 7,528.05 1,002.61 0 656.16 0
+3 280.49 97.61 0 2,234.29 4.85 69.46 21.524 1,035.99 359.15 0 407.42 9.74 257.77 20.965 1,362.07 454.74 0 423.51 11.07 338.53 22.706 9,232.4 1,503.84 632.24 2,332.51 7.31 2,362.8 13.447 6,985.86 2,466.96 0 1,774.66 14.54 1,785.57 22.408 986.87 45.91 1,534.42 432.48 1.28 244.64 4.559 6,937.54 2,879.59 0 1,797.63 16.39 1,773.01 25.40
+Total 47,558.79 9,694.71 9,694.71 11,843.70 8.73 11,839.45 14.70A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+13
+
+===PAGE 14===
+Table A3
+RC-Without-DR and RC-With-DR results of each node.
+Node Grid-Purchase
+[kWh/a]Total CO 2Emissions
+[kg-CO 2/a]Without-DR With-DR
+Total Energy Costs
+[V/a]Total Energy Costs
+[V/a]
+1 19,972.69 4,707.04 3,618.40 3,639.43
+2 5,171.55 1,205.9 1,213.08 1,172.613 378.10 88.51 246.24 220.234 1,395.14 326.11 451.38 426.285 1,816.81 437.94 476.21 470.096 14,093.83 3,416.54 3,012.70 2,973.577 9,452.83 2,300.86 2,076.61 2,031.588 1,803.63 421.54 533.77 516.00
+9 9,817.13 2,376.74 2,150.10 2,105.11
+Total 63,901.69 15,281.18 13,778.50 13,554.91
+Table A4
+OC-Without-DR results of each node.
+Node Grid-Purchase
+[kWh/a]REC-Purchase
+[kWh/a]Total Energy Costs
+[V/a]Cost Savings
+[%]Total CO 2Emissions
+[kg-CO 2/a]CO2Savings
+[%]
+1 17,038.1 2,934.58 3,401.74 5.99 4,109.12 12.70
+2 2,953.54 2,218.01 989.22 18.45 733.25 39.19
+3 222.59 155.50 230.55 6.37 55.42 37.394 816.95 578.20 393.02 12.93 203.41 37.635 1,087.75 729.06 407.37 14.46 261.69 40.256 8,614.12 5,479.71 2,459.63 18.36 2,203.69 35.507 5,897.95 3,554.88 1,717.82 17.28 1,512.07 34.288 1,050.26 753.37 457.73 14.25 261.25 38.029 6,091.13 3,726.00 1,774.03 17.49 1,559.94 34.37
+Total 43,772.39 20,129.30 11,831.10 14.13 10,899.84 28.67
+Table A5
+OC-With-DR results of each node.
+Node Grid-Purchase
+[kWh/a]REC-Purchase
+[kWh/a]Total Energy Costs
+[V/a]Cost Savings
+[%]Total CO 2Emissions
+[kg-CO 2/a]CO2Savings
+[%]
+1 16,939.24 3,033.44 3,403.20 6.49 4,090.04 13.11
+2 2,374.73 2,796.82 934.93 20.27 606.58 49.70
+3 128.04 250.05 180.60 18.00 31.77 64.114 598.89 796.26 340.76 20.06 151.78 53.465 425.97 1,390.84 328.56 30.11 101.61 76.806 8,211.39 5,882.44 2,475.52 16.75 2,145.4 37.217 5,217.33 4,235.49 1,680.29 17.29 1,366.73 40.608 859.62 944.01 415.86 19.41 219.35 47.969 5,216.71 4,600.42 1,721.31 18.23 1,362.86 42.66
+Total 39,971.92 23,929.76 11,481.03 15.30 10,076.12 34.06A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+14
+
+===PAGE 15===
+References
+[1]IRENA. Renewable energy and climate Pledges: Five Years after the Paris
+Agreement. Abu Dhabi: International Renewable Energy Agency; 2019 .
+[2] Wang R, Hsu SC, Zheng S, Chen JH, Li XI. Renewable energy microgrids:
+economic evaluation and decision making for government policies to
+contribute to affordable and clean energy. Appl Energy 2020;274:115287.
+https://doi.org/10.1016/j.apenergy.2020.115287 .
+[3] Tabar VS, Jirdehi MA, Hemmati R. Sustainable planning of hybrid microgrid
+towards minimizing environmental pollution, operational cost and frequencyﬂuctuations. J Clean Prod 2018;203:1187 e200. https://doi.org/10.1016/
+j.jclepro.2018.05.059 .
+[4]Basu AK, Chowdhury SP, Chowdhury S, Paul S. Microgrids: energy manage-
+ment by strategic deployment of DERs da comprehensive survey. Renew
+Sustain Energy Rev 2011;15(9):4348 e56.
+[5] Schwaegerl C, Tao L. Quanti ﬁcation of technical, economic, environmental and
+social bene ﬁts of microgrid operation. In: Microgrids. John Wiley and Sons
+Ltd; 2013. p. 275 e313. https://doi.org/10.1002/9781118720677.ch07 .
+[6]Long C, Wu J, Zhang C, Thomas L, Cheng M, Jenkins N. Peer-to-peer energy
+trading in a community microgrid. In: 2017 IEEE power energy society general
+meeting. IEEE; 2017, July. p. 1 e5.
+[7] Directorate-General for Energy (European Commission). Clean energy for all
+Europeans. Euroheat Power 2019;14(2):3. https://doi.org/10.2833/9937 .
+[8] European Parliament. Directive (EU) 2018/2001 of the European Parliament
+and of the Council on the promotion of the use of energy from renewable
+sources. Off J Eur Union 2018;2018(L 328):82 e209. https://eur-lex.europa.eu/
+legal-content/EN/TXT/PDF/?uri ¼CELEX:32018L2001from ¼EN.
+[9] European Parliament. Directive (EU) 2019/944 on Common rules for the in-
+ternal market for electricity. Off J Eur Union 2019;L 158:18. http://www.omel.
+es/en/ ﬁles/directive_celex_32019l0944_en.pdf .
+[10] In^es C, Guilherme PL, Esther MG, Swantje G, Stephen H, Lars H. Regulatory
+challenges and opportunities for collective renewable energy prosumers in
+the EU. Energy Pol 2020;138:111212 .
+[11] 58/ME (XXVII. GP) - Erneuerbaren-Ausbau-Gesetz eEAG. Erneuerbaren-
+ausbau-gesetzespaket eEAG-Paket. 2012. https://www.parlament.gv.at/
+PAKT/VHG/XXVII/ME/ME_00058/index.shtml .
+[12] Park C, Yong T. Comparative review and discussion on P2P electricity trading.
+Energy Procedia 2017;128:3 e9.
+[13] Zhang C, Wu J, Long C, Cheng M. Review of existing peer-to-peer energytrading projects. Energy Procedia 2017;105:2563 e8.
+[14] Mengelkamp E, G €arttner J, Rock K, Kessler S, Orsini L, Weinhardt C. Designing
+microgrid energy markets: a case study: the Brooklyn Microgrid. Appl Energy
+2018;210:870
+e80.
+[15] Leong CH, Gu C, Li F. Auction mechanism for P2P local energy trading
+considering physical constraints. Energy Procedia 2019;158:6613 e8.
+[16] Morstyn T, Teytelboym A, McCulloch MD. Bilateral contract networks for
+peer-to-peer energy trading. IEEE Trans Smart Grid 2018;10(2):2026 e35.
+[17] Long C, Wu J, Zhou Y, Jenkins N. Aggregated battery control for peer-to-peer
+energy sharing in a community Microgrid with PV battery systems. Energy
+Procedia 2018;145:522 e7.
+[18] Reihani E, Siano P, Genova M. A new method for peer-to-peer energy ex-
+change in distribution grids. Energies 2020;13(4):799. https://doi.org/
+10.3390/en13040799 .
+[19] Cui S, Wang YW, Shi Y, Xiao JW. An ef ﬁcient peer-to-peer energy-sharing
+framework for numerous community prosumers. IEEE Trans Ind Inf
+2020;16(12):7402 e12.https://doi.org/10.1109/TII.2019.2960802 .
+[20] Lin CC, Wu YF, Liu WY. Optimal sharing energy of a complex of houses
+through energy trading in the Internet of energy. Energy 2021;220:119613 .
+[21] Mahmoud MS, Rahman MSU, Fouad MS. Review of microgrid architectures ea
+system of systems perspective. IET Renew Power Gener 2015;9(8):1064 e78.
+[22] Huang H, Nie S, Lin J, Wang Y, Dong J. Optimization of peer-to-peer power
+trading in a microgrid with distributed PV and battery energy storage sys-tems. Sustainability 2020;12(3). https://doi.org/10.3390/su12030923 .
+[23] Fleischhacker A, Lettner G, Schwabeneder D, Auer H. Portfolio optimization of
+energy communities to meet reductions in costs and emissions. Energy
+2019;173:1092 e105. https://doi.org/10.1016/j.energy.2019.02.104 .
+[24] Mansoor M, Stadler M, Zellinger M, Lichtenegger K, Auer H, Cosic A. Optimal
+planning of thermal energy systems in a microgrid with seasonal storage and
+Piecewise af ﬁne cost functions. Energy 2020:119095 .
+[25] Stadler M, Pecenak Z, Mathiesen P, Fahy K, Kleissl J. Performance comparison
+between two established microgrid planning MILP methodologies tested on
+13 microgrid projects. Energies 2020;13(17):4460 .
+[26] Mansoor M, Stadler M, Auer H, Zellinger M. Advanced optimal planning for
+microgrid technologies including hydrogen and mobility at a real microgridtestbed. Int J Hydrogen Energy 2021;46(37):19285 e302.
+[27] Zwickl-Bernhard S, Auer H. Open-source modeling of a low-carbon urban
+neighborhood with high shares of local renewable generation. Appl Energy
+2020;282:116166 .
+[28] Fina B, Fleischhacker A, Auer H, Lettner G. Economic assessment and business
+models of rooftop photovoltaic systems in multiapartment buildings: case
+studies for Austria and Germany. J Renew Energy 2018;2018 .
+[29] Roberts MB, Bruce A, MacGill I. Impact of shared battery energy storage sys-
+tems on photovoltaic self-consumption and electricity bills in apartment
+buildings. Appl Energy 2019;245:78 e95.
+[30] Fleischhacker A, Auer H, Lettner G, Botterud A. Sharing solar PV and energy
+storage in apartment buildings: resource allocation and pricing. IEEE TransSmart Grid 2018;10(4):3963 e73.
+[31]
+Perger T, Wachter L, Fleischhacker A, Auer H. PV sharing in local communities:
+peer-to-peer trading under consideration of the prosumers' willingness-to-
+pay. Sustain Cities Soc 2021;66:102634 .
+[32] Jiang A, Yuan H, Li D. A two-stage optimization approach on the decisions for
+prosumers and consumers within a community in the Peer-to-peer energy
+sharing trading. Int J Electr Power Energy Syst 2021;125:106527 .
+[33] Mashayekh S, Stadler M, Cardoso G, Heleno M. A mixed integer linear pro-
+gramming approach for optimal DER portfolio, sizing, and placement in multi-
+energy microgrids. Appl Energy 2017;187:154 e68.
+[34] Fahy K, Stadler M, Pecenak ZK, Kleissl J. Input data reduction for microgrid
+sizing and energy cost modeling: representative days and demand charges.J Renew Sustain Energy 2019;11(6):065301 .
+[35] Remund J, Müller S, Kunz S, Schilter C. METEONORM: Global meteorological
+database for solar energy and applied climatology. Meteotest; 2007 .
+[36] Oib-Rl 6. Energieeinsparung und W €armeschutz, OIB-Leitfaden Ener-
+gietechnisches Verhalten von Geb €auden, OIB-330.6-027/19. 2019. Retrieved
+November 20, 2020, from, https://www.oib.or.at/sites/default/ ﬁles/
+erlaeuternde_bemerkungen_richtlinie_6_12.04.19_0.pdf .
+[37] IRENA. Global energy Transformation: a Roadmap to 2050. Abu Dhabi: IRENA;
+2018 .
+[38] IRENA. Electricity storage and renewables: costs and markets to 2030. Abu
+Dhabi: International Renewable Energy Agency; 2017 .
+[39] Tesla. Tesla Powerwall 2. 2020. Retrieved November 20, 2020, from, https://
+www.tesla.com/sites/default/ ﬁles/pdfs/powerwall/Powerwall%202_AC_
+Datasheet_de_DE.pdf .
+[40] Battery University. How to prolong Lithium-based batteries. 2020. Retrieved
+November 20, 2020, from, https://batteryuniversity.com/learn/article/how_
+to_prolong_lithium_based_batteries .
+Fig. A1. The total electricity transfer from Node 2 to all other nodes for the optimi-
+zation scenario OC-Without-DR-PV.A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+15
+
+===PAGE 16===
+[41] Battery University. Elevating self-discharge. 2018. Retrieved November 20,
+2020, from, https://batteryuniversity.com/learn/article/elevating_self_
+discharge .
+[42] E-Control. Decreed grid usage rates for 2020. 2020. Retrieved November 20,
+2020, from, https://www.e-control.at/industrie/strom/strompreis/
+netzentgelte .
+[43] E-Control. Taxes and charges. 2020. Retrieved November 20, 2020, from,
+https://www.e-control.at/marktteilnehmer/strom/strommarkt/preise/
+steuern-und-abgaben .
+[44] RIS. Ordinance of E-Control ’s Regulatory Commission determining the fees forgrid use. 2020. Retrieved November 20, 2020, from, https://www.ris.bka.gv.
+at/GeltendeFassung.wxe?
+Abfrage ¼Bundesnormen &Gesetzesnummer ¼20010107 .
+[45] KELAG. Kelag Home basic energy rate. 2020. Retrieved November 20, 2020,
+from, https://www.kelag.at/ ﬁles/folder/Produktfolder/Privatkunden/Strom/
+Tarifblatt_Kelag_Home_Basic.pdf .
+[46] EPEX Spot. EPEX spot market auction prices for 2019 - Austria. 2019.
+Retrieved November 20, 2020, from, https://www.epexspot.com/en/market-
+data .A. Cosic, M. Stadler, M. Mansoor et al. Energy 237 (2021) 121559
+16

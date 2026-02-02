@@ -1,0 +1,215 @@
+\section{Nomenclature}
+
+\subsection{Energy Quantities [MWh]}
+
+\subsubsection{Load Variables}
+
+\begin{tabular}{ll}
+$L_{i,t}$ & Load of consumer $i$ at time $t$ \\
+$L_{i,t}^f$ & Forecasted load of consumer $i$ at time $t$ \\
+$L_{i,t}^{\text{corr}}$ & Corrected load of consumer $i$ after REC sharing at time $t$ \\
+$Q_{\text{load,DA}}^{t}$ & Aggregated load forecast (Day-Ahead) at time $t$ \\
+$Q_{\text{load,ID}}^{t}$ & Aggregated load forecast (Intra-Day) at time $t$ \\
+$Q_{\text{load,actual}}^{t}$ & Actual load consumption at time $t$ \\
+\end{tabular}
+
+\subsubsection{Generation Variables}
+
+\begin{tabular}{ll}
+$G_{j,t}$ & Generation of prosumer $j$ at time $t$ \\
+$G_{j,t}^f$ & Forecasted generation of prosumer $j$ at time $t$ \\
+$G_{j,t}^{\text{corr}}$ & Corrected generation of prosumer $j$ after REC sharing \\
+$Q_{\text{RES,DA}}^{t}$ & Aggregated RES forecast (Day-Ahead) at time $t$ \\
+$Q_{\text{RES,ID}}^{t}$ & Aggregated RES forecast (Intra-Day) at time $t$ \\
+$Q_{\text{gen,actual}}^{t}$ & Actual RES generation at time $t$ \\
+\end{tabular}
+
+\subsubsection{Net Position Variables}
+
+\begin{tabular}{ll}
+$Q_{\text{DA,net}}^{t}$ & Day-ahead net position (RES - load) at time $t$ \\
+$Q_{\text{ID,net}}^{t}$ & Intra-day net position at time $t$ \\
+$Q_{\text{actual,net}}^{t}$ & Actual net position at time $t$ \\
+$Q_{\text{DA,net\_load}}^{t}$ & Day-ahead net load to purchase (deficit, $\geq 0$) \\
+$Q_{\text{DA,net\_gen}}^{t}$ & Day-ahead net generation to sell (surplus, $\geq 0$) \\
+$Q_{\text{ID,net\_load}}^{t}$ & Intra-day net load to purchase ($\geq 0$) \\
+$Q_{\text{ID,net\_gen}}^{t}$ & Intra-day net generation to sell ($\geq 0$) \\
+$Q_{\text{actual,net\_load}}^{t}$ & Actual net load deficit ($\geq 0$) \\
+$Q_{\text{actual,net\_gen}}^{t}$ & Actual net generation surplus ($\geq 0$) \\
+\end{tabular}
+
+\subsubsection{Imbalance Variables}
+
+\begin{tabular}{ll}
+$\Delta Q_{\text{BRP}}^{t}$ & Balancing Responsible Party imbalance at time $t$ \\
+$\Delta Q_{\text{ID}}^{t}$ & Intra-day adjustment from day-ahead forecast \\
+$\Delta Q_{\text{load}}^{t}$ & Deviation in load position \\
+$\Delta Q_{\text{gen}}^{t}$ & Deviation in generation position \\
+$\Delta Q_{\text{net}}^{t}$ & Net imbalance for settlement \\
+$\Delta Q_{\text{net\_load}}^{t}$ & Change in net load position (ID - DA) \\
+$\Delta Q_{\text{net\_gen}}^{t}$ & Change in net generation position (ID - DA) \\
+\end{tabular}
+
+\subsection{REC (Renewable Energy Community) Variables}
+
+\begin{tabular}{ll}
+$\text{Total Load}_t$ & Sum of all REC member loads at time $t$ [MWh] \\
+$\text{Total Gen}_t$ & Sum of all REC member generation at time $t$ [MWh] \\
+$\text{Shared Energy}_t$ & Energy shared internally within REC [MWh] \\
+                          & $= \min(\text{Total Load}_t, \text{Total Gen}_t)$ \\
+$\text{Exported Energy}_t$ & Energy exported to grid after sharing [MWh] \\
+                            & $= \max(0, \text{Total Gen}_t - \text{Total Load}_t)$ \\
+\end{tabular}
+
+\subsection{Price Variables [\euro/MWh]}
+
+\begin{tabular}{ll}
+$p_{\text{DA}}^{t}$ & Day-ahead market clearing price at time $t$ \\
+$p_{\text{ID}}^{t}$ & Intra-day market price at time $t$ \\
+$p_{\text{imbalance}}^{t}$ & Imbalance price (single-price with sign) \\
+$p_{\text{penalty}}^{t}$ & Penalty price (BRP worsens system imbalance) \\
+$p_{\text{reward}}^{t}$ & Reward price (BRP helps system) \\
+\end{tabular}
+
+\subsection{Settlement and Financial Variables [\euro]}
+
+\subsubsection{Day-Ahead Market}
+
+\begin{tabular}{ll}
+$S_{\text{DA}}^{t}$ & Day-ahead net settlement at time $t$ \\
+$C_{\text{DA,purchase}}^{t}$ & Day-ahead purchase cost ($\geq 0$) \\
+$R_{\text{DA,sale}}^{t}$ & Day-ahead sale revenue ($\geq 0$) \\
+$C_{\text{DA,total}}$ & Total day-ahead commitment over period \\
+\end{tabular}
+
+\subsubsection{Intra-Day Market}
+
+\begin{tabular}{ll}
+$S_{\text{ID}}^{t}$ & Intra-day net adjustment settlement at time $t$ \\
+$C_{\text{ID,adj}}^{t}$ & Intra-day purchase adjustment \\
+$R_{\text{ID,adj}}^{t}$ & Intra-day sale adjustment \\
+$S_{\text{closing}}^{t}$ & Closing net commitment (DA + ID) \\
+$C_{\text{closing,purchase}}^{t}$ & Closing purchase commitment \\
+$R_{\text{closing,sale}}^{t}$ & Closing sale commitment \\
+\end{tabular}
+
+\subsubsection{Balancing Market}
+
+\begin{tabular}{ll}
+$S_{\text{balancing}}^{t}$ & Balancing settlement at time $t$ \\
+$P_{\text{penalty}}^{t}$ & Penalty amount ($\geq 0$) \\
+$R_{\text{reward}}^{t}$ & Reward amount ($\geq 0$) \\
+$S_{\text{final}}^{t}$ & Final settlement (DA + ID + Balancing) \\
+\end{tabular}
+
+\subsubsection{Total Costs}
+
+\begin{tabular}{ll}
+$C_{\text{total}}$ & Total supplier wholesale cost/revenue \\
+\end{tabular}
+
+\subsection{System Indicators}
+
+\begin{tabular}{ll}
+$I_{\text{system}}^{t}$ & System imbalance indicator at time $t$ \\
+                        & ($-1$ = shortage, $0$ = balanced, $+1$ = excess) \\
+$t$ & Time index/timestamp \\
+$T$ & Total number of timestamps \\
+   & (35,136 for one year at 15-minute resolution) \\
+\end{tabular}
+
+\subsection{Sets and Indices}
+
+\begin{tabular}{ll}
+$\mathcal{C}_A$ & Set of consumers in Supplier A \\
+$\mathcal{P}_A$ & Set of prosumers in Supplier A \\
+$\mathcal{C}_B$ & Set of consumers in Supplier B \\
+$\mathcal{P}_B$ & Set of prosumers in Supplier B \\
+$\mathcal{R}$ & Set of all REC members \\
+$i$ & Consumer index \\
+$j$ & Prosumer index \\
+$k$ & Balancing group member index \\
+$m$ & Consumer member index \\
+$N_{\text{prosumers}}$ & Number of prosumers \\
+$N_{\text{consumers}}$ & Number of consumers \\
+\end{tabular}
+
+\subsection{Key Mathematical Formulas}
+
+\subsubsection{REC Sharing - Corrected Loads}
+$$L_{i,t}^{\text{corr}} = L_{i,t} - \frac{L_{i,t}}{\text{Total Load}_t} \times \text{Shared Energy}_t$$
+
+\subsubsection{REC Sharing - Corrected Generation}
+$$G_{j,t}^{\text{corr}} = G_{j,t} - \frac{G_{j,t}}{\text{Total Gen}_t} \times \text{Shared Energy}_t$$
+
+\subsubsection{Day-Ahead Net Position}
+$$Q_{\text{DA,net}}^{t} = Q_{\text{RES,DA}}^{t} - Q_{\text{load,DA}}^{t}$$
+
+\subsubsection{Imbalance Calculation}
+$$\Delta Q_{\text{BRP}}^{t} = Q_{\text{actual,net}}^{t} - Q_{\text{ID,forecast}}^{t}$$
+
+\subsection{Abbreviations}
+
+\begin{tabular}{ll}
+\multicolumn{2}{l}{\textbf{Market \& System}} \\
+BRP & Balancing Responsible Party \\
+BG & Balancing Group \\
+DA & Day-Ahead market \\
+ID & Intra-Day market \\
+DOD & Day-of-Delivery (intraday continuous trading) \\
+TSO & Transmission System Operator \\
+REC & Renewable Energy Community \\
+RES & Renewable Energy Sources \\
+PV & Photovoltaic (solar generation) \\
+\\
+\multicolumn{2}{l}{\textbf{Load Profile Types (BDEW)}} \\
+H0 & Standard residential household \\
+H0-A, H0-B, H0-C & Regional household variants \\
+H0-G & Residential with hot water heating \\
+H0-L & Residential with heat pump \\
+G0 & General commercial \\
+G1 & Commercial (weekdays 8-18) \\
+G2 & Commercial (extended hours) \\
+G3 & Commercial (continuous, reduced night) \\
+G4 & Commercial (continuous 24/7) \\
+G6 & Special commercial (emergency services) \\
+\\
+\multicolumn{2}{l}{\textbf{PV Profile Classes}} \\
+PV1--PV8 & Solar PV by peak capacity (1 kWp to $>$500 kWp) \\
+\\
+\multicolumn{2}{l}{\textbf{Network \& Standards}} \\
+BDEW & Bundesverband der Energie- und Wasserwirtschaft \\
+SimBench & Simulation benchmark dataset \\
+LV & Low Voltage network (0.4 kV) \\
+MWh & Megawatt-hour (energy) \\
+kWh & Kilowatt-hour (energy) \\
+kWp & Kilowatt-peak (PV capacity) \\
+\end{tabular}
+
+\subsection{Mathematical Operators}
+
+\begin{tabular}{ll}
+$\sum$ & Summation operator \\
+$\min(\cdot, \cdot)$ & Minimum function \\
+$\max(\cdot, \cdot)$ & Maximum function \\
+$|\cdot|$ & Absolute value \\
+$\times$ & Multiplication \\
+\end{tabular}
+
+\subsection{Constants and Parameters}
+
+\begin{tabular}{ll}
+Retail price & 201.0 \euro/MWh (fixed consumer purchase price) \\
+Feed-in tariff & 82.4 \euro/MWh (prosumer grid export compensation) \\
+Time resolution & 15-minute intervals \\
+Annual timesteps & 35,136 (4 intervals/hour $\times$ 24 h/day $\times$ 366 days) \\
+SimBench network & 1-LV-urban6--2-no\_sw \\
+REC members & 9 total (6 consumers + 3 prosumers) \\
+\end{tabular}
+
+\subsection{Settlement Sign Convention}
+
+\begin{tabular}{ll}
+Positive & Revenue (money in) or helping system balance \\
+Negative & Cost (money out) or worsening system balance \\
+\end{tabular}

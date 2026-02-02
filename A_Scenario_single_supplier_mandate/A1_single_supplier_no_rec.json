@@ -1,0 +1,274 @@
+{
+  "energy_system": {
+    "system_id": "ES_A1_SINGLE_NOREC_001",
+    "system_name": "Single Supplier Mandate without REC - Scenario A1",
+    "description": "Single supplier mandate: All consumers and prosumers must use ONE supplier. No REC structure. Supplier uses actual meter readings for forecasting and handles all balancing responsibilities.",
+    "location": {
+      "latitude": 48.3069,
+      "longitude": 14.2858,
+      "region": "Vienna",
+      "country": "AT"
+    },
+    "simulation_period": {
+      "start_date": "2016-01-01",
+      "end_date": "2016-12-31",
+      "timestep": "15min"
+    }
+  },
+  "energy_market": {
+    "market_id": "MARKET_001",
+    "market_name": "Austrian Energy Market",
+    "market_type": "day_ahead",
+    "price_lists": {
+      "day_ahead_prices": {
+        "csv_file": "data/prices.csv",
+        "id": "DA_price"
+      },
+      "intraday_prices": {
+        "csv_file": "data/prices.csv",
+        "id": "ID_price"
+      },
+      "balancing_prices": {
+        "imbalance_price": {
+          "csv_file": "data/prices.csv",
+          "id": "imbalance_price"
+        }
+      },
+      "grid_fees": {
+        "transmission_fee_eur_per_kwh": 0.01,
+        "distribution_fee_eur_per_kwh": 0.01,
+        "total_grid_fee_eur_per_kwh": 0.02
+      },
+      "rec_incentives": {
+        "shared_energy_bonus_eur_per_kwh": 0.00,
+        "self_consumption_bonus_eur_per_kwh": 0.00,
+        "note": "No REC incentives in this scenario"
+      }
+    }
+  },
+  "suppliers": [
+    {
+      "supplier_id": "SUP_A",
+      "supplier_name": "Energy Supplier A",
+      "balancing_groups": [
+        {
+          "balancing_group_id": "BG_SUP_A_001"
+        }
+      ],
+      "retail_pricing": {
+        "csv_file": "data/prices.csv",
+        "price": "retail_price"
+      },
+      "feedin_pricing": {
+        "csv_file": "data/prices.csv",
+        "price": "feedin_price"
+      }
+    }
+  ],
+  "recs": [],
+  "prosumers": [
+    {
+      "meter_id": "prosumer_001",
+      "actor_type": "prosumer",
+      "res_type": "PV",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "id": "LV3.101 Load 90 [G4-A]"
+      },
+      "res": {
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "id": "LV3.101 SGen 4 [PV4]"
+      }
+    },
+    {
+      "meter_id": "prosumer_002",
+      "actor_type": "prosumer",
+      "res_type": "PV",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV3.101 Load 31 [H0-A]"
+      },
+      "res": {
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "id": "LV3.101 SGen 1 [PV7]"
+      }
+    },
+    {
+      "meter_id": "prosumer_003",
+      "actor_type": "prosumer",
+      "res_type": "PV",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV3.101 Load 24 [H0-A]"
+      },
+      "res": {
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "id": "LV3.101 SGen 2 [PV3]"
+      }
+    }
+  ],
+  "consumers": [
+    {
+      "meter_id": "consumer_001",
+      "actor_type": "consumer",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "id": "LV3.101 Load 46 [G6-A]"
+      }
+    },
+    {
+      "meter_id": "consumer_002",
+      "actor_type": "consumer",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV3.101 Load 42 [H0-G]"
+      }
+    },
+    {
+      "meter_id": "consumer_003",
+      "actor_type": "consumer",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV3.101 Load 1 [H0-C]"
+      }
+    },
+    {
+      "meter_id": "consumer_004",
+      "actor_type": "consumer",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV3.101 Load 27 [H0-A]"
+      }
+    },
+    {
+      "meter_id": "consumer_005",
+      "actor_type": "consumer",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "id": "LV3.101 Load 97 [G1-C]"
+      }
+    },
+    {
+      "meter_id": "consumer_006",
+      "actor_type": "consumer",
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_SUP_A_001"
+      },
+      "rec": "",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV3.101 Load 28 [H0-A]"
+      }
+    }
+  ],
+  "settlement_approach": {
+    "type": "single_supplier_no_rec",
+    "description": "Single supplier mandate without REC. All consumers and prosumers use ONE supplier. No internal energy sharing. Supplier uses actual meter readings for forecasting and handles all balancing.",
+    "internal_sharing": false,
+    "rec_bonuses": false,
+    "balancing_responsibility": "single_supplier_balancing_group",
+    "metering": {
+      "load_actual": "data/load_actual.csv",
+      "res_actual": "data/res_actual.csv",
+      "settlement_basis": "individual_actual_meter_readings"
+    },
+    "billing_flow": [
+      "1. Single supplier purchases energy in day-ahead market based on aggregated forecasts from actual meter data",
+      "2. Single supplier adjusts position in intra-day market based on updated forecasts",
+      "3. NO energy community settlement (no REC)",
+      "4. Actual consumption/generation measured at individual meters",
+      "5. Single supplier handles all imbalances in balancing market",
+      "6. Single supplier bills all customers based on retail prices for net consumption",
+      "7. Prosumers receive feed-in tariff for net exports to grid"
+    ]
+  },
+  "output_configuration": {
+    "output_dir": "A_Scenario_single_supplier_mandate/A1_output",
+    "export_files": [
+      "supplier_financial_summary.csv",
+      "day_ahead_market_summary.csv",
+      "intraday_market_summary.csv",
+      "balancing_market_summary.csv",
+      "customer_bills.csv",
+      "supplier_revenues.csv",
+      "day_ahead_forecasts.csv",
+      "intraday_forecasts.csv",
+      "actual_positions.csv",
+      "imbalances.csv"
+    ]
+  }
+}

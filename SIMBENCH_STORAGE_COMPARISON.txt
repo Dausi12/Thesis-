@@ -1,0 +1,172 @@
+=================================================================================
+SIMBENCH STORAGE PROFILE ANALYSIS - COMPARISON WITH CASE STUDY
+=================================================================================
+
+CURRENT NETWORK IN USE:
+-----------------------
+Network Code: 1-LV-rural3--0-no_sw (LV3.101)
+Storage Units: 0 (NO STORAGE UNITS IN THIS NETWORK)
+
+=================================================================================
+CASE STUDY PARAMETERS (Li-ion Based ESS from Table 3)
+=================================================================================
+
+Parameter                                  | Value                | Unit
+-------------------------------------------|----------------------|------------------
+Charging Efficiency of ESS                 | 95                   | %
+Discharging Efficiency of ESS              | 95                   | %
+Maximum Charge Rate                        | 34                   | % per hour
+Maximum Discharge Rate                     | 34                   | % per hour
+Minimum SOC of ESS                         | 20                   | %
+Maximum SOC of ESS                         | 100                  | %
+Self-Discharge Rate of ESS                 | 0.2                  | % per hour
+
+Converted to daily: 0.2% × 24 = 4.8% per day (for comparison with SimBench)
+
+=================================================================================
+SIMBENCH NETWORKS WITH STORAGE PROFILES - SUMMARY
+=================================================================================
+
+Total Networks Searched: 140
+Networks with Storage Units: 18
+
+┌─────────────────────────────┬─────────────┬───────────────────────────────┐
+│ Network Code                │ # Storage   │ Profile Types                 │
+├─────────────────────────────┼─────────────┼───────────────────────────────┤
+│ 1-MV-comm--2-no_sw          │ 80          │ PV_Storage, PV_Storage_MV     │
+│ 1-LV-rural1--1-sw           │ 4           │ PV_Storage                    │
+│ 1-LV-rural1--1-no_sw        │ 4           │ PV_Storage                    │
+│ 1-LV-rural1--2-sw           │ 5           │ PV_Storage                    │
+│ 1-LV-rural1--2-no_sw        │ 5           │ PV_Storage                    │
+│ 1-LV-rural2--2-sw           │ 8           │ PV_Storage                    │
+│ 1-LV-rural2--2-no_sw        │ 8           │ PV_Storage                    │
+│ 1-LV-rural3--1-sw           │ 14          │ PV_Storage                    │
+│ 1-LV-rural3--1-no_sw        │ 14          │ PV_Storage                    │
+│ 1-LV-rural3--2-sw           │ 16          │ PV_Storage                    │
+│ 1-LV-rural3--2-no_sw        │ 16          │ PV_Storage                    │
+│ 1-LV-semiurb4--1-sw         │ 1           │ PV_Storage                    │
+│ 1-LV-semiurb4--1-no_sw      │ 1           │ PV_Storage                    │
+│ 1-LV-semiurb4--2-sw         │ 4           │ PV_Storage                    │
+│ 1-LV-semiurb4--2-no_sw      │ 4           │ PV_Storage                    │
+│ 1-LV-semiurb5--1-sw         │ 10          │ PV_Storage                    │
+│ 1-LV-semiurb5--1-no_sw      │ 10          │ PV_Storage                    │
+│ 1-LV-semiurb5--2-sw         │ 15          │ PV_Storage                    │
+│ 1-LV-semiurb5--2-no_sw      │ 15          │ PV_Storage                    │
+│ 1-LV-urban6--2-sw           │ 7           │ PV_Storage                    │
+│ 1-LV-urban6--2-no_sw        │ 7           │ PV_Storage                    │
+└─────────────────────────────┴─────────────┴───────────────────────────────┘
+
+=================================================================================
+DETAILED COMPARISON: SIMBENCH vs CASE STUDY STORAGE PARAMETERS
+=================================================================================
+
+PARAMETER                          | SIMBENCH      | CASE STUDY    | DIFFERENCE
+-----------------------------------|---------------|---------------|----------------
+Efficiency (Charging)              | 95%           | 95%           | ✓ MATCH
+Efficiency (Discharging)           | 95%           | 95%           | ✓ MATCH
+Self-Discharge Rate (per day)      | 0.13%         | 4.8%          | ✗ DIFFERENT
+Max Charge/Discharge Rate          | Not specified | 34% per hour  | ✗ NOT IN SIMBENCH
+Min SOC                            | 0% (min_e_mwh)| 20%           | ✗ DIFFERENT
+Max SOC                            | Varies by unit| 100%          | ~ COMPARABLE
+
+=================================================================================
+KEY DIFFERENCES & OBSERVATIONS
+=================================================================================
+
+1. EFFICIENCY:
+   ✓ Both systems use 95% round-trip efficiency
+   ✓ SimBench: efficiency_percent = 0.95
+   ✓ Case Study: Charging = 95%, Discharging = 95%
+
+2. SELF-DISCHARGE RATE:
+   ✗ SimBench: 0.13% per day (0.00542% per hour)
+   ✗ Case Study: 4.8% per day (0.2% per hour)
+   → Case Study has 37× higher self-discharge rate
+   → SimBench assumes better battery chemistry (more optimistic)
+
+3. CHARGE/DISCHARGE RATE LIMITS:
+   ✗ SimBench: NOT explicitly modeled in storage parameters
+   ✗ Case Study: 34% per hour C-rate (~3 hours to full charge)
+   → SimBench uses power limits (max_p_mw, min_p_mw) instead
+   → Relationship: C-rate = (max_p_mw / max_e_mwh) × 100
+
+4. STATE OF CHARGE LIMITS:
+   ✗ SimBench: min_e_mwh = 0 (allows full discharge to 0%)
+   ✗ Case Study: Min SOC = 20% (battery protection)
+   → SimBench is less conservative (no depth-of-discharge protection)
+   → Case Study preserves battery lifetime by limiting discharge depth
+
+5. ENERGY CAPACITY RANGE:
+   SimBench storage units range from:
+   - Smallest: 0.0034 MWh (3.4 kWh) - Residential
+   - Largest: 4.9797 MWh (4,980 kWh) - MV level
+   - Most common: 0.0068-0.0205 MWh (6.8-20.5 kWh) - Residential scale
+
+=================================================================================
+RECOMMENDED SIMBENCH NETWORKS WITH STORAGE (CLOSEST TO LV3.101 STRUCTURE)
+=================================================================================
+
+BEST MATCH: 1-LV-rural3--2-no_sw (LV3.101 variant with storage)
+-----------------------------------------------------------------
+- Same network family as current LV3.101 (1-LV-rural3--0-no_sw)
+- 16 storage units (PV_Storage type)
+- Maintains similar load/generation profile structure
+- Storage profiles: PV3/PV4 residential (H0-A, H0-B, H0-G, H0-C, H0-L)
+
+Storage Details:
+├─ Efficiency: 95% (matches case study)
+├─ Self-discharge: 0.13% per day (lower than case study 4.8%)
+├─ Min SOC: 0% (case study uses 20%)
+├─ Capacity range: 0.0028-0.0103 MWh (2.8-10.3 kWh)
+└─ Profile types: Storage_PV3_*, Storage_PV4_*, Storage_PV1_*, Storage_PV7_*
+
+ALTERNATIVE: 1-LV-semiurb5--2-no_sw (More storage diversity)
+-------------------------------------------------------------
+- 15 storage units with varied capacity
+- Includes commercial storage (G1-C, G3-A, G4-B, G5-A)
+- Larger capacity range: 0.0083-0.1874 MWh (8.3-187.4 kWh)
+
+=================================================================================
+PARAMETER MAPPING FOR SIMULATION ADJUSTMENT
+=================================================================================
+
+To match Case Study parameters in SimBench networks:
+
+1. SELF-DISCHARGE ADJUSTMENT:
+   SimBench: 0.13% per day → Adjust to 4.8% per day
+   Modification factor: 4.8 / 0.13 = 36.92×
+   
+2. MIN SOC CONSTRAINT:
+   SimBench: min_e_mwh = 0 → Set to 20% of max_e_mwh
+   Example: If max_e_mwh = 0.0205, set min_e_mwh = 0.0041
+
+3. C-RATE CALCULATION:
+   Case Study: 34% per hour
+   For SimBench unit with max_e_mwh = 0.0205 MWh:
+   max_p_mw should be: 0.0205 × 0.34 = 0.00697 MW (6.97 kW)
+
+4. EFFICIENCY:
+   No adjustment needed (both use 95%)
+
+=================================================================================
+CONCLUSIONS
+=================================================================================
+
+✓ SIMILARITIES:
+  - Round-trip efficiency (95%) is identical
+  - Both use Li-ion technology assumptions
+  - Storage coupled with PV generation
+
+✗ DIFFERENCES REQUIRING ADJUSTMENT:
+  1. Self-discharge rate: SimBench 37× lower than case study
+  2. Min SOC: SimBench allows full discharge vs. 20% protection
+  3. C-rate modeling: Implicit in SimBench vs. explicit in case study
+
+RECOMMENDATION:
+If implementing case study storage behavior in SimBench:
+→ Use 1-LV-rural3--2-no_sw network (closest to current LV3.101)
+→ Adjust self-discharge parameter by factor of ~37
+→ Apply 20% minimum SOC constraint in energy management logic
+→ Verify C-rate constraints match 34% per hour target
+
+=================================================================================

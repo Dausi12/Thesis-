@@ -1,0 +1,10 @@
+Node,Type,Extracted_Load_kWh,SimBench_Load_kWh,Load_Error_pct,Best_Load_Match,Load_Alternatives,PV_Capacity_kWp,Extracted_PV_kWh,SimBench_PV_kWh,PV_Error_pct,Best_PV_Match,PV_Alternatives
+1,Local Authority,15600,15800,1.28%,LV6.201 SLoad 7 [Commercial],—,—,—,—,—,—,—
+2,Fire Fighting Station,28400,15800,44.37%,LV6.201 SLoad 7 [Commercial],—,17.68,18115.65,17034.02,5.97%,LV6.201 SGen 4 [PV5],—
+3,Apartment,2800,3000,7.14%,LV6.201 SLoad 8 [Apartment],—,—,—,—,—,—,—
+4,Apartment,2700,3000,11.11%,LV6.201 SLoad 8 [Apartment],—,—,—,—,—,—,—
+5,Apartment (Hot Water Boiler),5900,5200,11.86%,LV6.201 SLoad 15 [Residential],—,—,—,—,—,—,—
+6,Household,6500,5200,20.00%,LV6.201 SLoad 15 [Residential],—,4.2,4303.49,4127.38,4.09%,LV6.201 SGen 8 [PV2],—
+7,Bank,8200,8850,7.93%,LV6.201 SLoad 11 [Commercial],—,—,—,—,—,—,—
+8,Household,4200,4800,14.29%,LV6.201 SLoad 6 [Residential],—,2.6,2664.07,2613.22,1.91%,LV6.201 SGen 5 [PV8],LV6.201 SGen 12 [PV8] (1.91%); LV6.201 SGen 6 [PV5] (6.57%)
+9,Household,3100,3150,1.61%,LV6.201 SLoad 9 [Apartment],LV6.201 SLoad 8 [Apartment] (3.23%),—,—,—,—,—,—

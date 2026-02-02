@@ -1,0 +1,71 @@
+  "prosumers": [
+    {
+      "meter_id": "prosumer_001",
+      "actor_type": "prosumer",
+      "res_type": "PV",
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_SUP_B_001"
+      },
+      "rec": "REC_01",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
+        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_type": "commercial",
+        "id": "LV6.201 Load 5 [G6]"
+      },
+      "res": {
+        "csv_file": "data/res_actual.csv",
+        "rec_res_forecast_da_file": "data/rec_res_forecast_da.csv",
+        "rec_res_forecast_id_file": "data/rec_res_forecast_id.csv",
+        "id": "LV6.201 SGen 4 [PV5]"
+      }
+    },
+    {
+      "meter_id": "prosumer_002",
+      "actor_type": "prosumer",
+      "res_type": "PV",
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_SUP_B_001"
+      },
+      "rec": "REC_01",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
+        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV6.201 Load 15 [H0-A]"
+      },
+      "res": {
+        "csv_file": "data/res_actual.csv",
+        "rec_res_forecast_da_file": "data/rec_res_forecast_da.csv",
+        "rec_res_forecast_id_file": "data/rec_res_forecast_id.csv",
+        "id": "LV6.201 SGen 8 [PV2]"
+      }
+    },
+    {
+      "meter_id": "prosumer_003",
+      "actor_type": "prosumer",
+      "res_type": "PV",
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_SUP_B_001"
+      },
+      "rec": "REC_01",
+      "load": {
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
+        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_type": "residential",
+        "id": "LV6.201 Load 6 [H0-A]"
+      },
+      "res": {
+        "csv_file": "data/res_actual.csv",
+        "rec_res_forecast_da_file": "data/rec_res_forecast_da.csv",
+        "rec_res_forecast_id_file": "data/rec_res_forecast_id.csv",
+        "id": "LV6.201 SGen 5 [PV8]"
+      }
+    }
+  ],

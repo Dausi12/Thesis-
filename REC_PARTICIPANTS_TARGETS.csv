@@ -1,0 +1,10 @@
+Node,Type,Max_Hourly_Power_kW,Annual_Load_kWh,PV_Annual_kWh
+1,Local Authority,10.52,19972.69,
+2,Fire Fighting,1.98,5171.55,18115.65
+3,Apartment,1.26,378.1,
+4,Apartment,1.65,1395.14,
+5,Apartment (HWB),2.84,1816.81,
+6,Household,5.03,14093.83,4303.49
+7,Bank,3.13,9452.83,
+8,Household,2.23,1803.63,2664.07
+9,Household,3.25,9817.13,

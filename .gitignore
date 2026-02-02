@@ -1,0 +1,33 @@
+# Large data files
+data/load_actual.csv
+
+# Large zip files
+simbench-develop.zip
+simBench2PowerFactory-main.zip
+
+# Large PDF documentation
+simbench_documentation_en_1.1.0.pdf
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -31,3 +31,8 @@ env/
 # OS files
 .DS_Store
 Thumbs.db
+
+# folders
+simBench2PowerFactory-main/
+simbench-develop/
+

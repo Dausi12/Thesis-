@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "scenario": "C3 - Single Supplier REC with Battery Optimization",
+    "execution_date": "2026-02-10 18:15:21",
+    "delivery_day": "2023-07-15",
+    "num_participants": 5,
+    "solver": "gurobi"
+  },
+  "battery_parameters": {
+    "capacity_kwh": 56.5,
+    "soc_min_kwh": 5.65,
+    "soc_max_kwh": 56.5,
+    "eta_charge": 0.9233333333333333,
+    "eta_discharge": 0.9233333333333333
+  },
+  "baseline_no_battery": {
+    "total_cost_eur": 10441.26,
+    "grid_import_kwh": 0.0,
+    "grid_export_kwh": 0.0
+  },
+  "with_battery_optimization": {
+    "total_cost_eur": 133.83211083111954,
+    "grid_import_kwh": 430.7279217657066,
+    "grid_export_kwh": 105.95786547465767,
+    "num_optimizations": 4,
+    "final_soc_kwh": 5.65
+  },
+  "savings": {
+    "absolute_eur": 10307.427889168881,
+    "percentage": 98.71823792500982
+  },
+  "participant_allocation": [
+    {
+      "Participant": "P1",
+      "Load (kWh)": 135.88901607013972,
+      "PV (kWh)": 71.39675861358512,
+      "Share (%)": 19.136424140170792,
+      "Baseline Cost (\u20ac)": 1998.0837991779968,
+      "With Battery (\u20ac)": 25.610680364386486,
+      "Savings (\u20ac)": 1972.4731188136102,
+      "Savings (%)": 98.71823792500982
+    },
+    {
+      "Participant": "P2",
+      "Load (kWh)": 174.23826360752042,
+      "PV (kWh)": 85.19700112869131,
+      "Share (%)": 24.536915567328734,
+      "Baseline Cost (\u20ac)": 2561.963150365268,
+      "With Battery (\u20ac)": 32.83827203660561,
+      "Savings (\u20ac)": 2529.1248783286624,
+      "Savings (%)": 98.71823792500982
+    },
+    {
+      "Participant": "P3",
+      "Load (kWh)": 102.36636472508889,
+      "PV (kWh)": 70.77880044047544,
+      "Share (%)": 14.415632916611967,
+      "Baseline Cost (\u20ac)": 1505.1737134690388,
+      "With Battery (\u20ac)": 19.29274582196748,
+      "Savings (\u20ac)": 1485.8809676470714,
+      "Savings (%)": 98.71823792500983
+    },
+    {
+      "Participant": "P4",
+      "Load (kWh)": 127.09146881236771,
+      "PV (kWh)": 58.564880443025515,
+      "Share (%)": 17.897519035206123,
+      "Baseline Cost (\u20ac)": 1868.726496015363,
+      "With Battery (\u20ac)": 23.952627511217777,
+      "Savings (\u20ac)": 1844.7738685041452,
+      "Savings (%)": 98.71823792500982
+    },
+    {
+      "Participant": "P5",
+      "Load (kWh)": 170.52151420272077,
+      "PV (kWh)": 86.94175925841844,
+      "Share (%)": 24.013508340682378,
+      "Baseline Cost (\u20ac)": 2507.312840972333,
+      "With Battery (\u20ac)": 32.137785096942174,
+      "Savings (\u20ac)": 2475.175055875391,
+      "Savings (%)": 98.71823792500983
+    }
+  ],
+  "forecast_accuracy": [
+    {
+      "forecast_num": 1,
+      "forecast_type": "DA",
+      "horizon_length": 96,
+      "load_rmse_kw": 3.3900601475301984,
+      "load_mape_pct": 9.42005034239956,
+      "pv_rmse_kw": 4.541946636227169,
+      "pv_mape_pct": 6.159344907203885
+    },
+    {
+      "forecast_num": 2,
+      "forecast_type": "ID",
+      "horizon_length": 96,
+      "load_rmse_kw": 2.7593884830783377,
+      "load_mape_pct": 7.022799133984566,
+      "pv_rmse_kw": 2.6466082035112364,
+      "pv_mape_pct": 3.3876910233535105
+    },
+    {
+      "forecast_num": 3,
+      "forecast_type": "ID",
+      "horizon_length": 72,
+      "load_rmse_kw": 1.651568228791172,
+      "load_mape_pct": 4.243882322748118,
+      "pv_rmse_kw": 1.5296288204174653,
+      "pv_mape_pct": 1.866050764062947
+    },
+    {
+      "forecast_num": 4,
+      "forecast_type": "ID",
+      "horizon_length": 48,
+      "load_rmse_kw": 1.0277981055754626,
+      "load_mape_pct": 2.8594967239151807,
+      "pv_rmse_kw": 0.9344673856851201,
+      "pv_mape_pct": 1.235772010075851
+    }
+  ]
+}

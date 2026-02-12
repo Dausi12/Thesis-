@@ -401,7 +401,11 @@ class RECBatteryOptimizer:
             print(f"\n✅ Optimization Complete!")
             print(f"   Status: {solver_results.solver.termination_condition}")
             print(f"   Total Cost: €{total_cost:.2f}")
-            print(f"   Solve Time: {solver_results.solver.time:.2f} seconds")
+            solve_time = getattr(solver_results.solver, "time", None)
+            if solve_time is not None:
+                print(f"   Solve Time: {solve_time:.2f} seconds")
+            else:
+                print("   Solve Time: n/a")
             
             # Battery utilization summary
             print(f"\n🔋 Battery Utilization:")

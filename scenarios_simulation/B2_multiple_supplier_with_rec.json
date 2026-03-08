@@ -1,0 +1,305 @@
+{
+  "energy_system": {
+    "system_id": "ES_B2_MULTI_REC_001",
+    "system_name": "Multiple Suppliers with REC - Scenario B2",
+    "simbench_network": "1-LV-rural3--2-no_sw",
+    "description": "2 Suppliers with 2 RECs (one for consumers, one for prosumers). RECs perform internal energy sharing before external supplier billing. Settlement order: DA market \u2192 ID market \u2192 REC settlement \u2192 Balancing market \u2192 Supplier billing. Prosumers are net generators (RES only, no local load in billing).",
+    "location": {
+      "latitude": 48.3069,
+      "longitude": 14.2858,
+      "region": "Vienna",
+      "country": "AT"
+    },
+    "simulation_period": {
+      "start_date": "2016-01-01",
+      "end_date": "2016-12-31",
+      "timestep": "15min"
+    }
+  },
+  "energy_market": {
+    "market_id": "MARKET_001",
+    "market_name": "Austrian Energy Market",
+    "market_type": "day_ahead",
+    "price_lists": {
+      "day_ahead_prices": {
+        "csv_file": "data/prices.csv",
+        "id": "DA_price"
+      },
+      "intraday_prices": {
+        "csv_file": "data/prices.csv",
+        "id": "ID_price"
+      },
+      "balancing_prices": {
+        "imbalance_price": {
+          "csv_file": "data/prices.csv",
+          "id": "imbalance_price"
+        }
+      },
+      "grid_fees": {
+        "transmission_fee_eur_per_kwh": 0.01,
+        "distribution_fee_eur_per_kwh": 0.01,
+        "total_grid_fee_eur_per_kwh": 0.02
+      },
+      "rec_incentives": {
+        "shared_energy_bonus_eur_per_kwh": 0.01,
+        "self_consumption_bonus_eur_per_kwh": 0.015,
+        "note": "REC incentives apply to internally shared energy"
+      }
+    }
+  },
+  "suppliers": [
+    {
+      "supplier_id": "SUP_A",
+      "supplier_name": "Supplier A",
+      "balancing_groups": [
+        {
+          "balancing_group_id": "BG_A",
+          "balancing_group_name": "Balancing Group A"
+        }
+      ],
+      "retail_pricing": {
+        "price": "retail_price"
+      },
+      "feedin_pricing": {
+        "price": "feedin_price"
+      }
+    },
+    {
+      "supplier_id": "SUP_B",
+      "supplier_name": "Supplier B",
+      "balancing_groups": [
+        {
+          "balancing_group_id": "BG_B",
+          "balancing_group_name": "Balancing Group B"
+        }
+      ],
+      "retail_pricing": {
+        "price": "retail_price"
+      },
+      "feedin_pricing": {
+        "price": "feedin_price"
+      }
+    }
+  ],
+  "recs": [
+    {
+      "rec_id": "REC_01",
+      "rec_name": "Renewable Energy Community 1",
+      "settlement_method": "proportional"
+    }
+  ],
+  "prosumers": [
+    {
+      "meter_id": "prosumer_001",
+      "name": "Fire Fighting Station",
+      "node_id": 2,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "res": {
+        "id": "LV3.101 SGen 1 [PV7]",
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV7"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "prosumer_002",
+      "name": "Household",
+      "node_id": 6,
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
+      },
+      "res": {
+        "id": "LV3.101 SGen 2 [PV3]",
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV3"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "prosumer_003",
+      "name": "Household",
+      "node_id": 8,
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
+      },
+      "res": {
+        "id": "LV3.101 SGen 3 [PV3]",
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV3"
+      },
+      "rec": "REC_01"
+    }
+  ],
+  "consumers": [
+    {
+      "meter_id": "consumer_001",
+      "name": "Local Authority",
+      "node_id": 1,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 77 [G1-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "profile": "G1-C"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_002",
+      "name": "Apartment",
+      "node_id": 3,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 64 [H0-L]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_003",
+      "name": "Apartment",
+      "node_id": 4,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 75 [H0-L]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_004",
+      "name": "Apartment (Hot Water Boiler)",
+      "node_id": 5,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 86 [H0-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-C"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_005",
+      "name": "Bank",
+      "node_id": 7,
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
+      },
+      "load": {
+        "id": "LV3.101 Load 62 [G5-A]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "profile": "G5-A"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_006",
+      "name": "Household",
+      "node_id": 9,
+      "supplier": {
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
+      },
+      "load": {
+        "id": "LV3.101 Load 2 [H0-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-C"
+      },
+      "rec": "REC_01"
+    }
+  ],
+  "settlement_approach": {
+    "type": "with_rec",
+    "description": "Energy community settlement occurs after DA and ID markets but before balancing market. Internal sharing reduces external grid dependency.",
+    "internal_sharing": true,
+    "rec_bonuses": true,
+    "balancing_responsibility": "supplier_balancing_group",
+    "metering": {
+      "load_actual": "data/load_actual.csv",
+      "res_actual": "data/res_actual.csv",
+      "settlement_basis": "corrected_meter_readings_after_rec_sharing"
+    },
+    "billing_flow": [
+      "1. Supplier purchases energy in day-ahead market based on aggregated forecasts",
+      "2. Supplier adjusts position in intra-day market based on updated forecasts",
+      "3. REC performs internal energy sharing based on actual meter readings",
+      "4. Meter readings corrected: generation/load reduced proportionally based on shared energy",
+      "5. Actual consumption/generation after REC settlement measured",
+      "6. Supplier handles remaining imbalances in balancing market",
+      "7. Supplier bills customers based on corrected meter readings (residual energy only)",
+      "8. Members benefit from REC internal prices and bonuses for shared energy"
+    ],
+    "rec_settlement_algorithm": {
+      "type": "proportional_sharing",
+      "steps": [
+        "1. Sum total generation (Gen_total) and total load (Load_total) in REC at each timestamp",
+        "2. If Gen_total == Load_total: All generation and load treated as 0 for external billing",
+        "3. If Gen_total < Load_total: All generation set to 0, each load reduced proportionally by Gen_total",
+        "4. If Gen_total > Load_total: All load set to 0, each generation reduced proportionally by Load_total",
+        "5. Edge case: If proportional share exceeds individual meter, set to 0 and redistribute to others",
+        "6. Corrected meter readings used for supplier billing"
+      ]
+    }
+  },
+  "output_configuration": {
+    "output_dir": "B_Scenarion_Forecasting/B2_output",
+    "export_files": [
+      "supplier_financial_summary.csv",
+      "rec_settlement_summary.csv",
+      "day_ahead_market_summary.csv",
+      "intraday_market_summary.csv",
+      "balancing_market_summary.csv",
+      "customer_bills_with_rec.csv",
+      "supplier_revenues_with_rec.csv",
+      "meter_corrections.csv",
+      "rec_shared_energy.csv",
+      "day_ahead_forecasts.csv",
+      "intraday_forecasts.csv",
+      "actual_positions.csv",
+      "imbalances.csv"
+    ]
+  }
+}

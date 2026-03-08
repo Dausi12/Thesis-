@@ -1,0 +1,886 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{makecell}
+
+\geometry{margin=2.5cm}
+
+\crefname{equation}{Eq.}{Eqs.}
+\Crefname{equation}{Equation}{Equations}
+
+\title{\textbf{Simulation and Optimisation Infrastructure:\\
+Energy Market Operations in Renewable Energy Communities}}
+\author{Energy Systems Analysis}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%%=============================================================================
+\section{Simulation and Optimisation Infrastructure}
+\label{sec:infrastructure}
+%%=============================================================================
+
+This section describes the methodological and computational infrastructure
+underlying the energy market simulations.  The model is designed to replicate
+the Austrian wholesale and retail electricity market structure at
+quarterly-hour resolution across a full calendar year.  Its core purpose is
+to evaluate how different organisational arrangements — supplier structure,
+Renewable Energy Community (REC) participation, and flexible storage — affect
+settlement outcomes for a small community of nine nodes.
+
+The infrastructure is deliberately structured as a sequential \emph{market
+pipeline}: each stage of the Austrian energy market timeline is implemented as
+a self-contained computation whose outputs become the inputs of the next stage.
+This design preserves the causal ordering of real market operations and allows
+each mechanism to be activated, deactivated, or modified independently across
+scenarios.
+
+%%-----------------------------------------------------------------------------
+\subsection{Sequential Market Simulation Engine}
+\label{subsec:engine}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Temporal Structure}
+
+The simulation operates at a temporal resolution of $\Delta t = 0.25$~h
+(15-minute intervals), consistent with the Austrian quarter-hour imbalance
+settlement regime.  The full simulation horizon covers the calendar year 2016
+($T = 35{,}136$ intervals), chosen for its complete availability of SimBench
+load and generation profiles.  All energy quantities are expressed in kWh per
+quarter-hour; power quantities in kW are converted via
+$E = P \cdot \Delta t$.
+
+\subsubsection{Market Timeline and Causal Ordering}
+
+The market pipeline mirrors the chronological stages at which a Balance
+Responsible Party (BRP) commits to and reconciles its energy position in the
+Austrian market.  For scenarios involving only standard wholesale markets
+(Scenarios A1, A2, B1, B2), the pipeline advances through five sequential
+stages per settlement interval:
+
+\begin{enumerate}[leftmargin=2.5em, label=\textbf{Stage~\arabic*.}]
+  \item \textbf{Day-Ahead (DA) Market.}  The BRP submits forecast-based net
+        positions to the exchange.  For each balancing group $g$, the
+        aggregated load and generation forecasts yield a signed net commitment
+        $Q_{g,\mathrm{DA}}^{t}$.  Purchase and sale volumes, and their
+        associated financial commitments, are fixed at this stage.
+        Formally, $C_{g,\mathrm{DA}}^{t}$ and $R_{g,\mathrm{DA}}^{t}$ are
+        locked in before any intra-day revision is possible.
+
+  \item \textbf{Intra-Day (ID) Market.}  Updated forecasts, available closer
+        to real time, allow the BRP to revise its position.  The signed
+        adjustment $\Delta Q_{g}^{t,\pm}$ is traded at the ID clearing price
+        $\pi_{\mathrm{ID}}^{t}$.  This stage produces the \emph{closing
+        position} $(\bar{Q}_{g}^{t,+},\, \bar{Q}_{g}^{t,-})$ that defines
+        the BRP's contracted net demand for the settlement period.
+
+  \item \textbf{REC Settlement} (Scenarios A2, B2 only at this stage).  After
+        market trading closes, the REC operator applies an internal energy
+        sharing rule based on \emph{actual} metered values.  The correction
+        reduces participant-level import and export volumes proportionally,
+        producing corrected metres $(\tilde{\ell}_{n}^{t},\,\tilde{g}_{n}^{t})$
+        that are passed to the balancing stage.
+
+  \item \textbf{Balancing Market.}  The TSO settles deviations between the
+        BRP's contracted closing position and the realised net position
+        computed from corrected meters.  Imbalance volumes
+        $\varepsilon_{g}^{t}$ are valued at the system imbalance price
+        $\pi_{\mathrm{imb}}^{t}$, creating penalties ($\Pi_{g}^{t}$) or
+        rewards ($\Rho_{g}^{t}$) depending on sign.
+
+  \item \textbf{Supplier Billing.}  The supplier settles individual member
+        accounts using the corrected net exchange $\tilde{m}_{n}^{t}$:
+        net imports are charged at the retail tariff
+        $\pi_{\mathrm{ret},s(n)}^{t}$ and net exports are credited at the
+        feed-in tariff $\pi_{\mathrm{fi},s(n)}^{t}$.
+\end{enumerate}
+
+\noindent
+This structure ensures that: (i) contracted positions are fixed before
+realisation; (ii) REC corrections act on actual metered values post-trading;
+and (iii) balancing costs reflect only the residual deviation unexplained by
+either the forecast revision or the REC correction.  The output of each stage
+is stored as an interval-level array and propagated downstream without
+modification, preserving the independence of each market mechanism.
+
+\subsubsection{Feed-Forward Architecture}
+
+The pipeline is strictly feed-forward: no stage modifies results produced by
+a prior stage.  Any influence between stages passes exclusively through the
+state arrays that connect them.  Specifically:
+
+\begin{itemize}
+  \item The DA stage outputs $Q_{g,\mathrm{DA}}^{t,\pm}$ and
+        $C_{g,\mathrm{DA}}^{t}$, $R_{g,\mathrm{DA}}^{t}$.
+  \item The ID stage reads the DA outputs and produces
+        $\bar{Q}_{g}^{t,\pm}$, $C_{g,\mathrm{ID}}^{t}$, $R_{g,\mathrm{ID}}^{t}$.
+  \item The REC stage reads actual meters and produces
+        $\tilde{\ell}_{n}^{t}$, $\tilde{g}_{n}^{t}$.
+  \item The balancing stage reads the closing position and the corrected
+        meters to produce $\varepsilon_{g}^{t}$, $\Pi_{g}^{t}$, $\Rho_{g}^{t}$.
+  \item The billing stage reads corrected meters and produces
+        $\text{Bill}_{n}^{t}$ and supplier $R_{s}^{\mathrm{ret},t}$,
+        $C_{s}^{\mathrm{fi},t}$.
+\end{itemize}
+
+This architecture makes the model \emph{modular}: any stage can be replaced
+or disabled without altering the logic of the remaining stages.  In Scenarios
+A1 and B1, the REC stage simply passes through uncorrected meters.
+
+%%-----------------------------------------------------------------------------
+\subsection{Forecasting and Uncertainty Modelling}
+\label{subsec:forecasting}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Role of Forecasts in the Market Pipeline}
+
+Forecast error is the primary driver of balancing cost in the model.  The
+market pipeline requires two sets of forecasts:
+
+\begin{itemize}
+  \item \textbf{Day-ahead forecasts}
+        $(\hat{\ell}_{n,\mathrm{DA}}^{t},\, \hat{g}_{n,\mathrm{DA}}^{t})$:
+        used to submit DA commitments.
+  \item \textbf{Intra-day forecasts}
+        $(\hat{\ell}_{n,\mathrm{ID}}^{t},\, \hat{g}_{n,\mathrm{ID}}^{t})$:
+        used to revise positions in the ID market and, in Scenario C3, to
+        optimise the battery schedule.
+\end{itemize}
+
+Both forecast sets are derived from the same underlying SimBench profiles by
+applying a controlled stochastic perturbation.
+
+\subsubsection{Stochastic Perturbation Method}
+
+Let $v_{n}^{t}$ denote the true (actual) value of a quantity for participant
+$n$ at interval $t$.  The day-ahead forecast is generated as
+
+\begin{equation}
+\hat{v}_{n,\mathrm{DA}}^{t}
+  = v_{n}^{t}\,\bigl(1 + \sigma_{\mathrm{DA}}\,\xi_{n}^{t}\bigr),
+  \qquad \xi_{n}^{t} \sim \mathcal{N}(0,1)
+\label{eq:da_forecast}
+\end{equation}
+
+where $\sigma_{\mathrm{DA}}$ is the day-ahead relative error standard
+deviation.  The intra-day forecast applies a smaller perturbation reflecting
+improved information:
+
+\begin{equation}
+\hat{v}_{n,\mathrm{ID}}^{t}
+  = v_{n}^{t}\,\bigl(1 + \sigma_{\mathrm{ID}}\,\xi_{n}^{t}\bigr),
+  \qquad \sigma_{\mathrm{ID}} < \sigma_{\mathrm{DA}}
+\label{eq:id_forecast}
+\end{equation}
+
+The noise realisations $\xi_{n}^{t}$ are drawn from a fixed, seeded random
+number generator, ensuring that all scenario comparisons are made under
+identical stochastic conditions.  This is essential for isolating the effect
+of market structure from the effect of forecast realisation.
+
+\subsubsection{Asymmetric Accuracy Assumptions}
+
+In practice, load forecasting is considerably more accurate than renewable
+generation forecasting.  The model reflects this by applying distinct
+$\sigma$ values to load and generation:
+
+\begin{equation}
+\sigma_{\mathrm{DA}}^{(\ell)} < \sigma_{\mathrm{DA}}^{(g)}, \qquad
+\sigma_{\mathrm{ID}}^{(\ell)} < \sigma_{\mathrm{ID}}^{(g)}
+\label{eq:asymmetric_sigma}
+\end{equation}
+
+Consequently, the dominant source of imbalance exposure in all scenarios is
+PV generation uncertainty.  This is consistent with empirical evidence from
+the Austrian balancing market.
+
+\subsubsection{Error Propagation to Imbalance}
+
+The relationship between forecast error and imbalance cost is direct.  The
+imbalance of balancing group~$g$ at interval~$t$ is
+
+\begin{equation}
+\varepsilon_{g}^{t}
+  = \underbrace{A_{g}^{t}}_{\text{actual net load}}
+  - \underbrace{\bigl(\bar{Q}_{g}^{t,+} - \bar{Q}_{g}^{t,-}\bigr)}_{\text{contracted position}}
+\label{eq:imbalance_error}
+\end{equation}
+
+Since the contracted position is based on intra-day forecasts, the imbalance
+is approximately:
+
+\begin{equation}
+\varepsilon_{g}^{t} \approx
+  \sum_{n \in \mathcal{N}_{g}} \bigl(\ell_{n}^{t} - \hat{\ell}_{n,\mathrm{ID}}^{t}\bigr)
+  - \sum_{n \in \mathcal{P}_{g}} \bigl(g_{n}^{t} - \hat{g}_{n,\mathrm{ID}}^{t}\bigr)
+\label{eq:imbalance_error_approx}
+\end{equation}
+
+(more precisely, after applying the REC correction in scenarios where the
+REC is active).  The balancing settlement is therefore a direct financial
+measure of total forecast error, weighted by the imbalance price.
+
+\subsubsection{Performance Metrics}
+
+Model accuracy is reported using the Mean Absolute Percentage Error (MAPE):
+
+\begin{equation}
+\mathrm{MAPE}_{n}
+  = \frac{100\%}{T}
+    \sum_{t \in \mathcal{T}}
+    \left|
+      \frac{v_{n}^{t} - \hat{v}_{n,\mathrm{ID}}^{t}}{v_{n}^{t}}
+    \right|
+\label{eq:mape_infra}
+\end{equation}
+
+and the Root Mean Squared Error (RMSE):
+
+\begin{equation}
+\mathrm{RMSE}_{n}
+  = \sqrt{\frac{1}{T} \sum_{t \in \mathcal{T}}
+    \bigl(v_{n}^{t} - \hat{v}_{n,\mathrm{ID}}^{t}\bigr)^{2}}
+\label{eq:rmse}
+\end{equation}
+
+These metrics are reported separately for load and generation to quantify the
+relative contribution of each source to overall imbalance.
+
+%%-----------------------------------------------------------------------------
+\subsection{Renewable Energy Community Settlement Modelling}
+\label{subsec:rec_model}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Position within the Pipeline}
+
+The REC settlement is applied \emph{after} the intra-day market closes and
+\emph{before} the balancing settlement.  This ordering reflects the Austrian
+regulatory framework, under which the REC sharing correction is applied to
+metered values that have already been remunerated at retail and feed-in
+tariffs, and the residual grid exchange is then reported to the BRP for
+balancing purposes.  The correction is therefore invisible to the wholesale
+market — it reduces only the bilateral supplier-customer settlement and the
+BRP's residual imbalance exposure.
+
+\subsubsection{Aggregation and Shared Energy}
+
+For a REC $r$ with member set $\mathcal{M}_{r}$, the total generation and
+load within the community at interval $t$ are:
+
+\begin{equation}
+G_{r}^{t} = \sum_{n \in \mathcal{P} \cap \mathcal{M}_{r}} g_{n}^{t},
+\qquad
+L_{r}^{t} = \sum_{n \in \mathcal{M}_{r}} \ell_{n}^{t}
+\label{eq:rec_totals_infra}
+\end{equation}
+
+The quantity of energy that can be shared internally — without transiting the
+public grid — is the lesser of total generation and total load:
+
+\begin{equation}
+E_{r}^{\mathrm{shared},t} = \min\!\bigl(G_{r}^{t},\; L_{r}^{t}\bigr)
+\label{eq:shared_energy_infra}
+\end{equation}
+
+This rule follows the Austrian regulatory definition of collectively
+self-consumed energy and is applied uniformly regardless of the
+physical proximity of generators and consumers within the network.
+
+\subsubsection{Proportional Allocation Rule}
+
+The shared energy is distributed proportionally across generators and
+consumers.  For prosumer $n \in \mathcal{P} \cap \mathcal{M}_{r}$, the
+corrected generation that exits the community boundary is
+
+\begin{equation}
+\tilde{g}_{n}^{t} = g_{n}^{t}\left(1 - \frac{E_{r}^{\mathrm{shared},t}}{G_{r}^{t}}\right)
+  \qquad \bigl(G_{r}^{t} > 0\bigr)
+\label{eq:gen_correction_infra}
+\end{equation}
+
+and for member $n \in \mathcal{M}_{r}$, the corrected load that is drawn
+from the public grid is
+
+\begin{equation}
+\tilde{\ell}_{n}^{t} = \ell_{n}^{t}\left(1 - \frac{E_{r}^{\mathrm{shared},t}}{L_{r}^{t}}\right)
+  \qquad \bigl(L_{r}^{t} > 0\bigr)
+\label{eq:load_correction_infra}
+\end{equation}
+
+The proportional rule ensures that no single member receives an
+disproportionate benefit, and that the sum of corrections is consistent with
+the total shared energy:
+
+\begin{equation}
+\sum_{n \in \mathcal{P} \cap \mathcal{M}_{r}}
+  \bigl(g_{n}^{t} - \tilde{g}_{n}^{t}\bigr)
+=
+\sum_{n \in \mathcal{M}_{r}}
+  \bigl(\ell_{n}^{t} - \tilde{\ell}_{n}^{t}\bigr)
+= E_{r}^{\mathrm{shared},t}
+\label{eq:rec_conservation}
+\end{equation}
+
+confirming that the correction is energy-conserving at the community boundary.
+
+\subsubsection{Impact on Balancing Group Position}
+
+The corrected meters alter the realised net position of each balancing group.
+For group~$g$:
+
+\begin{equation}
+A_{g}^{t}
+  = \sum_{n \in \mathcal{N}_{g}} \tilde{\ell}_{n}^{t}
+  - \sum_{n \in \mathcal{P}_{g}} \tilde{g}_{n}^{t}
+\label{eq:bg_actual_infra}
+\end{equation}
+
+This is the actual net demand that the BRP must have covered through its
+combined DA/ID commitments.  In scenarios without a REC, corrected and
+original meters coincide.
+
+\subsubsection{Structural Consequence for Imbalance}
+
+Because the REC correction is applied to actual meters but the BRP's contracted
+position was derived from \emph{forecast} meters (without REC correction), a
+systematic timing mismatch arises.  The BRP cannot incorporate future REC
+corrections into its market commitments.  This mismatch enters the balancing
+imbalance as an additional, structurally unavoidable component, which is one
+of the central research questions addressed by the scenario comparisons in
+\cref{sec:infrastructure}.
+
+%%-----------------------------------------------------------------------------
+\subsection{Multi-Supplier Structure Representation}
+\label{subsec:multisupplier}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Motivation}
+
+Scenarios B1 and B2 introduce a second supplier, transforming the balancing
+structure from a single-BRP portfolio (Scenarios A1/A2) to a two-BRP system.
+The structural change affects how generation and load are aggregated within
+each balancing group, which in turn affects imbalance exposure even when total
+community production and consumption remain unchanged.
+
+\subsubsection{Balancing Group Assignment}
+
+In the single-supplier scenarios (A1, A2), all nine community nodes belong
+to a single balancing group $g^* = \mathcal{G}_{s^*}$.  Portfolio aggregation
+benefits from the statistical cancellation of individual forecast errors:
+positive and negative deviations at different nodes tend to offset each other,
+reducing the aggregate imbalance below the sum of individual imbalances.
+
+In the two-supplier scenarios (B1, B2), participants are partitioned into two
+disjoint balancing groups $g_1 \subset \mathcal{G}_{s_1}$ and
+$g_2 \subset \mathcal{G}_{s_2}$, with $g_1 \cup g_2 = \mathcal{N}$ and
+$g_1 \cap g_2 = \emptyset$.  Each group forms an independent net position:
+
+\begin{equation}
+Q_{g_k,\mathrm{DA}}^{t} = G_{g_k,\mathrm{DA}}^{t} - L_{g_k,\mathrm{DA}}^{t},
+\quad k = 1, 2
+\label{eq:two_bg_net}
+\end{equation}
+
+The total DA commitment is the sum $Q_{g_1}^{t} + Q_{g_2}^{t}$, which
+numerically equals the single-BRP commitment.  However, balancing penalties
+are assessed per group and are proportional to the absolute imbalance of each
+group independently:
+
+\begin{equation}
+\Pi_{\mathrm{total}}^{t}
+  = \Pi_{g_1}^{t} + \Pi_{g_2}^{t}
+  \geq \Pi_{g^*}^{t}
+\label{eq:fragmentation_inequality}
+\end{equation}
+
+Inequality \eqref{eq:fragmentation_inequality} holds strictly whenever
+$\varepsilon_{g_1}^{t}$ and $\varepsilon_{g_2}^{t}$ have opposite signs,
+which occurs systematically if prosumers and consumers are not evenly
+distributed across groups.  This \emph{fragmentation effect} is the primary
+mechanism responsible for cost differences between A1 and B1, and between
+A2 and B2.
+
+\subsubsection{Portfolio Composition Effect}
+
+The degree of fragmentation depends on how prosumers (with volatile generation)
+are distributed between groups.  If all three prosumers belong to one group and
+all six consumers to the other, generation and load deviations cannot cancel
+across groups.  The model assigns participants to groups according to the
+scenario configuration files, allowing the fragmentation magnitude to be
+quantified empirically.
+
+\subsubsection{Cross-Supplier REC Interaction (Scenarios B2)}
+
+In Scenario B2 the REC is active while participants are distributed across two
+suppliers.  The REC correction operates on the full community (all nine nodes)
+regardless of supplier assignment.  The corrected meters are then attributed
+back to the original balancing groups.
+
+This creates a cross-supplier dependency: the REC allocation to a member of
+group $g_1$ is determined by the aggregate generation and load of the entire
+community, including members of group $g_2$.  Formally, for a member
+$n \in \mathcal{M}_{r} \cap \mathcal{N}_{g_1}$:
+
+\begin{equation}
+\tilde{\ell}_{n}^{t} = \ell_{n}^{t}\left(1 - \frac{\min(G_{r}^{t}, L_{r}^{t})}{L_{r}^{t}}\right)
+\label{eq:cross_bg_rec}
+\end{equation}
+
+where $G_{r}^{t}$ and $L_{r}^{t}$ include contributions from both $g_1$ and
+$g_2$.  This cross-group dependency means that the corrected net position of
+$g_1$ depends on the generation and load outcomes of $g_2$, introducing an
+externality across supplier balancing accounts.
+
+%%-----------------------------------------------------------------------------
+\subsection{Cost and Settlement Aggregation}
+\label{subsec:cost_aggregation}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Per-Interval Settlement Building Blocks}
+
+At each interval $t$, four financial flows are computed for each balancing
+group $g$ belonging to supplier $s$:
+
+\begin{enumerate}[leftmargin=2.5em, label=(\roman*)]
+  \item \textbf{Day-ahead cost/revenue}: purchase cost $C_{g,\mathrm{DA}}^{t}$
+        and sale revenue $R_{g,\mathrm{DA}}^{t}$ at the DA price.
+  \item \textbf{Intra-day adjustment}: additional purchase cost
+        $C_{g,\mathrm{ID}}^{t}$ and additional sale revenue
+        $R_{g,\mathrm{ID}}^{t}$ at the ID price.
+  \item \textbf{Balancing penalty/reward}: $\Pi_{g}^{t}$ for net deficit,
+        $\Rho_{g}^{t}$ for net surplus, at the imbalance price.
+  \item \textbf{Retail/feed-in settlement}: retail revenue
+        $R_{s}^{\mathrm{ret},t}$ from member import charges; feed-in cost
+        $C_{s}^{\mathrm{fi},t}$ for crediting member exports.
+\end{enumerate}
+
+\subsubsection{Annual Aggregation}
+
+The supplier's annual profit/loss is:
+
+\begin{align}
+\Pi_{s}^{\mathrm{annual}}
+  &= \underbrace{\sum_{t}\sum_{g \in \mathcal{G}_{s}}S_{g,\mathrm{DA}}^{t}}_{\text{DA settlement}}
+   + \underbrace{\sum_{t}\sum_{g \in \mathcal{G}_{s}}
+     \bigl(R_{g,\mathrm{ID}}^{t} - C_{g,\mathrm{ID}}^{t}\bigr)}_{\text{ID adjustment}}
+\notag\\
+  &\quad
+   + \underbrace{\sum_{t}\sum_{g \in \mathcal{G}_{s}}
+     \bigl(\Rho_{g}^{t} - \Pi_{g}^{t}\bigr)}_{\text{balancing net}}
+   + \underbrace{\sum_{t}
+     \bigl(R_{s}^{\mathrm{ret},t} - C_{s}^{\mathrm{fi},t}\bigr)}_{\text{retail net}}
+\label{eq:pl_decomposed}
+\end{align}
+
+This decomposition directly supports the scenario comparison framework:
+differences between scenarios can be attributed precisely to the stage at which
+they first arise.
+
+\subsubsection{Individual Member Cost Calculation}
+
+From the perspective of a community member, the annual cost is:
+
+\begin{equation}
+\Gamma_{n}^{\mathrm{annual}}
+  = \sum_{t \in \mathcal{T}} \text{Bill}_{n}^{t}
+  = \sum_{t \in \mathcal{T}}
+    \Bigl[
+      \max\!\bigl(\tilde{m}_{n}^{t},\;0\bigr)\,\pi_{\mathrm{ret},s(n)}^{t}
+    - \max\!\bigl(-\tilde{m}_{n}^{t},\;0\bigr)\,\pi_{\mathrm{fi},s(n)}^{t}
+    \Bigr]
+\label{eq:member_annual_cost}
+\end{equation}
+
+The REC correction reduces $|\tilde{m}_{n}^{t}|$ relative to the uncorrected
+net exchange, thereby reducing both imports charged at retail tariff and
+exports credited at feed-in tariff.  The net saving to a consumer is always
+positive; for a prosumer the net effect depends on the relative levels of
+$\pi_{\mathrm{ret}}$ and $\pi_{\mathrm{fi}}$.
+
+%%-----------------------------------------------------------------------------
+\subsection{Model Validation and Consistency Checks}
+\label{subsec:validation}
+%%-----------------------------------------------------------------------------
+
+The model incorporates a set of algebraic consistency checks that are applied
+at the end of each simulated year.  These checks do not require external
+benchmarks: they verify internal logical invariants that must hold regardless
+of parameterisation.
+
+\subsubsection{Community Energy Balance}
+
+At every interval, total metered generation, total metered load, and net
+grid exchange must be consistent:
+
+\begin{equation}
+\sum_{n \in \mathcal{P}} g_{n}^{t}
+- \sum_{n \in \mathcal{N}} \ell_{n}^{t}
+= \underbrace{X_{\mathrm{comm}}^{t} - I_{\mathrm{comm}}^{t}}_{\text{net export}}
+\label{eq:energy_balance_check}
+\end{equation}
+
+where $X_{\mathrm{comm}}^{t}$ and $I_{\mathrm{comm}}^{t}$ are the aggregate
+export and import at the community boundary.  Any numerically significant
+violation of \cref{eq:energy_balance_check} indicates a data inconsistency
+in the profile scaling.
+
+\subsubsection{REC Conservation Check}
+
+Equation~\cref{eq:rec_conservation} is verified numerically at every interval
+to confirm that the total reduction in generation export equals the total
+reduction in load import:
+
+\begin{equation}
+\left|\;
+\sum_{n \in \mathcal{P} \cap \mathcal{M}_{r}}
+\bigl(g_{n}^{t} - \tilde{g}_{n}^{t}\bigr)
+\;-\;
+\sum_{n \in \mathcal{M}_{r}}
+\bigl(\ell_{n}^{t} - \tilde{\ell}_{n}^{t}\bigr)
+\;\right| < \epsilon
+\label{eq:rec_conservation_check}
+\end{equation}
+
+for a suitable numerical tolerance $\epsilon$.  A violation indicates an
+implementation error in the proportional allocation logic.
+
+\subsubsection{Contracted vs Realised Position Consistency}
+
+The total contracted position across all balancing groups of a supplier must
+equal the sum of the DA and ID commitments:
+
+\begin{equation}
+\sum_{g \in \mathcal{G}_{s}}
+\bigl(\bar{Q}_{g}^{t,+} - \bar{Q}_{g}^{t,-}\bigr)
+=
+\sum_{g \in \mathcal{G}_{s}}
+\bigl(Q_{g,\mathrm{ID}}^{t,+} - Q_{g,\mathrm{ID}}^{t,-}\bigr)
+\label{eq:contracted_check}
+\end{equation}
+
+\subsubsection{Non-Negativity of Settlement Quantities}
+
+By construction, purchase volumes $Q_{g}^{t,+}$, sale volumes $Q_{g}^{t,-}$,
+penalties $\Pi_{g}^{t}$, rewards $\Rho_{g}^{t}$, and retail revenues
+$R_{s}^{\mathrm{ret},t}$ must all be non-negative.  Negative values would
+indicate a sign error in the settlement logic and are flagged as exceptions.
+
+\subsubsection{Imbalance Decomposition Check}
+
+The total annual balancing cost must be consistent with the sum of per-group,
+per-interval balancing settlements:
+
+\begin{equation}
+C_{s}^{\mathrm{bal}}
+= \sum_{t \in \mathcal{T}}\;\sum_{g \in \mathcal{G}_{s}} \Pi_{g}^{t}
+\label{eq:bal_cost_check}
+\end{equation}
+
+\subsubsection{Comparative Scenario Consistency}
+
+As a higher-level check, the interaction decomposition must be internally
+consistent:
+
+\begin{equation}
+\bigl(C_{\text{B2}} - C_{\text{A1}}\bigr)
+\stackrel{!}{=}
+\Delta C^{\mathrm{REC}} + \Delta C^{\mathrm{comp}} + \Delta C^{\mathrm{int}}
+\label{eq:interaction_check}
+\end{equation}
+
+This equality is definitional (it follows from the definitions of the three
+components), but its numerical verification confirms that the cost aggregation
+pipeline has been applied consistently across all four base scenarios.
+
+%%-----------------------------------------------------------------------------
+\subsection{Computational Structure}
+\label{subsec:computation}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Time-Step Iteration}
+
+For scenarios A1, A2, B1, B2 the market pipeline is implemented as a single
+vectorised pass over all $T$ intervals.  Market prices (DA, ID, imbalance,
+retail, feed-in) and profile values are pre-loaded into aligned arrays indexed
+by $t$.  Each stage applies element-wise operations across the full time
+dimension, avoiding explicit time-step loops where possible.  This design
+enables efficient computation of the full annual settlement in a single
+function call per stage.
+
+\subsubsection{Modular Stage Activation}
+
+A scenario configuration object specifies a Boolean activation flag for each
+pipeline stage.  Stages not activated for a given scenario return
+pass-through outputs (uncorrected meters, zero adjustments), ensuring that
+the downstream pipeline receives consistently structured data regardless of
+scenario.  This design allows the same pipeline code to execute all five
+scenarios without conditional branching in the core settlement logic.
+
+\subsubsection{Data Flow and Storage}
+
+Intermediate outputs from each stage are stored as named arrays with
+dimensions $(\text{node} \times T)$ or $(\text{group} \times T)$.  No
+intermediate results are discarded until final annual aggregation is complete.
+This retention policy supports post-hoc decomposition of any cost component
+at any temporal granularity (interval, day, month, year) without re-running
+the simulation.
+
+\subsubsection{Algorithmic Complexity}
+
+For $N = |\mathcal{N}|$ participants, $G = |\mathcal{G}|$ balancing groups,
+and $T$ intervals, the computational complexity of the base pipeline (Stages
+1--5 for Scenarios A1/A2/B1/B2) is
+
+\begin{equation}
+\mathcal{O}\bigl(T \cdot (N + G)\bigr)
+\label{eq:complexity_base}
+\end{equation}
+
+For the case study, $N = 9$, $G \in \{1, 2\}$, and $T = 35{,}136$, making the
+base computation negligible in wall-clock time.
+
+%%=============================================================================
+\section{Scenario C3: Battery Optimisation Extension}
+\label{sec:scenario_c3}
+%%=============================================================================
+
+Scenario C3 augments the Scenario A2 pipeline with a centralised, MILP-based
+battery scheduling stage inserted between the intra-day market and the REC
+settlement.  This section describes the battery optimisation method and its
+integration into the simulation infrastructure.
+
+%%-----------------------------------------------------------------------------
+\subsection{Position within the Pipeline}
+\label{subsec:battery_position}
+%%-----------------------------------------------------------------------------
+
+The battery scheduling problem is solved \emph{after} the intra-day market
+closes and \emph{before} the REC settlement.  The rationale is:
+
+\begin{enumerate}[leftmargin=2.5em]
+  \item The intra-day forecasts
+        $(\hat{\ell}_{n,\mathrm{ID}}^{t},\, \hat{g}_{n,\mathrm{ID}}^{t})$
+        represent the best available information and are used as inputs to the
+        optimiser.
+  \item The resulting battery schedule modifies the net generation profile
+        before REC sharing is applied, so the REC settlement already accounts
+        for battery output when computing shared energy.
+  \item The balancing imbalance in C3 reflects the three compounded
+        uncertainties: forecast error, REC timing mismatch, and battery
+        schedule deviation from actuals.
+\end{enumerate}
+
+The full C3 pipeline is:
+
+\begin{equation}
+\text{DA}
+\;\rightarrow\; \text{ID}
+\;\rightarrow\; \underbrace{\text{Battery MILP}}_{\text{C3 only}}
+\;\rightarrow\; \text{REC}
+\;\rightarrow\; \text{Balancing}
+\;\rightarrow\; \text{Billing}
+\label{eq:c3_pipeline}
+\end{equation}
+
+%%-----------------------------------------------------------------------------
+\subsection{Battery Optimisation Problem}
+\label{subsec:battery_milp}
+%%-----------------------------------------------------------------------------
+
+\subsubsection{Decision Variables}
+
+The optimiser determines, for each interval $t \in \mathcal{T}$:
+charge power $P_{\mathrm{c}}^{t} \geq 0$; discharge power
+$P_{\mathrm{d}}^{t} \geq 0$; state of charge $E^{t}$; binary mode
+variable $u^{t} \in \{0,1\}$ ($u^{t} = 1$ for charging); grid import
+$I^{t} \geq 0$; grid export $X^{t} \geq 0$.
+
+\subsubsection{Objective Function}
+
+The optimiser minimises the community's annual net grid cost, valued at the
+supplier's retail tariff for imports and feed-in tariff for exports:
+
+\begin{equation}
+\min_{\{P_{\mathrm{c}}^{t},\,P_{\mathrm{d}}^{t},\,E^{t},\,u^{t},\,I^{t},\,X^{t}\}}
+\quad
+\sum_{t \in \mathcal{T}}
+\Bigl[
+  I^{t}\,\pi_{\mathrm{ret},s}^{t}
+ -X^{t}\,\pi_{\mathrm{fi},s}^{t}
+\Bigr]
+\label{eq:battery_obj_c3}
+\end{equation}
+
+\subsubsection{State-of-Charge Dynamics}
+
+The SoC evolves according to the charge/discharge balance:
+
+\begin{equation}
+E^{t} = E^{t-1} + \eta_{\mathrm{c}}\,P_{\mathrm{c}}^{t}\,\Delta t
+              - \frac{P_{\mathrm{d}}^{t}\,\Delta t}{\eta_{\mathrm{d}}},
+\qquad E^{0} = E_{0}
+\label{eq:soc_dynamics_c3}
+\end{equation}
+
+with charge efficiency $\eta_{\mathrm{c}} = 0.95$ and discharge efficiency
+$\eta_{\mathrm{d}} = 0.95$.  The asymmetric treatment of charge and discharge
+efficiencies in \cref{eq:soc_dynamics_c3} means that a charge-discharge cycle
+always incurs a net energy loss of approximately
+$1 - \eta_{\mathrm{c}} \cdot \eta_{\mathrm{d}} = 9.75\%$.
+
+\subsubsection{Physical and Operational Constraints}
+
+\begin{align}
+E_{\min} &\leq E^{t} \leq E_{\max}
+&&\forall\, t \in \mathcal{T}
+\label{eq:soc_bounds_c3}\\[4pt]
+0 &\leq P_{\mathrm{c}}^{t} \leq P_{\mathrm{c}}^{\max}\,u^{t}
+&&\forall\, t \in \mathcal{T}
+\label{eq:charge_limit_c3}\\[4pt]
+0 &\leq P_{\mathrm{d}}^{t} \leq P_{\mathrm{d}}^{\max}\,(1 - u^{t})
+&&\forall\, t \in \mathcal{T}
+\label{eq:discharge_limit_c3}
+\end{align}
+
+Constraints~\cref{eq:charge_limit_c3,eq:discharge_limit_c3} are the big-M
+formulation of binary mutual exclusivity: the battery can charge or discharge
+in any interval, but not both simultaneously.  This prevents the optimiser
+from exploiting round-trip efficiency differentials spuriously.
+
+The parameters for Scenario C3 are: $E_{\max} = 200$~kWh;
+$P_{\mathrm{c}}^{\max} = P_{\mathrm{d}}^{\max} = 50$~kW;
+$E_{\min} = 0.20 \times E_{\max} = 40$~kWh; $E_{0} = 0.50 \times E_{\max} = 100$~kWh.
+
+\subsubsection{Net Power Balance}
+
+Let $\tilde{L}^{t}$ and $\tilde{G}^{t}$ denote the community-level intra-day
+load and generation forecasts.  The grid import/export decision variables are
+linked to battery operation through:
+
+\begin{equation}
+I^{t} - X^{t}
+  = \tilde{L}^{t} - \tilde{G}^{t}
+    + P_{\mathrm{c}}^{t}\,\Delta t - P_{\mathrm{d}}^{t}\,\Delta t,
+\qquad I^{t} \geq 0,\quad X^{t} \geq 0
+\label{eq:grid_balance_c3}
+\end{equation}
+
+This constraint ensures that the optimised schedule is physically consistent
+with the community's net load, as estimated from intra-day forecasts.
+
+\subsubsection{Modelling Approach and Solver Class}
+
+The problem is a Mixed-Integer Linear Programme (MILP) with $6T$ decision
+variables ($T$ binary) and $5T$ constraints.  For $T = 35{,}136$ the problem
+has approximately $211{,}000$ variables and $176{,}000$ constraints.  The
+problem is solved as a single annual optimisation using the branch-and-bound
+method, with the GLPK/CBC solver invoked via the Pyomo algebraic modelling
+framework.
+
+\subsubsection{Interaction with Forecast Updates}
+
+The battery schedule is optimised using intra-day forecasts, not actual values.
+Deviations of actual generation and load from the intra-day forecast therefore
+cause the battery's realised impact on net load to differ from its scheduled
+impact.  This forecast-induced deviation enters the balancing imbalance as an
+additional source of error, specific to Scenario C3:
+
+\begin{equation}
+\varepsilon_{g,C3}^{t} = \varepsilon_{g,A2}^{t}
+  + \underbrace{
+    \bigl(P_{\mathrm{d,actual}}^{t} - P_{\mathrm{c,actual}}^{t}\bigr)
+    - \bigl(P_{\mathrm{d,sched}}^{t} - P_{\mathrm{c,sched}}^{t}\bigr)
+  }_{\text{battery schedule deviation}}
+\label{eq:battery_imbalance}
+\end{equation}
+
+Whether the battery reduces or increases net balancing cost relative to
+Scenario A2 depends on the relative magnitude of the cost reduction from
+peak shaving and export arbitrage versus the additional imbalance from
+schedule deviations.
+
+%%-----------------------------------------------------------------------------
+\subsection{C3 Validation Checks}
+\label{subsec:c3_validation}
+%%-----------------------------------------------------------------------------
+
+In addition to the base-scenario checks of \cref{subsec:validation}, the
+following invariants are verified for Scenario C3:
+
+\begin{enumerate}[leftmargin=2.5em]
+  \item \textbf{SoC feasibility}: $E_{\min} \leq E^{t} \leq E_{\max}$ for
+        all $t$.
+  \item \textbf{Binary exclusivity}: $P_{\mathrm{c}}^{t} \cdot P_{\mathrm{d}}^{t} = 0$
+        for all $t$ (numerically: both cannot be simultaneously above a small
+        tolerance).
+  \item \textbf{Grid balance consistency}: at every $t$, $I^{t} - X^{t}$
+        as returned by the solver must equal the right-hand side of
+        \cref{eq:grid_balance_c3} to within numerical tolerance.
+  \item \textbf{Objective consistency}: the total net grid cost reported by
+        the solver must equal $\sum_t (I^t \pi_{\mathrm{ret}}^t - X^t \pi_{\mathrm{fi}}^t)$
+        computed from the optimal variable values.
+\end{enumerate}
+
+%%=============================================================================
+\section{Summary of Methodological Choices}
+\label{sec:summary}
+%%=============================================================================
+
+\begin{table}[H]
+\centering
+\caption{Key methodological choices and their justification}
+\label{tab:method_summary}
+\begin{tabular}{@{} p{3.8cm} p{5.0cm} p{5.5cm} @{}}
+\toprule
+\makecell[l]{Design Choice} &
+\makecell[l]{Implementation} &
+\makecell[l]{Justification} \\
+\midrule
+Temporal resolution
+  & 15-minute intervals ($\Delta t = 0.25$~h)
+  & Matches Austrian imbalance settlement period \\[4pt]
+Forecast perturbation
+  & Seeded Gaussian noise, asymmetric $\sigma$ for load and generation
+  & Reproducible; reflects empirical accuracy gap between load and PV \\[4pt]
+REC timing
+  & Post-ID, pre-balancing
+  & Consistent with Austrian regulatory framework \\[4pt]
+REC allocation rule
+  & Proportional to metered share
+  & Avoids discriminatory treatment of members \\[4pt]
+BRP fragmentation
+  & Independent net positions per group
+  & Correctly captures loss of portfolio diversification \\[4pt]
+Battery horizon
+  & Full annual MILP
+  & Provides perfect-forecast upper bound on battery value; avoids
+    rolling-horizon truncation artefacts \\[4pt]
+Battery binary constraint
+  & Big-M formulation
+  & Prevents simultaneous charge/discharge; standard MILP encoding \\[4pt]
+Validation
+  & Algebraic invariant checks post-simulation
+  & Detects implementation errors without reference data \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\bibliography{references}
+\bibliographystyle{plain}
+
+\end{document}

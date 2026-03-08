@@ -1,0 +1,298 @@
+{
+  "energy_system": {
+    "system_id": "ES_C3_SINGLE_REC_BATTERY_001",
+    "system_name": "Single Supplier Mandate with REC and Battery Optimization - Scenario C3",
+    "simbench_network": "1-LV-rural3--2-no_sw",
+    "simulation_period": {
+      "start_date": "2016-01-01",
+      "end_date": "2016-12-31",
+      "timestep": "15min"
+    },
+    "participants": {
+      "total_nodes": 9,
+      "prosumers": 3,
+      "consumers": 6,
+      "total_pv_capacity_kwp": 24.48,
+      "total_annual_load_kwh": 63899.61,
+      "total_annual_pv_kwh": 25083.21
+    },
+    "description": " Prosumers are net generators (RES only, no local load in billing)."
+  },
+  "energy_market": {
+    "market_id": "MARKET_001",
+    "market_name": "Austrian Energy Market",
+    "market_type": "day_ahead_with_intraday_updates",
+    "price_lists": {
+      "day_ahead_prices": {
+        "csv_file": "data/prices.csv",
+        "id": "DA_price"
+      },
+      "intraday_prices": {
+        "csv_file": "data/prices.csv",
+        "id": "ID_price"
+      },
+      "balancing_prices": {
+        "imbalance_price": {
+          "csv_file": "data/prices.csv",
+          "id": "imbalance_price"
+        }
+      },
+      "grid_fees": {
+        "transmission_fee_eur_per_kwh": 0.01,
+        "distribution_fee_eur_per_kwh": 0.01,
+        "total_grid_fee_eur_per_kwh": 0.02
+      },
+      "rec_incentives": {
+        "shared_energy_bonus_eur_per_kwh": 0.01,
+        "self_consumption_bonus_eur_per_kwh": 0.015,
+        "note": "REC incentives apply to internally shared energy"
+      }
+    }
+  },
+  "battery_optimization": {
+    "optimization_framework": "pyomo",
+    "solver": "glpk",
+    "formulation": "MILP",
+    "objective_function": "minimize_total_rec_cost",
+    "constraints": [
+      "battery_capacity_limits",
+      "charging_discharging_power_limits",
+      "state_of_charge_bounds",
+      "energy_balance",
+      "no_simultaneous_charge_discharge"
+    ]
+  },
+  "batteries": [
+    {
+      "battery_id": "BESS_REC_01",
+      "battery_name": "Centralized REC Community Battery",
+      "technical_parameters": {
+        "capacity_kwh": 200,
+        "max_charge_power_kw": 68,
+        "max_discharge_power_kw": 68,
+        "charging_efficiency": 0.95,
+        "discharging_efficiency": 0.95,
+        "soc_min_percent": 20,
+        "soc_max_percent": 100,
+        "initial_soc_percent": 50
+      }
+    },
+    {
+      "battery_id": "BESS_REC_02",
+      "battery_name": "Prosumer Residential Battery",
+      "technical_parameters": {
+        "capacity_kwh": 80,
+        "max_charge_power_kw": 25,
+        "max_discharge_power_kw": 25,
+        "charging_efficiency": 0.95,
+        "discharging_efficiency": 0.95,
+        "soc_min_percent": 20,
+        "soc_max_percent": 100,
+        "initial_soc_percent": 50
+      }
+    }
+  ],
+  "suppliers": [
+    {
+      "supplier_id": "SUP_A",
+      "supplier_name": "Supplier A",
+      "balancing_groups": [
+        {
+          "balancing_group_id": "BG_A",
+          "balancing_group_name": "Balancing Group A"
+        }
+      ],
+      "retail_pricing": {
+        "price": "retail_price"
+      },
+      "feedin_pricing": {
+        "price": "feedin_price"
+      }
+    }
+  ],
+  "recs": [
+    {
+      "rec_id": "REC_01",
+      "rec_name": "Renewable Energy Community 1",
+      "settlement_method": "proportional"
+    }
+  ],
+  "prosumers": [
+    {
+      "meter_id": "prosumer_001",
+      "name": "Fire Fighting Station",
+      "node_id": 2,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "res": {
+        "id": "LV3.101 SGen 1 [PV7]",
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV7"
+      },
+      "rec": "REC_01",
+      "storage": {
+        "id": "LV3.101 Storage 1 [Storage_PV3_H0-G]",
+        "csv_file": "data/storage_actual.csv",
+        "profile": "Storage_PV4_H0-G"
+      }
+    },
+    {
+      "meter_id": "prosumer_002",
+      "name": "Household",
+      "node_id": 6,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "res": {
+        "id": "LV3.101 SGen 2 [PV3]",
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV3"
+      },
+      "rec": "REC_01",
+      "storage": {
+        "id": "LV3.101 Storage 2 [Storage_PV3_H0-A]",
+        "csv_file": "data/storage_actual.csv",
+        "profile": "Storage_PV3_H0-L"
+      }
+    },
+    {
+      "meter_id": "prosumer_003",
+      "name": "Household",
+      "node_id": 8,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "res": {
+        "id": "LV3.101 SGen 3 [PV3]",
+        "csv_file": "data/res_actual.csv",
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV3"
+      },
+      "rec": "REC_01",
+      "storage": {
+        "id": "LV3.101 Storage 3 [Storage_PV4_H0-G]",
+        "csv_file": "data/storage_actual.csv",
+        "profile": "Storage_PV1_H0-L"
+      }
+    }
+  ],
+  "consumers": [
+    {
+      "meter_id": "consumer_001",
+      "name": "Local Authority",
+      "node_id": 1,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 77 [G1-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "profile": "G1-C"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_002",
+      "name": "Apartment",
+      "node_id": 3,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 64 [H0-L]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_003",
+      "name": "Apartment",
+      "node_id": 4,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 75 [H0-L]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_004",
+      "name": "Apartment (Hot Water Boiler)",
+      "node_id": 5,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 86 [H0-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-C"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_005",
+      "name": "Bank",
+      "node_id": 7,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 62 [G5-A]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "profile": "G5-A"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_006",
+      "name": "Household",
+      "node_id": 9,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 2 [H0-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-C"
+      },
+      "rec": "REC_01"
+    }
+  ]
+}

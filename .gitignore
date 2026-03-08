@@ -1,6 +1,8 @@
 # Large data files
 data/load_actual.csv
 *.zip
+gurobi_server13.0.1_linux64.tar.gz
+Gurobi-13.0.1-win64.msi
 
 # Large zip files
 simbench-develop.zip

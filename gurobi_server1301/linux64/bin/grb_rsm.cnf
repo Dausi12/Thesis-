@@ -1,0 +1,29 @@
+# Gurobi Cluster Manager Configuration File
+#
+# use 'grb_rsm properties' to get a complete list of the properties and
+# their documentation.
+#
+#
+
+# By default, communication uses the HTTP protocol. If you wish to encrypt the
+# data using standard HTTPS between the clients and the Cluster Manager, you must
+# enable TLS using the following property.
+#TLS=true
+
+# TLS_KEY and TLS_CERT indicate the path to the private key and certificate. If
+# you do not provide them, a self-signed certificate will be used.
+#TLS_KEY=company.key
+#TLS_CERT=company.crt
+
+# PORT indicates what port to use for HTTP or HTTPS communication between the clients
+# and the Cluster Manager. If you wish to use a different port, set this property.
+PORT=61080
+
+
+# CLUSTER_TOKEN is a private key that enables the manager to access
+# the cluster nodes. All nodes of a cluster and the manager must have the same token.
+# It is recommended to generate a new token using the grb_rs token command.
+CLUSTER_TOKEN=GRBTK-BzlUTKg9M/+HUvOpy/EPebc1CsttzOfDouQvPxiyssy1n57LfCDHTJNKZJ8shL4QkLm1FA==
+
+# DB_URI is the connection string to the Mongo/DocumentDB Database
+DB_URI=mongodb://127.0.0.1:27017

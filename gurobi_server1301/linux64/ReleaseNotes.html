@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Gurobi Optimization</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <style>
+        body {
+            background-color: #E7E9EB;
+            padding: 20px 40px;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 20px;
+            margin: 0px;
+        }
+
+        img {
+            border: none;
+        }
+
+        h2 {
+            margin: 36px 0 8px;
+        }
+
+        .menu {
+            padding-bottom: 40px;
+        }
+
+        .menu td {
+            padding-right: 30px;
+            font-size: 14pt;
+            font-weight: bold;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #292929;
+        }
+
+        .menu a:hover {
+            color: #909090;
+        }
+
+        .platforms {
+            border-collapse: collapse;
+        }
+
+        .platforms td, .platforms th {
+            font-size: 10pt;
+            border: solid 1px black;
+            padding: 4px 8px;
+            text-align: left;
+        }
+
+        .navtext {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<table class='menu'>
+    <tr>
+        <td><a href="https://www.gurobi.com"><img style='width:211px' src="logo.png" alt="Gurobi Optimization"
+                                                  title="Gurobi Optimization"/></a></td>
+        <td><a href="https://www.gurobi.com">gurobi.com</a></td>
+        <td><a href="docs/remoteservices/remoteservices.html">Reference Manual</a></td>
+        <td><a href="https://support.gurobi.com">Customer Support</a></td>
+    </tr>
+</table>
+<h1>
+    WELCOME
+</h1>
+<p>
+    You have successfully installed version 13.0.1 of the Gurobi Remote Services.
+</p>
+<p>
+    Gurobi Remote Services is a set of Gurobi features that allows a
+    cluster of one or more machines to perform Gurobi computations on
+    behalf of other machines. The key components of Remote Services are:
+</p>
+<ul>
+    <li>Compute Server, which allows you to offload all Gurobi computations
+        from a client machine onto a remote cluster.
+    </li>
+    <li>Distributed Workers, which can be used to perform parallel
+        computation on multiple machines.
+    </li>
+    <li>The Cluster Manager, an application server that
+        provides secured access to your Remote Services cluster, as well
+        as providing a Web User Interface and a command-line tool that make it
+        easier to manage and monitor your cluster. The Cluster Manager uses
+        a database to store user accounts, API keys, jobs, batches, and settings.
+        You can use Compute Servers without a Cluster Manager -
+        we refer to that as a self-managed cluster.
+        However, we recommended you use a Cluster Manager to get the rich
+        set of features that it provides.
+    </li>
+</ul>
+<p>
+<p>
+    Please refer to the <a href="https://docs.gurobi.com/12.0/">Gurobi Documentation</a> for more details.
+    All bug fixes listed by version can be found on our
+    <a href="https://www.gurobi.com/downloads/recent-bug-fixes-by-version/">website</a>.
+</p>
+
+</p>
+
+<section id="getlicense">
+    <h2>
+        Obtaining Your License
+    </h2>
+    <p>
+        To manage your Gurobi licenses, you will need to visit the <a
+            href="https://portal.gurobi.com/" target="_blank">Gurobi User Portal</a>.
+        If you are a commercial user under maintenance, you should see your existing Gurobi licenses under the <a
+            href="https://portal.gurobi.com/iam/licenses/list" target="_blank">Licenses</a> section.
+        If you would like to request a free academic license or other licenses, you can do so from the <a
+            href="https://portal.gurobi.com/iam/licenses/request" target="_blank">Request License</a> section.
+        Once you have a license on the Gurobi User Portal, you will need to follow the instructions for installing or
+        downloading a license by clicking on the <code>Install</code> or <code>Open</code> button next to your license.
+    </p>
+</section>
+
+<section id="platforms">
+    <h2>
+        Supported Platforms by the Compute Server/Cluster Manager
+    </h2>
+    <table class='platforms grb-table-spec'>
+        <thead>
+        <tr>
+            <th scope="col">Platform</th>
+            <th scope="col">Operating System</th>
+            <th scope="col">Notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Windows 64-bit (win64)</td>
+            <td>Windows 10, 11, Windows Server 2016, 2019, 2022, 2025</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan="4">Linux&reg; x86-64 64-bit (linux64)</td>
+            <td>Red Hat&reg; Enterprise Linux 8, 9, 10</td>
+            <td rowspan="4"></td>
+        </tr>
+        <tr>
+            <td>SUSE&reg; Enterprise Linux 15</td>
+        </tr>
+        <tr>
+            <td>Ubuntu&reg; 22.04, 24.04</td>
+        </tr>
+        <tr>
+            <td>Amazon Linux 2, 2023</td>
+        </tr>
+        <tr>
+            <td>Mac OS 64-bit (macos_universal2)</td>
+            <td>13 (Ventura), 14 (Sonoma), 15 (Sequoia)</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan="4">Linux&reg; arm64 64-bit (armlinux64)</td>
+            <td>Red Hat&reg; Enterprise Linux 8, 9, 10</td>
+            <td rowspan="4"></td>
+        </tr>
+        <tr>
+            <td>SUSE&reg; Enterprise Linux 15</td>
+        </tr>
+        <tr>
+            <td>Ubuntu&reg; 22.04, 24.04</td>
+        </tr>
+        <tr>
+            <td>Amazon Linux 2, 2023</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<section id="supported_browsers">
+    <h2>
+        Supported Browsers by the Cluster Manager Web UI
+        <span class="grb-navtext navtext">Supported Browsers</span>
+    </h2>
+
+    <table class='platforms grb-table-spec'>
+        <thead>
+        <tr>
+            <th scope="col">Browser</th>
+            <th scope="col">Minimum Version</th>
+            <th scope="col">Notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Chrome</td>
+            <td>87</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Firefox</td>
+            <td>87</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Edge</td>
+            <td>44</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Safari</td>
+            <td>14</td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<section id="supported_databases">
+    <h2>
+        Supported Databases by the Cluster Manager
+        <span class="grb-navtext navtext">Supported Databases</span>
+    </h2>
+
+    <table class='platforms grb-table-spec'>
+        <thead>
+        <tr>
+            <th scope="col">Database</th>
+            <th scope="col">Minimum Version</th>
+            <th scope="col">Notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>MongoDB</td>
+            <td>7.0 and up</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Amazon DocumentDB</td>
+            <td>4.0 and 5.0</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Azure Cosmos DB</td>
+            <td>4.2</td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<section id="new_features">
+    <h2>
+        New or Improved Features
+    </h2>
+</section>
+
+<section id="global_updates">
+    <h3>Global Updates</h3>
+    <ul>
+        <li>
+            Gurobi Compute Server now supports Gurobi Optimizer 13.0.x, in addition to past releases 11.0.x and 12.0.x.
+            Older versions are no longer supported nor packaged in the compute server.
+        </li>
+        <li>
+            The reference manual of the Gurobi remote services, including the Compute Server
+            and the Cluster Manager, is available on the online <a href="https://docs.gurobi.com/13.0/">documentation
+            website</a>.
+        </li>
+    </ul>
+</section>
+
+<section id="usability">
+    <h3>Cluster Manager</h3>
+    <ul>
+        <li>
+            Cluster Manager is now fully accessible and compliant with the Web Content Accessibility Guidelines (WCAG)
+            2.1 at level AA, as well as the European standard EN 301 549. This ensures that the application provides an
+            inclusive experience for all users, including those relying on assistive technologies such as screen readers
+            and keyboard navigation, by meeting recognized international accessibility requirements.
+        </li>
+        <li>
+            We introduced a Kubernetes Autoscaler Operator for Gurobi Compute Servers that provides configurable
+            autoscaling to align the number of pods in a cluster to the current workload. The operator monitors job
+            queues, waiting times, and node utilization, and adjusts deployments up or down as needed. Scale-down is
+            handled gracefully to avoid interrupting running jobs.
+            The scaling logic can be modified through parameters, giving users control over how decisions are made.
+            The operator is published on <a href="https://hub.docker.com/r/gurobi/manager-operator">DockerHub</a> and uses
+            the existing Cluster Manager REST APIs, ensuring backwards
+            compatibility with previous Gurobi Compute Server versions.
+        </li>
+    </ul>
+</section>
+
+<section id="database">
+    <h3>Database</h3>
+    <p>
+        No major updates.
+    </p>
+</section>
+
+
+<section id="Compute Server">
+    <h3>Compute Server</h3>
+    <p>
+        With v13.0.0, we added a new cypher policy 'TLS_POLICY_TLS13_1300' to enforce TLS 1.3 connections only.
+        Note that on Windows, the clients require Windows 11 or later, or Windows Serer 2022 or later, to
+        support TLS 1.3.
+    </p>
+    <p>
+        Fixed an issue in Thread-Based Load Balancing (TBLB) where the Compute Server could oversubscribe node thread capacity.
+        When environments were created without explicit thread parameters, the Compute Server could reserve more threads than allowed by NODE_THREADLIMIT, causing jobs to be queued unexpectedly. This has been fixed so that node thread capacity is now correctly enforced.
+    </p>
+</section>
+
+<section id="license_agreement">
+    <h2>
+        License Agreement
+    </h2>
+    <p>
+        Note that this software is covered by the <a href="EULA.pdf">Gurobi End User License Agreement</a>. By
+        completing the Gurobi installation process and using the software, you are accepting the terms of this
+        agreement.
+    </p>
+    <p>
+        Thank you for using Gurobi products!
+    </p>
+    <hr/>
+    <p>
+        &copy; 2026 Gurobi Optimization. All Rights Reserved.
+    </p>
+</section>
+</body>
+</html>

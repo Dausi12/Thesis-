@@ -1,0 +1,1181 @@
+{
+  "swagger": "2.0",
+  "host": "$HOSTNAME",
+  "info": {
+    "title": "Gurobi Remote Services API",
+    "description": "The Gurobi Remote Services is used to control a compute  node",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Gurobi Optimization, LLC",
+      "url": "https://www.gurobi.com"
+    }
+  },
+  "schemes": [
+    "http"
+  ],
+  "basePath": "/api/v1",
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "summary": "Pings a node",
+        "description": "This endpoint is provided to test if a given node is reachable",
+        "tags": [
+          "Node"
+        ],
+        "parameters": [
+        ],
+        "responses": {
+          "204": {
+            "description": "Ping is successful"
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "summary": "Gets current configuration",
+        "description": "Returns exported configuration properties. This endpoint will not return all the configuration properties, but only a subset in order to monitor the configuration.",
+        "tags": [
+          "Node"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The current configuration",
+            "schema": {
+              "$ref": "#/definitions/Config"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "ADMIN - Updates the configuration",
+        "description": "Updates dynamic configuration properties, such as the job limit",
+        "tags": [
+          "Node"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Admin password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "config",
+            "in": "body",
+            "description": "Configuration update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConfigUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The configuration has been changed"
+          }
+        }
+      }
+    },
+    "/cluster/licenses": {
+      "get": {
+        "summary": "ADMIN - Lists the licenses",
+        "description": "Returns the license information from each node of the cluster. This call is useful to verify and monitor licenses across the cluster nodes. For example, the expiration date of licenses can easily be monitored.",
+        "tags": [
+          "Cluster"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Admin Password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The license list",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/License"
+              }
+            }
+          },
+          "400": {
+            "description": "An error occured",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cluster/nodes": {
+      "get": {
+        "summary": "Lists the nodes",
+        "description": "Returns the list of nodes of the cluster with the latest status and metrics.",
+        "tags": [
+          "Cluster"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The node list",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Node"
+              }
+            }
+          },
+          "400": {
+            "description": "An error occured",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cluster/jobs": {
+      "get": {
+        "summary": "Lists the jobs",
+        "description": "This endpoint returns the list of all jobs started, queued or recently processed in the cluster. You can filter the jobs by using the query parameters queued, running or completed. In the returned list, the same job can appear multiple times as it may have been queued in multiple nodes of the cluster unless the aggregate query parameter is true .\n",
+        "tags": [
+          "Cluster"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "queued",
+            "in": "query",
+            "description": "Select queued jobs",
+            "default": true,
+            "type": "boolean"
+          },
+          {
+            "name": "aggregate",
+            "in": "query",
+            "description": "Aggregate queued jobs",
+            "default": false,
+            "type": "boolean"
+          },
+          {
+            "name": "running",
+            "in": "query",
+            "description": "Select running jobs",
+            "default": true,
+            "type": "boolean"
+          },
+          {
+            "name": "recent",
+            "in": "query",
+            "description": "Select recently processed jobs",
+            "default": true,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The job list",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Job"
+              }
+            }
+          },
+          "400": {
+            "description": "An error occured",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cluster/jobs/{id}": {
+      "get": {
+        "summary": "Returns a job description",
+        "description": "This endpoint returns the state of a specific jobs. It returns a list because the job may have been queued in multiple nodes of the cluster, unless the aggregate query parameter is true\n",
+        "tags": [
+          "Cluster"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Job ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "aggregate",
+            "in": "query",
+            "description": "Aggregate queued jobs",
+            "default": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A job singleton or multiple entries",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Job"
+              }
+            }
+          },
+          "400": {
+            "description": "An error occured",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cluster/jobs/{id}/processing": {
+      "delete": {
+        "summary": "ADMIN - Aborts a job",
+        "description": "This endpoint kills a running job immediately or remove it from the queue from all cluster members.",
+        "tags": [
+          "Cluster"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Admin Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Job ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The job has been aborted or did not exist"
+          }
+        }
+      }
+    },
+    "/cluster/jobs/{id}/interrupt": {
+      "post": {
+        "summary": "ADMIN - Interrupts a job",
+        "description": "This endpoint interrupts a running job gracefully, only supported for runtime > 12",
+        "tags": [
+          "Cluster"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Admin Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Job ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The job has been interrupted, did not exist or runtime not supported"
+          }
+        }
+      }
+    },
+    "/jobs/{id}/log": {
+      "get": {
+        "summary": "Returns the log of an active job",
+        "description": "Returns the engine log of the specified running or completed job. This endpoint is valid only with the node where the job is being processed. Several query parameters can be used to get the log from the job start, last lines or from a given index. The response header X-GUROBI-INDEX returns the last known index to be passed in the next call, so that new lines can be retrieved incrementally. \n",
+        "tags": [
+          "Node"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the job",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "description": "from the beginning",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "p",
+            "in": "query",
+            "description": "from a specific index",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "n",
+            "in": "query",
+            "description": "last n lines only",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The job log",
+            "headers": {
+              "X-GUROBI-INDEX": {
+                "type": "integer",
+                "description": "last returned index"
+              }
+            }
+          },
+          "404": {
+            "description": "The machine or job was not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/jobs/{id}/metrics": {
+      "get": {
+        "summary": "Returns the metrics of an active job",
+        "description": "Returns the metrics of the specified running or completed job. This endpoint is valid only with the node where the job is being processed. The returned data is formatted as a text file with one json object per line. Each object gives the timestamp since the start of the optimizatuon and one or more attibutes for the metrics such as objective value and bound. Several query parameters can be used to get the metrics from the job start, last lines or from a given index. The response header X-GUROBI-INDEX returns the last known index to be passed in the next call, so that new lines can be retrieved incrementally. \n",
+        "tags": [
+          "Node"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the job",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "m",
+            "in": "query",
+            "description": "model index",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "description": "from the beginning",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "p",
+            "in": "query",
+            "description": "from a specific index",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "n",
+            "in": "query",
+            "description": "last n lines only",
+            "required": false,
+            "type": "integer",
+            "default": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The job metrics",
+            "headers": {
+              "X-GUROBI-INDEX": {
+                "type": "integer",
+                "description": "last returned index"
+              }
+            }
+          },
+          "404": {
+            "description": "The job was not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/jobs/{id}/parameters": {
+      "get": {
+        "summary": "Returns the parameters of an active job",
+        "description": "Returns the parameters from a running or completed job. This endpoint is valid only with the node where the job is being processed.\n",
+        "tags": [
+          "Node"
+        ],
+        "parameters": [
+          {
+            "name": "X-GUROBI-CSPASSWORD",
+            "in": "header",
+            "description": "Password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the job",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The job parameters",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/JobParameter"
+              }
+            }
+          },
+          "404": {
+            "description": "The job was not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LicenseStatus": {
+      "type": "number",
+      "description": "License status 0=N/A, 1=VALID, 2=INVALID, 3=EXPIRED",
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "License": {
+      "type": "object",
+      "description": "License Info",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Node adddress"
+        },
+        "typeName": {
+          "type": "string",
+          "description": "License type name"
+        },
+        "status": {
+          "$ref": "#/definitions/LicenseStatus"
+        },
+        "cloudKey": {
+          "type": "string",
+          "description": "Cloud key"
+        },
+        "startedAt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Cloud session start timestamp"
+        },
+        "organization": {
+          "type": "string",
+          "description": "Owning Organization"
+        },
+        "userName": {
+          "type": "string",
+          "description": "Assigned username"
+        },
+        "maxVersion": {
+          "type": "integer",
+          "description": "Maximum version"
+        },
+        "expiration": {
+          "type": "integer",
+          "description": "Expiration date (formatted as YYYYMMDD)"
+        },
+        "expiresAt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Expiration timestamp"
+        },
+        "csEnabled": {
+          "type": "boolean",
+          "description": "Indicate of Compute Server is enabled"
+        },
+        "distributedLimit": {
+          "type": "integer",
+          "description": "Distributed limit"
+        },
+        "appName": {
+          "type": "string",
+          "description": "Assigned application name"
+        },
+        "tokenId": {
+          "type": "string",
+          "description": "Token ID if Web License Service is used"
+        },
+        "licenseId": {
+          "type": "string",
+          "description": "WEB License ID"
+        },
+        "errorMsg": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error": {
+          "type": "integer",
+          "description": "Error code"
+        },
+        "wlsJobConfigurations": {
+          "type": "object",
+          "description": "WLS On-Demand list of allowed Job configurations"
+        },
+        "wlsConfiguration": {
+          "type": "string",
+          "description": "WlS On-Demand Compute Server configuration"
+        },
+        "wlsInterrupt": {
+          "type": "integer",
+          "description": "WlS On-Demand maximum allowed seconds before interrupting jobs if the proxy connection is lost"
+        },
+        "wlsJobConfig": {
+          "type": "string",
+          "description": "Default WLS On-Demand configuration elected by the token"
+        }
+      }
+    },
+    "Config": {
+      "type": "object",
+      "description": "Configuration",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Remote Services version"
+        },
+        "jobLimit": {
+          "type": "integer",
+          "description": "Job limit"
+        },
+        "nodeThreadLimit": {
+          "type": "integer",
+          "description": "The Maximum allowed Threads to use in the node"
+        },
+        "distributed Limit": {
+          "type": "integer",
+          "description": "Distributed limit"
+        },
+        "csEnabled": {
+          "type": "boolean",
+          "description": "Indicates if Compute Server is enabled"
+        }
+      }
+    },
+    "ConfigUpdate": {
+      "type": "object",
+      "description": "Configuration update",
+      "properties": {
+        "jobLimit": {
+          "type": "integer",
+          "description": "New job limit"
+        },
+        "nodeThreadLimit": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "New node thread limit, use 0 to disable"
+        }
+      }
+    },
+    "NodeType": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Node type (1=COMPUTE: compute server, 2=WORKER: distributed worker)",
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "NodeStatus": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Node status (1=ALIVE, 2=FAILED, 3=JOINING, 4=LEAVING, 5=DEGRADED)",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "ProcessingState": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Processing state (1=ACCEPTING, 2=DRAINING, 3=STOPPED)",
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "Node": {
+      "type": "object",
+      "description": "Node description",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Node ID"
+        },
+        "address": {
+          "type": "string",
+          "description": "Node address"
+        },
+        "type": {
+          "$ref": "#/definitions/NodeType"
+        },
+        "license": {
+          "$ref": "#/definitions/LicenseStatus"
+        },
+        "status": {
+          "$ref": "#/definitions/NodeStatus"
+        },
+        "processing": {
+          "$ref": "#/definitions/ProcessingState"
+        },
+        "startedAt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Start time timestamp"
+        },
+        "runtimes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Deployed runtime versions"
+        },
+        "version": {
+          "type": "string",
+          "description": "Remote Services Agent version"
+        },
+        "jobLimit": {
+          "type": "integer",
+          "description": "Job Limit (maximum number of running jobs)"
+        },
+        "nodeThreadLimit": {
+          "type": "integer",
+          "description": "Thread Limit (maximum number of running threads)"
+        },
+        "group": {
+          "type": "string",
+          "description": "Group name for job affinity"
+        },
+        "metrics": {
+          "$ref": "#/definitions/NodeMetrics"
+        }
+      }
+    },
+    "NodeMetrics": {
+      "type": "object",
+      "description": "Node metrics",
+      "properties": {
+        "nbRunningJobs": {
+          "type": "integer",
+          "description": "Number of jobs running"
+        },
+        "nbUsedThreads": {
+          "type": "integer",
+          "description": "Total number of reserved threads by all running jobs, if enabled"
+        },
+        "nbQueuedJobs": {
+          "type": "integer",
+          "description": "Number of jobs in queue"
+        },
+        "nbRecentJobs": {
+          "type": "integer",
+          "description": "Number of recent jobs in the short term history"
+        },
+        "processedJobCounter": {
+          "type": "integer",
+          "description": "Persistent counter of processed jobs [0,4294967295], will cycle"
+        },
+        "idleTime": {
+          "type": "integer",
+          "description": "Idle time since the last job execution (in minutes)"
+        },
+        "memory": {
+          "type": "number",
+          "description": "Percentage of memory currently used on the machine"
+        },
+        "cpu": {
+          "type": "number",
+          "description": "Percentage of CPU currently used on the machine"
+        }
+      }
+    },
+    "JobStatus": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Job status 0=UNKNOWN, 1=QUEUED, 2=RUNNING, 3=ABORTED, 4=FAILED, 5=COMPLETED, 6=REJECTED, 7=DISCONNECTED 8=IDLETIMEOUT",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "JobSolveStatus": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Job status 0=UNKNOWN, 1=INIT, 2=OPTIMIZING, 3=COMPLETED",
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "Job": {
+      "type": "object",
+      "description": "Optimization Job",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "the unique job id"
+        },
+        "nodeId": {
+          "type": "string",
+          "description": "the unique node id"
+        },
+        "address": {
+          "type": "string",
+          "description": "server address"
+        },
+        "status": {
+          "$ref": "#/definitions/JobStatus"
+        },
+        "errorCode": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Error code"
+        },
+        "errorMsg": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "startedAt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Job start timestamp"
+        },
+        "queuedAt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Job queue timestamp"
+        },
+        "queueIndex": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Job index in the queue"
+        },
+        "endedAt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Job end stimestamp"
+        },
+        "solveStatus": {
+          "$ref": "#/definitions/JobSolveStatus"
+        },
+        "properties": {
+          "$ref": "#/definitions/JobProperties"
+        },
+        "modelInfo": {
+          "$ref": "#/definitions/JobModelInfo"
+        },
+        "mipInfo": {
+          "$ref": "#/definitions/JobMipInfo"
+        },
+        "simplexInfo": {
+          "$ref": "#/definitions/JobSimplexInfo"
+        },
+        "barrierInfo": {
+          "$ref": "#/definitions/JobBarrierInfo"
+        },
+        "tuningInfo": {
+          "$ref": "#/definitions/JobTuningInfo"
+        },
+        "optimizationStatus": {
+          "$ref": "#/definitions/OptimizationComplete"
+        }
+      }
+    },
+    "JobProperties": {
+      "type": "object",
+      "description": "Job properties defined when submitting the job",
+      "properties": {
+        "priority": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Priority of the job"
+        },
+        "pid": {
+          "type": "integer",
+          "format": "int32",
+          "description": "PID of the process that submitted the job"
+        },
+        "hostname": {
+          "type": "string",
+          "description": "Hostname of the machine that submitted the job"
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the process that submitted the job"
+        },
+        "ip": {
+          "type": "string",
+          "description": "IP of the machine that submitted the job"
+        },
+        "parentId": {
+          "type": "string",
+          "description": "Parent ID when the job is a worker job"
+        },
+        "appName": {
+          "type": "string",
+          "description": "License application name"
+        },
+        "runtime": {
+          "type": "string",
+          "description": "Requested runtime to execute the job"
+        },
+        "strict": {
+          "type": "boolean",
+          "description": "Indicates if runtime version must match strictly the requested version"
+        },
+        "keepAliveTimeout": {
+          "type": "integer",
+          "description": "Indicates a custom value for the keep alive timeout (seconds)"
+        },
+        "idleTimeout": {
+          "type": "integer",
+          "description": "Indicates a custom value for the idle timeout (seconds)"
+        },
+        "group": {
+          "type": "string",
+          "description": "Group name for cluster server selection"
+        },
+        "apitype": {
+          "type": "string",
+          "description": "API type of the client submitting the job (C++, .Net, Python...)"
+        },
+        "threadLimit": {
+          "type": "integer",
+          "description": "If supported, max number of threads for the requested job"
+        },
+        "wlsConfig": {
+          "type": "string",
+          "description": "WLS On-Demand configuration"
+        },
+        "origin": {
+          "type": "string",
+          "description": "Origin"
+        }
+      }
+    },
+    "JobModelInfo": {
+      "type": "object",
+      "description": "Optimization Job",
+      "properties": {
+        "rows": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Number of rows"
+        },
+        "cols": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Number of columns"
+        },
+        "nonz": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Number of non-zero"
+        },
+        "ts": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Timestamp of model creation"
+        }
+      }
+    },
+    "JobMipInfo": {
+      "type": "object",
+      "description": "Current MIP information",
+      "properties": {
+        "objbst": {
+          "type": "number",
+          "description": "Current best objective"
+        },
+        "objbnd": {
+          "type": "number",
+          "description": "Current best objective bound"
+        },
+        "nodcnt": {
+          "type": "number",
+          "description": "Current explored node count"
+        },
+        "nodlft": {
+          "type": "number",
+          "description": "Current unexplored node count"
+        },
+        "solcnt": {
+          "type": "number",
+          "description": "Current count of feasible solutions found"
+        },
+        "cutcnt": {
+          "type": "number",
+          "description": "Current count of cutting planes applied"
+        }
+      }
+    },
+    "JobSimplexInfo": {
+      "type": "object",
+      "description": "Current simplex information",
+      "properties": {
+        "objval": {
+          "type": "number",
+          "description": "Current simplex objective value"
+        },
+        "priminf": {
+          "type": "number",
+          "description": "Current primal infeasibility"
+        },
+        "dualinf": {
+          "type": "number",
+          "description": "Current dual infeasibility"
+        },
+        "ispert": {
+          "type": "number",
+          "description": "Is problem perturbed?"
+        }
+      }
+    },
+    "JobBarrierInfo": {
+      "type": "object",
+      "description": "Current barrier information",
+      "properties": {
+        "primobj": {
+          "type": "number",
+          "description": "Primal objective value"
+        },
+        "dualobj": {
+          "type": "number",
+          "description": "Dual objective value "
+        },
+        "priminf": {
+          "type": "number",
+          "description": "Primal infeasibility"
+        },
+        "dualinf": {
+          "type": "number",
+          "description": "Dual infeasibility"
+        },
+        "compl": {
+          "type": "number",
+          "description": "Complementarity violation"
+        }
+      }
+    },
+    "JobTuningInfo": {
+      "type": "object",
+      "description": "Current tuning information",
+      "properties": {
+      }
+    },
+    "OptimizationComplete": {
+      "type": "object",
+      "description": "Optimization completion info",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "description": "Optimization status code"
+        },
+        "error": {
+          "type": "integer",
+          "description": "Error code"
+        },
+        "errormsg": {
+          "type": "string",
+          "description": "Error message"
+        }
+      }
+    },
+    "JobParameter": {
+      "type": "object",
+      "description": "Job parameter",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Parameter name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Parameter type "
+        },
+        "value": {
+          "type": "string",
+          "description": "Parameter current value"
+        },
+        "defaultValue": {
+          "type": "string",
+          "description": "Parameter default value"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ErrorMessage"
+        }
+      }
+    },
+    "ErrorMessage": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "the error code"
+        },
+        "message": {
+          "type": "string",
+          "description": "the error message"
+        }
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ValidationErrorInfo"
+        }
+      }
+    },
+    "ValidationErrorInfo": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "the error code"
+        },
+        "message": {
+          "type": "string",
+          "description": "the error message"
+        },
+        "validation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "description": "the optional list of validation messages"
+        }
+      }
+    },
+    "ValidationMessage": {
+      "type": "object",
+      "properties": {
+        "param": {
+          "type": "string",
+          "description": "the input field that failed validation"
+        },
+        "msg": {
+          "type": "string",
+          "description": "the validation error message"
+        },
+        "value": {
+          "type": "string",
+          "description": "the received value"
+        }
+      }
+    }
+  }
+}

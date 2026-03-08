@@ -1,0 +1,14 @@
+{
+  "dashboard": {
+    "rows": [
+      {
+        "component": "NodeMetricsBar",
+        "noCard": true
+      },
+      "NodeCPUTimeline",
+      "NodeMemTimeline",
+      "NodeQueueTimeline",
+      "NodeJobCountTimeline"
+    ]
+  }
+}

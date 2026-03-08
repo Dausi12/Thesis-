@@ -1,0 +1,103 @@
+{
+  "theme": "paper",
+  "dashboard": {
+    "columns": [
+      {
+        "component": "JobLog",
+        "icon": "log",
+        "title": "Log",
+        "style": {
+          "minWidth": 500,
+          "flex": "2 0 auto"
+        },
+        "actions": ["full"]
+      },
+      {
+        "style": {
+          "minWidth": "500px",
+          "flex": "1 0 auto"
+        },
+        "actions": ["full"],
+        "tabs": [
+          {
+            "id": "mip-objective",
+            "title": "Objective",
+            "icon": "chart",
+            "menuTitle": "Objective",
+            "component": "MipObjectiveChart",
+            "chartConfiguration": {
+              "columns": [
+                {
+                  "id": "time",
+                  "type": "number",
+                  "label": "Time (seconds)"
+                },
+                {
+                  "id": "objective",
+                  "type": "number",
+                  "label": "Objective"
+                },
+                {
+                  "id": "bound",
+                  "type": "number",
+                  "label": "Bound"
+                }
+              ]
+            }
+          },
+          {
+            "id": "mip-gap",
+            "title": "%Gap",
+            "icon": "chart",
+            "menuTitle": "%Gap",
+            "component": "MipGapChart",
+            "chartConfiguration": {
+              "columns": [
+                {
+                  "id": "time",
+                  "type": "number",
+                  "label": "Time (seconds)"
+                },
+                {
+                  "id": "gap",
+                  "type": "number",
+                  "label": "Gap"
+                },
+                {
+                  "id": "target",
+                  "type": "number",
+                  "label": "Target"
+                }
+              ],
+              "vAxis": {
+                "format": "#%"
+              }
+            }
+          },
+          {
+            "id": "objective",
+            "title": "Objective",
+            "icon": "chart",
+            "menuTitle": "Objective",
+            "component": "ObjectiveChart",
+            "chartConfiguration": {
+              "columns": [
+                {
+                  "id": "time",
+                  "type": "number",
+                  "label": "Time (seconds)"
+                },
+                {
+                  "id": "objective",
+                  "type": "number",
+                  "label": "Objective"
+                }
+              ]
+            }
+          }
+        ],
+        "swipeable": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+================================================================================
+REFERENCE NETWORK SELECTION AND PARTICIPANT MAPPING — SUMMARY
+================================================================================
+
+OVERVIEW
+--------
+The simulation requires a representative low-voltage (LV) distribution network
+that matches the structural and demographic characteristics of a rural Austrian
+municipality. Rather than constructing a synthetic network, a real benchmark
+network is drawn from the openly available SimBench dataset, which provides a
+library of LV, MV, and HV network models together with standardised annual
+time-series profiles for load, generation, and battery storage.
+
+CANDIDATE POOL
+--------------
+Because the case study represents a rural LV municipality, only LV network
+topologies from the SimBench library are considered as candidates. Each
+candidate is assessed against the functional requirements of the nine-node
+Renewable Energy Community (REC): specifically, whether it can supply
+compatible standard load profiles for each participant type (BDEW classes such
+as G1 for commercial offices, G4 for public institutions, G6 for intermittent
+commercial sites, and H0 variants for residential households), the required
+photovoltaic generation profile classes for prosumer nodes, and battery storage
+profiles where applicable.
+
+SELECTION OUTCOME
+-----------------
+The network "1-LV-rural3--2-no_sw" is selected as the single reference topology
+used consistently across all scenarios (A, B, and C). It was chosen because it
+covers the full set of required BDEW load profile classes, provides a sufficient
+number of PV generator profiles, and includes distributed residential battery
+storage units — activated only in Scenario C and disregarded in all other
+scenarios to maintain a consistent network topology throughout the case study.
+Its rural LV structure is directly consistent with the Austrian village setting
+modelled in the study.
+
+The selected network contains 153 load units, 27 PV generators, and 16
+distributed residential battery units with a total installed storage capacity
+of approximately 185.9 kWh.
+
+IMPORTANT — PROFILE USAGE CLARIFICATION
+-----------------------------------------
+The full network topology of "1-LV-rural3--2-no_sw" (i.e. its bus/branch
+structure, impedances, and physical layout) is NOT used in the simulation.
+Only the standardised BDEW Standard Load Profiles (SLPs) that the network
+provides are extracted and matched to the nine REC participants. Each
+participant is assigned the SLP class that best reflects their consumption
+or generation type — for example, G4 profiles for the local authority, G6
+for the fire station, G1 for the commercial bank, and H0 variants for
+residential prosumers and consumers. The network therefore serves purely as
+a validated, publicly documented source of realistic normalised annual
+time-series data, not as a power-flow model.
+
+MAPPING TO REC PARTICIPANTS
+----------------------------
+Once the reference network is selected, each of the nine REC participants is
+mapped to a specific profile instance within the network's load and generation
+datasets. This one-to-one mapping ensures that every participant is driven by
+a time series that reflects both the correct activity type (commercial, public,
+residential) and the correct generation technology (fixed-tilt PV, east/west
+orientation, etc.), as required by the scenario configuration files.
+
+================================================================================

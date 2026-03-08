@@ -1,0 +1,1023 @@
+% ============================================================
+%  Simulation Results: Scenarios A and B
+%  Thesis Chapter – Results Section
+% ============================================================
+%
+% Compilation note:  This file should be \input{} or \include{}d from
+% the main thesis document.  Required packages (assumed loaded in preamble):
+%   booktabs, multirow, siunitx, amsmath, hyperref, geometry, graphicx
+% ============================================================
+
+\chapter{Simulation Results: Scenarios A and B}
+\label{chap:results_AB}
+
+This chapter presents the numerical results of the simulation study for Scenario~A
+(Single Supplier Mandate) and Scenario~B (Multiple Suppliers with Independent
+Balancing Groups).  Both scenario families are evaluated in a baseline variant
+(\emph{without} a Renewable Energy Community, REC) and an enhanced variant
+(\emph{with} REC), yielding four primary sub-scenarios: A1, A2, B1, and B2.
+An additional pair of \emph{mixed-portfolio} sub-variants (suffixed ``-M'') tests
+robustness to alternative customer-to-supplier assignments.
+
+All simulations cover the 2016 calendar year (35\,040 quarter-hourly
+intervals, $\Delta t = 15\,\text{min}$) on the SimBench low-voltage rural
+network \texttt{1-LV-rural3-{}-2-no\_sw} located near Vienna, Austria
+(48.31°\,N, 14.29°\,E).  The community comprises \textbf{nine metered nodes}:
+three prosumers (photovoltaic generation + load) and six pure consumers.
+Retail electricity is billed at a time-varying tariff; feed-in compensation is
+fixed at €82.40\,/\,MWh throughout the year.  Day-ahead (DA), intra-day (ID),
+and imbalance prices are sourced from the Austrian APCS/EPEX market data for
+2016.
+
+The KPIs used for evaluation are defined in Chapter~\ref{sec:economic_kpis}
+and summarised in Table~\ref{tab:kpi_summary}.
+
+
+% ============================================================
+\section{Scenario A -- Single Supplier Mandate}
+\label{sec:results_A}
+% ============================================================
+
+Scenario~A represents the regulatory configuration in which all community
+members -- regardless of whether they are consumers or prosumers -- are contractually
+bound to a \textbf{single energy supplier} (Supplier~A, Balancing Group~BG\_A).
+This eliminates any competitive market dynamics at the retail level but
+simultaneously maximises portfolio aggregation benefits for the supplier's
+balancing group.
+
+% ------------------------------------------------------------
+\subsection{Scenario A1: Baseline -- Single Supplier Without REC}
+\label{sec:results_A1}
+% ------------------------------------------------------------
+
+\subsubsection{Configuration and Settlement Pipeline}
+
+In A1 the community operates without internal energy sharing.  The settlement
+pipeline follows the standard wholesale sequence:
+\begin{enumerate}
+    \item \textbf{Day-ahead commitment}: The supplier forecasts aggregate net load
+          for BG\_A and commits to the DA market.
+    \item \textbf{Intra-day adjustment}: Updated forecasts revise the DA position.
+    \item \textbf{Balancing market}: Residual imbalances between the closing ID
+          forecast and measured actual delivery are settled at the APCS imbalance
+          price.
+    \item \textbf{Retail billing}: Each prosumer and consumer is billed
+          individually at the retail tariff; prosumer feed-in exports are
+          compensated at the fixed feed-in tariff.
+\end{enumerate}
+
+\subsubsection{Wholesale Market Position and Balancing Settlement}
+
+Table~\ref{tab:A1_balancing} reports the annual aggregate balancing statistics
+for BG\_A.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A1 -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:A1_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & 313.41            & MWh \\
+Forecast BG net position (ID)      & 136.39            & MWh \\
+Total imbalance volume             & 177.02            & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual)          & 6{,}853.84        & € \\
+Imbalance penalty (annual)         & 678.08            & € \\
+Net balancing settlement           & +6{,}175.76       & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The balancing group finished the year with a substantially positive imbalance of
+177.02\,MWh -- actual consumption far exceeded the ID forecast.  Crucially, the
+Austrian electricity system was in a \textsc{short} (deficit) state for the
+majority of intervals in which this net under-forecast occurred.  Under the
+single-price sign-based settlement mechanism, a generator/supplier that is
+\emph{long} relative to a \emph{short} system receives a reward rather than a
+penalty.  Consequently, BG\_A earned a large annual balancing reward of
+€6{,}853.84 while incurring only €678.08 in penalties -- a net gain of
+€+6{,}175.76 from the balancing market.  This outcome is attributable to the
+fortuitous alignment between the supplier's systematic under-forecasting bias
+and the 2016 Austrian system's predominantly deficit character.
+
+\subsubsection{Retail Billing}
+
+Retail billing accounts for the bulk of both revenues and costs.  Supplier~A
+billed six consumers and three prosumers:
+\begin{itemize}
+    \item \textbf{Retail sales revenue:} €68{,}879.99 (electricity sold to
+          customers at the retail tariff).
+    \item \textbf{Retail purchase costs (feed-in):} €2{,}412.54 (compensation
+          paid for prosumer PV exports at €82.40\,/\,MWh).
+\end{itemize}
+Feed-in costs are comparatively modest because a substantial fraction of
+prosumer generation is self-consumed on-site, limiting net exports to the grid.
+
+\subsubsection{Profit and Loss Summary}
+
+The full annual P\&L for Scenario A1 is presented in
+Table~\ref{tab:A1_pnl}.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A1 -- Annual profit and loss statement (Supplier~A).}
+\label{tab:A1_pnl}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (€)} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 60.71               & 0.08 \\
+\quad Balancing rewards              & 6{,}853.84          & 9.04 \\
+\quad Retail sales                   & 68{,}879.99         & 90.88 \\
+\textbf{Total Revenue}               & \textbf{75{,}794.55} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 4{,}546.20          & 59.53 \\
+\quad Imbalance penalties           & 678.08              & 8.88  \\
+\quad Retail purchases (feed-in)     & 2{,}412.54          & 31.59 \\
+\textbf{Total Costs}                 & \textbf{7{,}636.82}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit / Loss}        & \textbf{€68{,}157.72} & \\
+Monthly average                      & €5{,}679.81        & \\
+Monthly minimum                      & €3{,}402.22        & \\
+Monthly maximum                      & €9{,}489.50        & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The supplier achieves a healthy annual profit of \textbf{€68{,}157.72} under the
+single-supplier mandate.  Retail sales constitute the dominant revenue stream at
+90.88\,\%, underscoring the central role of retail margin in the supply business.
+Balancing rewards contribute a non-trivial 9.04\,\% -- an unusually high share
+driven by the systematic imbalance described above.  Energy market sales are
+negligible (€60.71), confirming that the portfolio is almost never in a net long
+position at the DA/ID stage.  On the cost side, wholesale procurement accounts
+for 59.53\,\% of total costs, indicating that the supplier operates predominantly
+as a net buyer in the wholesale market.  Monthly profit ranges from
+€3{,}402.22 (winter) to €9{,}489.50 (summer), reflecting seasonal variation in
+PV generation and demand patterns.
+
+% ------------------------------------------------------------
+\subsection{Scenario A2: Single Supplier With REC}
+\label{sec:results_A2}
+% ------------------------------------------------------------
+
+\subsubsection{Configuration and Settlement Pipeline}
+
+Scenario~A2 retains the single-supplier mandate but introduces a
+\textbf{Renewable Energy Community (REC\_01)} encompassing all nine metered
+nodes.  The settlement pipeline is extended by a REC settlement step between the
+ID market and the balancing market:
+\begin{enumerate}
+    \item DA commitment.
+    \item ID adjustment.
+    \item \textbf{REC settlement}: For each 15-minute interval, the internal
+          shared energy $E^{\mathrm{shared}}_{t} = \min(G^{\mathrm{REC}}_t,\,
+          L^{\mathrm{REC}}_t)$ is computed.  Each member's metered grid import
+          and export are reduced proportionally.  REC incentives apply:
+          shared energy bonus €10\,/\,MWh; self-consumption bonus
+          €15\,/\,MWh.
+    \item Balancing market (based on \emph{corrected} meter readings).
+    \item Supplier billing (based on \emph{corrected} meter readings).
+\end{enumerate}
+
+\subsubsection{REC Energy Sharing}
+
+Over the full simulation year, the REC achieved a \textbf{total internal shared
+energy of 75.88\,MWh}.  This quantity represents the volume of photovoltaic
+generation that was directly matched to community load within a quarter-hour
+interval, bypassing the public grid.  At the aggregate BG level this manifests
+as a dramatic compression of net import variability: the corrected net position
+approaches zero at most timestamps, replacing the raw prosumer-versus-consumer
+imbalance that characterised A1.
+
+A representative single-interval statistic confirms the mechanism: at one
+sampled timestamp, a prosumer's original net generation of 5.02\,MWh was
+reduced to 0.28\,MWh after REC correction (94.3\,\% internally shared),
+with load proportionately adjusted across consuming members.
+
+\subsubsection{Wholesale Market Position and Balancing Settlement}
+
+Table~\ref{tab:A2_balancing} contrasts the balancing profile of A2 with A1.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A2 -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:A2_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & 308.62            & MWh \\
+Forecast BG net position (ID)      & 308.66            & MWh \\
+Total imbalance volume             & $-0.04$           & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
+\addlinespace
+Balancing reward (annual)          & 210.25            & € \\
+Imbalance penalty (annual)         & 212.28            & € \\
+Net balancing settlement           & $-2.03$           & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The introduction of the REC produces a \textbf{near-perfect forecast-actual
+alignment}: total annual imbalance collapses from 177.02\,MWh (A1) to
+$-0.04$\,MWh (A2) -- effectively zero.  The physical explanation is that the
+REC settlement corrects each member's metered position before the ID forecast is
+constructed; the corrected positions are substantially smoother and more
+predictable than raw prosumer/consumer meters.  Consequently, balancing rewards
+(€210.25) and penalties (€212.28) are reduced to near-negligible levels --
+the €6{,}853.84 reward windfall present in A1 is eliminated.
+
+\subsubsection{Profit and Loss Summary}
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A2 -- Annual profit and loss statement (Supplier~A).}
+\label{tab:A2_pnl}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (€)} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 7.11                & 0.01 \\
+\quad Balancing rewards              & 210.25              & 0.34 \\
+\quad Retail sales                   & 62{,}407.61         & 99.65 \\
+\textbf{Total Revenue}               & \textbf{62{,}624.97} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 10{,}075.62         & 96.50 \\
+\quad Imbalance penalties           & 212.28              & 2.03  \\
+\quad Retail purchases (feed-in)     & 153.35              & 1.47  \\
+\textbf{Total Costs}                 & \textbf{10{,}441.26} & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit / Loss}        & \textbf{€52{,}183.72} & \\
+Monthly average                      & €4{,}348.64        & \\
+Monthly minimum                      & €2{,}424.90        & \\
+Monthly maximum                      & €6{,}880.52        & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The annual profit of \textbf{€52{,}183.72} represents a reduction of
+\textbf{€15{,}974.00 ($-23.4$\,\%)} relative to A1.  Several effects
+interact:
+
+\begin{enumerate}
+    \item \textbf{Retail sales reduction (${-}$€6{,}472.38):}  REC internal
+          sharing redirects 75.88\,MWh of generation to community consumers,
+          which is deducted from the consumers' metered grid imports.
+          Consequently, the supplier sells fewer kWh at the retail tariff.
+    \item \textbf{Feed-in cost reduction ($+$€2{,}259.19 saving):}  REC-absorbed
+          generation reduces prosumers' residual export, cutting the supplier's
+          feed-in obligation from €2{,}412.54 to €153.35.
+    \item \textbf{Wholesale purchase increase (${-}$€5{,}529.42):}  To supply
+          its net-reduced retail load, the supplier incurs higher wholesale
+          purchase costs (from €4{,}546.20 to €10{,}075.62).  This reflects
+          the loss of the large A1 DA surplus from prosumer generation that was
+          previously netting against consumer purchases at the BG level.
+    \item \textbf{Balancing reward elimination (${-}$€6{,}643.59):}  The
+          dominant driver of the profit decline is the disappearance of the
+          exceptionally large balancing reward that was specific to A1's
+          systematic imbalance profile.
+\end{enumerate}
+
+It should be noted that some of the A1 profit advantage was \emph{opportunistic}
+rather than structural, arising from the coincidental alignment between
+under-forecasting and system deficit.  In a mature market with symmetric
+imbalance pricing, the A2 model would likely be more reproducible year-on-year.
+
+% ------------------------------------------------------------
+\subsection{Intra-Scenario Comparison: A1 versus A2}
+\label{sec:results_A_comparison}
+% ------------------------------------------------------------
+
+Table~\ref{tab:A_comparison} presents a side-by-side KPI comparison for the
+two A sub-scenarios.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A -- Key Performance Indicator comparison: A1 vs.\ A2.}
+\label{tab:A_comparison}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{KPI}              & \textbf{A1 (No REC)}   & \textbf{A2 (With REC)}  & \textbf{$\Delta$ (A2$-$A1)} \\
+\midrule
+Total revenue (€)         & 75{,}794.55            & 62{,}624.97             & $-13{,}169.58$ \\
+Total costs (€)           & 7{,}636.82             & 10{,}441.26             & $+2{,}804.44$ \\
+Annual profit (€)         & 68{,}157.72            & 52{,}183.72             & $-15{,}974.00$ \\
+Profit change (\%)        & ---                    & ---                     & $-23.4$\,\% \\
+\addlinespace
+Retail sales revenue (€)  & 68{,}879.99            & 62{,}407.61             & $-6{,}472.38$ \\
+Balancing reward (€)      & 6{,}853.84             & 210.25                  & $-6{,}643.59$ \\
+Imbalance penalty (€)     & 678.08                 & 212.28                  & $-465.80$ \\
+Feed-in cost (€)          & 2{,}412.54             & 153.35                  & $-2{,}259.19$ \\
+Market purchases (€)      & 4{,}546.20             & 10{,}075.62             & $+5{,}529.42$ \\
+\addlinespace
+Total imbalance (MWh)     & 177.02                 & $-0.04$                 & $-177.06$ \\
+System position           & \textsc{short}         & \textsc{long}           & --- \\
+REC shared energy (MWh)   & ---                    & 75.88                   & --- \\
+\addlinespace
+Monthly avg.\ profit (€)  & 5{,}679.81             & 4{,}348.64              & $-1{,}331.17$ \\
+Monthly min.\ profit (€)  & 3{,}402.22             & 2{,}424.90              & $-977.32$ \\
+Monthly max.\ profit (€)  & 9{,}489.50             & 6{,}880.52              & $-2{,}608.98$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The KPI table reveals a \textbf{supplier profit penalty associated with
+introducing a REC} in the single-supplier context.  The total annual profit
+decreases by €15{,}974.00 ($-23.4$\,\%), driven primarily by two mechanisms:
+(i) the elimination of the opportunistic balancing reward, and
+(ii) the structural reduction in retail grid sales as community self-consumption
+partially displaces external procurement.
+
+From the supplier's perspective, the REC is cost-reducing only in the dimension
+of feed-in obligations (saving €2{,}259.19).  However, this is more than offset
+by the combined loss of balancing income and retail margin.  The result
+underscores a fundamental tension in the supply business under energy community
+regulation: while the REC benefits consumers through reduced grid fees and the
+community through lower net import, the supplier bears the financial consequence
+of reduced throughput.
+
+Seasonally, the profit reduction is most severe in summer months (highest PV
+generation, maximum shared energy), where the monthly maximum drops from
+€9{,}489.50 to €6{,}880.52 ($-27.5$\,\%).  In winter, where PV output is low
+and shared energy minimal, the REC has little effect.
+
+% ============================================================
+\section{Scenario B -- Multiple Suppliers with Independent Balancing Groups}
+\label{sec:results_B}
+% ============================================================
+
+Scenario~B relaxes the single-supplier mandate and introduces \textbf{two
+independent energy suppliers}, each managing its own balancing group under
+separate forecasting and settlement responsibilities.  The customer allocation
+is:
+\begin{itemize}
+    \item \textbf{Supplier~A / BG\_SUP\_A\_001}: six pure consumers (no on-site
+          generation).
+    \item \textbf{Supplier~B / BG\_SUP\_B\_001}: three prosumers (PV + load).
+\end{itemize}
+
+This segregation reflects a realistic market scenario in which consumers and
+prosumers independently choose their preferred supplier.  Supplier~A operates a
+\emph{pure load} portfolio, while Supplier~B operates a \emph{mixed
+prosumer} portfolio with intermittent net generation.
+
+% ------------------------------------------------------------
+\subsection{Scenario B1: Baseline -- Multiple Suppliers Without REC}
+\label{sec:results_B1}
+% ------------------------------------------------------------
+
+\subsubsection{Supplier A (Consumer Portfolio)}
+
+Supplier~A's portfolio is entirely demand-side, with no on-site generation.
+The balancing group therefore maintains a consistently positive net load
+position; energy market sales are zero for the year.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 -- Annual P\&L: Supplier~A (consumer-only portfolio).}
+\label{tab:B1_supA_pnl}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (€)} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 0.00                & 0.00 \\
+\quad Balancing rewards              & 176.78              & 0.35 \\
+\quad Retail sales                   & 49{,}958.69         & 99.65 \\
+\textbf{Total Revenue}               & \textbf{50{,}135.47} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 8{,}128.50          & 97.86 \\
+\quad Imbalance penalties           & 177.18              & 2.13  \\
+\quad Retail purchases (feed-in)     & 0.00                & 0.00  \\
+\textbf{Total Costs}                 & \textbf{8{,}305.68}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit / Loss}        & \textbf{€41{,}829.79} & \\
+Monthly average                      & €3{,}485.82        & \\
+Monthly minimum                      & €2{,}153.64        & \\
+Monthly maximum                      & €5{,}556.02        & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Supplier~A's balancing performance is exceptionally clean:
+actual position 248.55\,MWh, forecast 248.50\,MWh, net imbalance +0.05\,MWh
+(system: SHORT, Deficit) -- an almost perfect year-long forecast.
+Consequently, balancing rewards and penalties are nearly symmetric
+(€176.78 vs.\ €177.18), yielding a net balancing loss of only $-$€0.40.
+The absence of generation assets means zero energy market sales and zero
+feed-in costs.  Retail sales at €49{,}958.69 are the sole revenue source.
+
+\subsubsection{Supplier B (Prosumer Portfolio)}
+
+Supplier~B's three-prosumer portfolio exhibits substantially higher volatility
+due to weather-dependent PV generation.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 -- Annual P\&L: Supplier~B (prosumer portfolio).}
+\label{tab:B1_supB_pnl}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (€)} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 252.41              & 1.22 \\
+\quad Balancing rewards              & 112.73              & 0.54 \\
+\quad Retail sales                   & 20{,}364.02         & 98.24 \\
+\textbf{Total Revenue}               & \textbf{20{,}729.16} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 2{,}604.14          & 50.83 \\
+\quad Imbalance penalties           & 107.26              & 2.09  \\
+\quad Retail purchases (feed-in)     & 2{,}412.54          & 47.10 \\
+\textbf{Total Costs}                 & \textbf{5{,}123.93}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit / Loss}        & \textbf{€15{,}605.23} & \\
+Monthly average                      & €1{,}300.44        & \\
+Monthly minimum                      & €692.65            & \\
+Monthly maximum                      & €1{,}794.55        & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Supplier~B generates a positive but modest annual profit of €15{,}605.23.
+The prosumer portfolio introduces DA/ID market sales (€252.41) when net
+PV generation exceeds aggregate load.  Feed-in costs (€2{,}412.54)
+account for 47.10\,\% of total costs -- the second-largest cost item after
+market purchases -- reflecting the obligation to compensate prosumer
+grid exports at the fixed tariff.  Balancing is well-controlled:
+imbalance = +0.10\,MWh across the year (system: SHORT).
+
+\subsubsection{Combined B1 Performance}
+
+The aggregate economic performance of both suppliers is:
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 -- Combined annual performance of Supplier~A and
+         Supplier~B.}
+\label{tab:B1_combined}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{KPI}           & \textbf{Supplier A}  & \textbf{Supplier B}  & \textbf{Combined} \\
+\midrule
+Total revenue (€)      & 50{,}135.47          & 20{,}729.16          & 70{,}864.63 \\
+Total costs (€)        & 8{,}305.68           & 5{,}123.93           & 13{,}429.61 \\
+Annual profit (€)      & 41{,}829.79          & 15{,}605.23          & 57{,}435.02 \\
+Market purchases (€)   & 8{,}128.50           & 2{,}604.14           & 10{,}732.64 \\
+Feed-in costs (€)      & 0.00                 & 2{,}412.54           & 2{,}412.54  \\
+Imbalance penalty (€)  & 177.18               & 107.26               & 284.44      \\
+Balancing reward (€)   & 176.78               & 112.73               & 289.51      \\
+Total imbalance (MWh)  & 0.05                 & 0.10                 & 0.15        \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At a combined level, the B1 market structure generates a total profit of
+\textbf{€57{,}435.02} across both suppliers, with Supplier~A contributing
+72.8\,\% of combined profit despite being the pure-consumer supplier.  The
+prosumer supplier (B) is less profitable in absolute terms due to the
+feed-in obligation that erodes margin.  Both balancing groups display
+remarkably precise forecast-actual alignment ($\leq 0.10$\,MWh annual
+imbalance), in stark contrast to A1 where systematic under-forecasting was
+evident.
+
+% ------------------------------------------------------------
+\subsection{Scenario B2: Multiple Suppliers With REC}
+\label{sec:results_B2}
+% ------------------------------------------------------------
+
+In B2, two independent RECs are introduced -- one for each balancing group --
+enabling internal energy sharing prior to supplier billing.  The REC incentives
+are identical to A2 (shared energy bonus: €10\,/\,MWh; self-consumption:
+€15\,/\,MWh).  The settlement order is:
+DA $\to$ ID $\to$ REC settlement $\to$ Balancing $\to$ Billing.
+
+\subsubsection{REC Energy Sharing Performance}
+
+Both Supplier~A's and Supplier~B's RECs record a total shared energy of
+\textbf{37.20\,MWh} per balancing group over the year.  This value represents
+the intra-community PV generation absorbed by community loads within each
+15-minute interval without transiting the distribution grid.  The combined
+community-wide shared energy is therefore 74.40\,MWh -- comparable to A2's
+75.88\,MWh, confirming consistency of the physical sharing mechanism across
+scenarios.
+
+\subsubsection{Supplier A (Consumer Portfolio with REC)}
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 -- Annual P\&L: Supplier~A (consumer portfolio, REC).}
+\label{tab:B2_supA_pnl}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (€)} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 0.00                & 0.00 \\
+\quad Balancing rewards              & 690.34              & 1.60 \\
+\quad Retail sales                   & 42{,}481.18         & 98.40 \\
+\textbf{Total Revenue}               & \textbf{43{,}171.52} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 7{,}487.67          & 87.73 \\
+\quad Imbalance penalties           & 1{,}046.17          & 12.26 \\
+\quad Retail purchases (feed-in)     & 0.00                & 0.00  \\
+\textbf{Total Costs}                 & \textbf{8{,}533.84}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit / Loss}        & \textbf{€34{,}637.68} & \\
+Monthly average                      & €2{,}886.47        & \\
+Monthly minimum                      & €1{,}154.97        & \\
+Monthly maximum                      & €5{,}658.49        & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Supplier~A's retail sales fall by €7{,}477.51 ($-14.9$\,\%) from B1 to B2
+due to REC-mediated reduction in consumers' net grid imports.  The REC
+introduces a modest but non-trivial imbalance penalty (€1{,}046.17 vs.\ €177.18
+in B1) alongside a higher balancing reward (€690.34 vs.\ €176.78), resulting
+in a net balancing loss of $-$€355.83.  This deterioration in balancing
+performance is attributed to the interaction between REC corrections and the
+separate (consumer-only) balancing group's forecast, which does not directly
+model the partial offset from prosumer generation.
+
+The system position is \textsc{long (Surplus)} for BG~A in B2:
+actual position 211.35\,MWh vs.\ forecast 228.93\,MWh, imbalance $-17.58$\,MWh.
+This reversal (from SHORT in B1) occurs because the REC settlement reduces
+the consumer group's net import in the actual data but not in the DA/ID
+forecast, creating a systematic over-forecast of demand.
+
+\subsubsection{Supplier B (Prosumer Portfolio with REC)}
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 -- Annual P\&L: Supplier~B (prosumer portfolio, REC).}
+\label{tab:B2_supB_pnl}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (€)} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 0.00                & 0.00 \\
+\quad Balancing rewards              & 4{,}193.36          & 15.74 \\
+\quad Retail sales                   & 22{,}439.14         & 84.26 \\
+\textbf{Total Revenue}               & \textbf{26{,}632.50} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 0.00                & 0.00 \\
+\quad Imbalance penalties           & 393.21              & 66.53 \\
+\quad Retail purchases (feed-in)     & 197.83              & 33.49 \\
+\textbf{Total Costs}                 & \textbf{591.03}     & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit / Loss}        & \textbf{€26{,}041.47} & \\
+Monthly average                      & €2{,}170.12        & \\
+Monthly minimum                      & €1{,}346.74        & \\
+Monthly maximum                      & €3{,}013.91        & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Supplier~B's performance is qualitatively transformed by REC introduction.
+Wholesale market purchases \emph{drop to zero} (from €2{,}604.14 in B1):
+after REC settlement, the corrected prosumer net position is consistently
+long, eliminating any requirement to buy from the wholesale market.
+Feed-in costs also fall to €197.83 ($-91.8$\,\%) as shared energy absorbs
+most of the prosumers' generation surplus.
+
+However, the balancing market position reveals an important structural
+imbalance: actual BG position = 109.24\,MWh (net net~load), but the ID
+forecast = 0.00\,MWh, yielding an annual imbalance of +109.24\,MWh.
+This large discrepancy arises because B2's forecast for the prosumer BG is
+constructed on corrected meter readings that approach zero, but the actual
+residual consumption is non-trivial in hours with low PV output.  Consequently,
+Supplier~B earns an exceptionally large balancing reward of \textbf{€4{,}193.36}
+-- the largest balancing income of any individual supplier in the study --
+as the short system repeatedly rewards the supplier's inadvertent
+\emph{long} imbalance contribution.  This is structurally analogous to A1's
+balancing windfall, but operating via a different mechanism.
+
+\subsubsection{Combined B2 Performance}
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 -- Combined annual performance of Supplier~A and
+         Supplier~B.}
+\label{tab:B2_combined}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{KPI}           & \textbf{Supplier A}  & \textbf{Supplier B}  & \textbf{Combined} \\
+\midrule
+Total revenue (€)      & 43{,}171.52          & 26{,}632.50          & 69{,}804.02 \\
+Total costs (€)        & 8{,}533.84           & 591.03               & 9{,}124.87  \\
+Annual profit (€)      & 34{,}637.68          & 26{,}041.47          & 60{,}679.15 \\
+Market purchases (€)   & 7{,}487.67           & 0.00                 & 7{,}487.67  \\
+Feed-in costs (€)      & 0.00                 & 197.83               & 197.83      \\
+Imbalance penalty (€)  & 1{,}046.17           & 393.21               & 1{,}439.38  \\
+Balancing reward (€)   & 690.34               & 4{,}193.36           & 4{,}883.70  \\
+Total imbalance (MWh)  & $-17.58$             & 109.24               & 91.66       \\
+REC shared energy (MWh)& 37.20                & 37.20                & 74.40       \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The combined B2 profit of \textbf{€60{,}679.15} exceeds B1's €57{,}435.02 by
+\textbf{€3{,}244.13 (+5.6\,\%)}.  Unlike the A scenario where REC introduction
+decreased supplier profit, the B scenario shows a modest \emph{gain} from
+REC introduction.  This positive effect is driven by the remarkable reduction
+in feed-in costs (from €2,412.54 to €197.83, saving €2,214.71) and the
+large balancing windfall earned by Supplier~B (€4,193.36 vs.\ €112.73 in B1).
+Combined imbalance penalties also increase (from €284.44 to €1,439.38), but
+the net effect remains positive.
+
+% ------------------------------------------------------------
+\subsection{Intra-Scenario Comparison: B1 versus B2}
+\label{sec:results_B_comparison}
+% ------------------------------------------------------------
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B -- KPI comparison B1 vs.\ B2 (combined totals and
+         per-supplier breakdown).}
+\label{tab:B_comparison}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Supplier A}} & \multicolumn{2}{c}{\textbf{Supplier B}} & \multicolumn{2}{c}{\textbf{Combined}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+\textbf{KPI (€)}        & \textbf{B1}   & \textbf{B2}   & \textbf{B1}   & \textbf{B2}   & \textbf{B1}   & \textbf{B2} \\
+\midrule
+Annual profit           & 41{,}830      & 34{,}638      & 15{,}605      & 26{,}041      & 57{,}435      & 60{,}679 \\
+Total revenue           & 50{,}135      & 43{,}172      & 20{,}729      & 26{,}633      & 70{,}865      & 69{,}804 \\
+Total costs             & 8{,}306       & 8{,}534       & 5{,}124       & 591           & 13{,}430      & 9{,}125  \\
+Retail sales            & 49{,}959      & 42{,}481      & 20{,}364      & 22{,}439      & 70{,}323      & 64{,}920 \\
+Market purchases        & 8{,}129       & 7{,}488       & 2{,}604       & 0             & 10{,}733      & 7{,}488  \\
+Feed-in costs           & 0             & 0             & 2{,}413       & 198           & 2{,}413       & 198      \\
+Balancing rewards       & 177           & 690           & 113           & 4{,}193       & 290           & 4{,}884  \\
+Imbalance penalties     & 177           & 1{,}046       & 107           & 393           & 284           & 1{,}439  \\
+\addlinespace
+Imbalance (MWh)         & 0.05          & $-17.58$      & 0.10          & 109.24        & 0.15          & 91.66   \\
+Shared energy (MWh)     & ---           & 37.20         & ---           & 37.20         & ---           & 74.40   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For \textbf{Supplier A}, REC introduction reduces annual profit from
+€41{,}829.79 to €34{,}637.68 ($-$€7{,}192.11, $-17.2$\,\%).  This is the
+consumer-only supplier: the REC reduces the quantity of electricity it sells
+at the retail tariff, directly eroding its retail margin with no compensating
+revenue stream.
+
+For \textbf{Supplier B}, REC introduction dramatically \emph{increases} annual
+profit from €15{,}605.23 to €26{,}041.47 (+€10{,}436.24, +\textbf{+66.9\,\%}).
+The prosumer-only supplier benefits from (i) near-total elimination of
+feed-in costs ($-$€2{,}214.71), (ii) elimination of wholesale purchases
+($-$€2{,}604.14 saving), and (iii) a large balancing windfall of €4{,}193.36
+due to systematic REC-induced over-forecasting.  The net effect is that
+Supplier~B's profit share in B2 rises from 27.2\,\% (B1) to 42.9\,\% (B2).
+
+\textbf{Combined}, REC introduction in Scenario~B yields a net gain of +€3{,}244
+(+5.6\,\%) but with a marked redistribution of profits: the consumer supplier
+loses while the prosumer supplier gains substantially.
+
+
+% ============================================================
+\section{Cross-Scenario Comparison: Scenario A versus Scenario B}
+\label{sec:results_AB_crosscomparison}
+% ============================================================
+
+This section compares Scenarios~A and~B across all four primary sub-scenarios,
+focusing on the system-level aggregate economics, balancing efficiency, and
+the incremental impact of REC introduction.
+
+\subsection{Aggregate Supplier Profit Comparison}
+
+Table~\ref{tab:AB_crosscomparison} presents the headline profit figures for all
+four configurations side by side.
+
+\begin{table}[htbp]
+\centering
+\caption{Cross-scenario aggregate profit comparison: A1, A2, B1, B2.}
+\label{tab:AB_crosscomparison}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Metric}                   & \textbf{A1}
+                                  & \textbf{A2}
+                                  & \textbf{B1}
+                                  & \textbf{B2} \\
+\midrule
+Annual profit -- all suppliers (€)& 68{,}157.72  & 52{,}183.72  & 57{,}435.02  & 60{,}679.15 \\
+$\Delta$ vs.\ no-REC baseline (€) & ---           & $-15{,}974$   & ---          & $+3{,}244$ \\
+$\Delta$ vs.\ no-REC baseline (\%)& ---           & $-23.4$\,\%   & ---          & $+5.6$\,\% \\
+$\Delta$ vs.\ A-scenario (€)      & ---           & ---           & $-10{,}723$  & $+8{,}495$ \\
+$\Delta$ vs.\ A-scenario (\%)     & ---           & ---           & $-15.7$\,\%  & $+16.3$\,\% \\
+\addlinespace
+Total retail revenue (€)         & 68{,}880      & 62{,}408      & 70{,}323     & 64{,}920   \\
+Total market purchases (€)       & 4{,}546       & 10{,}076      & 10{,}733     & 7{,}488    \\
+Total feed-in costs (€)          & 2{,}413       & 153           & 2{,}413      & 198        \\
+Net balancing (€)                & $+6{,}176$    & $-2$          & $+5$         & $+3{,}444$ \\
+Shared energy (MWh)              & 0             & 75.88         & 0            & 74.40      \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Single vs.\ Multiple Suppliers (No REC: A1 vs.\ B1).}
+Under the no-REC configuration, the single-supplier mandate (A1) outperforms the
+multiple-supplier arrangement (B1) by \textbf{€10{,}723} (+18.7\,\%).  The
+advantage is sourced entirely from the anomalously large balancing windfall in
+A1 (€6{,}176 net) relative to B1's near-zero net balancing ($+$€5).  In terms
+of retail economics -- the structural component of profit -- the two are
+comparable (A1: €66{,}467 net retail vs.\ B1: €67{,}910), confirming that both
+configurations access similar retail revenues from the same nine customer sites.
+
+The additional €3{,}200 in B1 net retail is attributable to Supplier~B's small
+energy market sales (€252.41 from DA/ID net generation), which are not available
+to the consolidated A1 portfolio because a net-generator BG offset the consumer
+BG's purchase commitment.
+
+\paragraph{REC Impact Across Scenarios (A1$\to$A2 and B1$\to$B2).}
+The economic impact of introducing a REC differs markedly between A and B:
+\begin{itemize}
+    \item In \textbf{Scenario A}, REC introduction reduces total supplier profit
+          by €15{,}974 ($-23.4$\,\%).  The single integrated supplier loses
+          retail margin on all nine customers simultaneously, while simultaneously
+          losing the large (if opportunistic) balancing reward.
+
+    \item In \textbf{Scenario B}, REC introduction increases total supplier profit
+          by €3{,}244 (+5.6\,\%).  The benefit is concentrated in Supplier~B's
+          prosumer portfolio, where feed-in obligations and wholesale purchases
+          are dramatically reduced.
+\end{itemize}
+
+This asymmetry has a clear structural explanation.  With a \emph{single} supplier
+(A-scenario), the REC reduces total throughput through the supplier's meter --
+both the generation and consumption sides of the REC are the same entity's
+customers, so the netting reduces billable volume for the sole supplier.  With
+\emph{multiple} suppliers (B-scenario), however, the REC crosses supplier
+boundaries: shared energy from Supplier~B's prosumers is consumed by
+Supplier~A's consumers (or vice versa), reducing each supplier's exposure to
+feed-in or procurement costs without necessarily eliminating retail revenue.
+
+\paragraph{Single vs.\ Multiple Suppliers (With REC: A2 vs.\ B2).}
+
+With REC, B2 outperforms A2 by \textbf{€8{,}495} (+16.3\,\%).  The higher
+combined profit in B2 is partly due to the asymmetric cross-supplier benefit of
+the REC, and partly due to the large balancing windfall earned by Supplier~B
+(€4{,}193 vs.\ A2's €210).  However, in A2 total costs are structurally lower
+(€10{,}441 vs.\ B2's €9{,}125), reflecting the A-scenario's integrated portfolio
+aggregation.
+
+\subsection{Balancing Efficiency Comparison}
+
+\begin{table}[htbp]
+\centering
+\caption{Balancing efficiency KPIs across all four scenarios.}
+\label{tab:balancing_comparison}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{KPI}                     & \textbf{A1}   & \textbf{A2}   & \textbf{B1}   & \textbf{B2 (A+B)} \\
+\midrule
+Total imbalance (MWh)            & 177.02        & $-0.04$       & 0.15          & 91.66  \\
+Total balancing reward (€)       & 6{,}853.84    & 210.25        & 289.51        & 4{,}883.70 \\
+Total imbalance penalty (€)      & 678.08        & 212.28        & 284.44        & 1{,}439.38 \\
+Net balancing settlement (€)     & $+6{,}175.76$ & $-2.03$       & $+5.07$       & $+3{,}444.32$ \\
+Imbalance-to-actual ratio        & 56.5\,\%      & $<0.1$\,\%    & $<0.1$\,\%    & 28.5\,\% \\
+System position                  & \textsc{short}& \textsc{long} & \textsc{short}& \textsc{mixed} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The balancing results reveal two fundamentally different regimes:
+
+\begin{enumerate}
+    \item \textbf{A1 -- high imbalance, high reward:}  A 177.02\,MWh annual
+          imbalance (56.5\,\% of actual position) generates €6{,}854 in rewards.
+          This is the direct consequence of not correcting the prosumer/consumer
+          offset at the BG level: the single BG carries the full prosumer
+          generation independently of consumer load, leading to systematic under-
+          forecasting of the net position.
+
+    \item \textbf{A2 -- near-perfect balance:}  REC settlement at the 15-minute
+          level produces an essentially zero annual imbalance, reducing both
+          rewards and penalties to €210 -- a 97\,\% reduction in balancing
+          activity.
+
+    \item \textbf{B1 -- excellent balance, low stakes:}  Separating consumers
+          (Supplier A) and prosumers (Supplier B) into distinct BGs results in
+          very clean forecasts for each group (annual imbalance 0.05 and 0.10\,MWh
+          respectively).  Balancing is near-neutral with minimal financial impact.
+
+    \item \textbf{B2 -- imbalance returns through the REC:}  Introducing RECs
+          into separate supplier portfolios creates systematic forecast deviations
+          (combined imbalance: 91.66\,MWh), because the REC corrections are
+          applied to actuals but not fully propagated to ID forecasts.  Supplier~B
+          benefits disproportionately (€4{,}193 reward), while Supplier~A incurs
+          the largest individual penalty (€1{,}046).
+\end{enumerate}
+
+\subsection{REC Shared Energy Impact}
+
+Both A2 and B2 achieve comparable annual shared energy volumes -- A2:
+75.88\,MWh, B2: 74.40\,MWh (combined across both BGs).  This confirms that the
+physical sharing mechanism is essentially scenario-structure-agnostic: the
+available solar generation and community load profiles determine the ceiling of
+shareable energy, irrespective of whether that generation and load reside in
+the same or different balancing groups.
+
+The economic value extracted from the shared energy, however, differs between
+scenarios.  In A2, the 75.88\,MWh saved the supplier €2{,}259\,in feed-in
+costs but cost approximately €6,472 in lost retail sales, yielding a net
+economic effect of $-$€4,213 from the sharing alone (before balancing effects).
+In B2 (combined), the 74.40\,MWh saved €2,215 in feed-in costs (Supplier~B)
+and reduced market purchases by €3{,}245 (Supplier~B), while reducing
+Supplier~A's retail sales by €7{,}478.  The combined sharing economics are:
+$+$€5{,}460 in cost savings vs.\ $-$€5{,}403 in retail revenue reduction --
+approximately break-even at the sharing-mechanism level alone, before balancing
+effects are included.
+
+\subsection{Mixed-Portfolio Sensitivity Analysis}
+
+To assess robustness of the main scenario results to the assignment of customers
+to suppliers, ``mixed-portfolio'' variants were simulated (suffix -M), in which
+the prosumer/consumer allocation across balancing groups differs from the primary
+configuration.  The key results are:
+
+\begin{table}[htbp]
+\centering
+\caption{Mixed-portfolio variants -- headline annual profit and balancing KPIs.}
+\label{tab:mixed_variants}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}llrrrl@{}}
+\toprule
+\textbf{Variant}  & \textbf{Supplier}  & \textbf{Ann.\ Profit (€)}
+                  & \textbf{Imbalance (MWh)} & \textbf{Shared (MWh)}
+                  & \textbf{System Pos.} \\
+\midrule
+A1-M              & A (single)          & 13{,}122.47 & $-0.05$  & ---   & \textsc{long}  \\
+A2-M              & A (single)          & 11{,}276.47 & $-0.05$  & 90.56 & \textsc{long}  \\
+B1-M Supplier A   & A (mixed)           & 5{,}784.51  & 0.00     & ---   & \textsc{short} \\
+B1-M Supplier B   & B (mixed)           & 4{,}221.60  & 0.03     & ---   & \textsc{short} \\
+B2-M Supplier A   & A (mixed, REC)      & 14{,}812.29 & $-45.28$ & 45.28 & \textsc{long}  \\
+B2-M Supplier B   & B (mixed, REC)      & $-3{,}535.83$ & 45.23  & 45.28 & \textsc{short} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Several observations emerge:
+
+\begin{enumerate}
+    \item The mixed A1/A2 variants are substantially less profitable
+          (€13{,}122 and €11{,}276 vs.\ €68{,}158 and €52{,}184) because the
+          mixed network contains fewer or smaller customers by design, reducing
+          absolute energy throughput.
+
+    \item In the mixed B2 configuration, Supplier~B posts a \textbf{net loss of
+          $-$€3{,}535.83}, demonstrating the potential for the cross-supplier REC
+          structure to produce financially adverse outcomes for the prosumer
+          supplier when the imbalance dynamic works against it.  This highlights
+          the supply-risk asymmetry embedded in multi-supplier REC structures.
+
+    \item Shared energy under A2-M reaches 90.56\,MWh -- higher than the
+          standard A2's 75.88\,MWh -- indicating that the mixed customer
+          composition in the alternative network has a more generation-rich
+          profile relative to demand, enabling greater intra-community matching.
+\end{enumerate}
+
+The mixed variants confirm that the direction of results is robust across
+customer compositions, but the magnitude of financial effects is sensitive to
+portfolio mix, particularly in the presence of REC structures.
+
+
+% ============================================================
+\section{Summary of Key Findings}
+\label{sec:results_summary}
+% ============================================================
+
+Table~\ref{tab:summary_findings} distils the key economic performance indicators
+for all four primary sub-scenarios into a single comparative dashboard.
+
+\begin{table}[htbp]
+\centering
+\caption{Comprehensive KPI dashboard: all four primary scenarios.}
+\label{tab:summary_findings}
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{KPI}                            & \textbf{A1}       & \textbf{A2}       & \textbf{B1}       & \textbf{B2}       \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Scenario structure}} \\
+\quad Suppliers                         & 1                 & 1                 & 2                 & 2                 \\
+\quad RECs                              & 0                 & 1                 & 0                 & 2                 \\
+\quad Prosumers                         & 3                 & 3                 & 3 (Sup.\ B)       & 3 (Sup.\ B)       \\
+\quad Consumers                         & 6                 & 6                 & 6 (Sup.\ A)       & 6 (Sup.\ A)       \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{Financial performance (aggregate, €)}} \\
+\quad Total revenue                     & 75{,}795          & 62{,}625          & 70{,}865          & 69{,}804          \\
+\quad Total costs                       & 7{,}637           & 10{,}441          & 13{,}430          & 9{,}125           \\
+\quad \textbf{Annual profit}            & \textbf{68{,}158} & \textbf{52{,}184} & \textbf{57{,}435} & \textbf{60{,}679} \\
+\quad Monthly avg.\ profit              & 5{,}680           & 4{,}349           & 4{,}786           & 5{,}057           \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{Revenue decomposition (€)}} \\
+\quad Retail sales                      & 68{,}880          & 62{,}408          & 70{,}323          & 64{,}920          \\
+\quad Balancing rewards                 & 6{,}854           & 210               & 290               & 4{,}884           \\
+\quad Market sales                      & 61                & 7                 & 252               & 0                 \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{Cost decomposition (€)}} \\
+\quad Market purchases                  & 4{,}546           & 10{,}076          & 10{,}733          & 7{,}488           \\
+\quad Feed-in costs                     & 2{,}413           & 153               & 2{,}413           & 198               \\
+\quad Imbalance penalties               & 678               & 212               & 284               & 1{,}439           \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{Balancing KPIs}} \\
+\quad Total imbalance (MWh)             & 177.02            & $-0.04$           & 0.15              & 91.66             \\
+\quad Net balancing settlement (€)      & $+6{,}176$        & $-2$              & $+5$              & $+3{,}444$        \\
+\quad System position                   & Short             & Long              & Short             & Mixed             \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{REC KPIs}} \\
+\quad Total shared energy (MWh)         & ---               & 75.88             & ---               & 74.40             \\
+\quad Feed-in cost saving (€)           & ---               & $+2{,}259$        & ---               & $+2{,}215$        \\
+\quad Retail revenue impact (€)         & ---               & $-6{,}472$        & ---               & $-5{,}403$        \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The following principal findings are drawn from the simulation:
+
+\begin{enumerate}
+    \item \textbf{Single-supplier mandate maximises profit in the no-REC
+          baseline (A1):}  The consolidated BG captures the full retail margin
+          from all nine customers.  In 2016, it also benefited from an
+          asymmetric balancing windfall (€6{,}176 net), which alone accounts for
+          the majority of A1's advantage over B1.
+
+    \item \textbf{REC introduction is financially adverse for a single
+          integrated supplier (A2):}  The $-23.4$\,\% profit reduction in A2
+          stems from (i) reduced retail throughput ($-$€6{,}472) as shared energy
+          displaces grid imports, (ii) elimination of the balancing reward, and
+          (iii) higher wholesale purchase costs.  The supplier's fee-in saving
+          (€2{,}259) only partially offsets these losses.
+
+    \item \textbf{Market fragmentation (B1) reduces aggregate profit but
+          improves balancing quality:}  Splitting consumers and prosumers into
+          separate BGs (B1) reduces aggregate profit by €10{,}723 versus A1.
+          The deficit is structural: the consumer BG cannot net against prosumer
+          generation at the DA/ID stage, leading to higher gross market purchases.
+          However, both BGs achieve near-perfect forecast alignment.
+
+    \item \textbf{REC introduction under multiple suppliers yields a modest
+          aggregate gain and a dramatic redistribution (B2):}  At the system
+          level, REC introduction in B2 raises combined profit by €3{,}244
+          (+5.6\,\%).  However, this aggregate improvement masks a large
+          intra-market redistribution: Supplier~B (prosumers) gains €10{,}436
+          while Supplier~A (consumers) loses €7{,}192.
+
+    \item \textbf{Shared energy volumes are physical-layer invariant:}
+          A2 and B2 share near-identical annual shared energy totals
+          (75.88\,MWh and 74.40\,MWh).  The physical sharing is determined
+          by PV generation and community load profiles, not by supplier structure.
+          The financial value of this shared energy, however, is profoundly
+          sensitive to how suppliers and balancing groups are arranged.
+
+    \item \textbf{Balancing market effects dominate in two scenarios (A1,
+          B2):}  Both A1 and B2 feature large balancing income that outweighs
+          structural factors.  In A1, this arises from systematic under-
+          forecasting in a predominantly-short system; in B2, it arises from
+          REC-induced forecast-actual divergence in Supplier~B's prosumer BG.
+          These effects may not persist in future years with different system
+          conditions, making them unreliable as long-run profit drivers.
+
+    \item \textbf{The optimal supplier configuration depends on REC strategy:}
+          Without a REC, the single-supplier mandate (A1) maximises profit.  With
+          a REC, the multi-supplier structure (B2) yields higher aggregate income.
+          This inversion suggests that energy policy decisions on supplier
+          competition and community energy simultaneously should account for their
+          interaction: mandating a single supplier in a high-REC-penetration
+          environment could systematically disadvantage suppliers compared to a
+          competitive multi-supplier market.
+\end{enumerate}
+
+These findings establish the quantitative baseline for Scenario~C
+(Battery Optimisation), where a two-stage hierarchical dispatch model will
+be evaluated for its ability to further improve both shared energy and supplier
+balancing performance beyond the levels achieved in A2 and B2.

@@ -1,0 +1,129 @@
+{
+  "dashboard": {
+    "rows": [
+      {
+        "component": "JobMetricsBar",
+        "noCard": true
+      },
+      {
+        "id": "grb-job-distribution-row",
+        "columns": [
+          {
+            "rows": [
+              {
+                "title": "Job statuses",
+                "icon": "job",
+                "component": "JobCountPerStatusSummary",
+                "style": {
+                  "borderBottom": "none"
+                }
+              },
+              {
+                "title": "Solve statuses",
+                "icon": "job",
+                "component": "JobCountPerSolveStatusSummary",
+                "style": {
+                  "paddingTop": "0",
+                  "flex": "1 0 auto"
+                },
+                "iconInvisible": true
+              }
+            ]
+          },
+          {
+            "tabs": [
+              {
+                "title": "Active applications",
+                "icon": "app",
+                "menuTitle": "Job count",
+                "scrolling": true,
+                "component": "JobCountPerAppSummary"
+              },
+              {
+                "title": "Active applications",
+                "icon": "app",
+                "menuTitle": "Execution time",
+                "scrolling": true,
+                "component": "JobAppDurationSummary"
+              }
+            ],
+            "swipeable": false
+          },
+          {
+            "tabs": [
+              {
+                "title": "Active users",
+                "icon": "user",
+                "menuTitle": "Job count",
+                "scrolling": true,
+                "component": "JobCountPerUsernameSummary"
+              },
+              {
+                "title": "Active users",
+                "icon": "user",
+                "menuTitle": "Execution time",
+                "scrolling": true,
+                "component": "JobDurationPerUsernameSummary"
+              }
+            ],
+            "swipeable": false
+          },
+          {
+            "tabs": [
+              {
+                "title": "Runtimes",
+                "icon": "runtime",
+                "menuTitle": "Job count",
+                "scrolling": true,
+                "component": "JobCountPerRuntimeSummary"
+              },
+              {
+                "title": "Runtimes",
+                "icon": "runtime",
+                "menuTitle": "Execution time",
+                "scrolling": true,
+                "component": "JobDurationPerRuntimeSummary"
+              }
+            ],
+            "swipeable": false
+          }
+        ]
+      },
+      {
+        "id": "grb-job-timelines-row",
+        "tabs": [
+          {
+            "title": "Jobs per application",
+            "menuTitle": "Applications",
+            "component": "JobAppTimeline"
+          },
+          {
+            "title": "Jobs statuses",
+            "menuTitle": "Job statuses",
+            "component": "JobStatusTimeline"
+          },
+          {
+            "title": "Jobs per solve statuses",
+            "menuTitle": "Solve statuses",
+            "component": "JobSolveStatusTimeline"
+          },
+          {
+            "title": "Jobs per user",
+            "menuTitle": "Users",
+            "component": "JobUserTimeline"
+          },
+          {
+            "title": "Job per runtimes",
+            "menuTitle": "Runtimes",
+            "component": "JobRuntimeTimeline"
+          },
+          {
+            "title": "Job solve times",
+            "menuTitle": "Solve times",
+            "component": "JobSolveTimes"
+          }
+        ]
+      }
+    ]
+  }
+}

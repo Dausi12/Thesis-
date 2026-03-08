@@ -2,7 +2,11 @@
   "seed": 42,
   "simbench_code": "1-LV-rural3--0-no_sw",
   "da_price_file": "original/Day Ahead Preise_M15_2016.csv",
-  "id_price_range": [0.9, 1.1],
+  "id_price_range": {
+    "tier_4h_6h": [0.85, 1.15],
+    "tier_2h_4h": [0.95, 1.05],
+    "tier_1h_2h": [0.98, 1.02]
+  },
   "imbalance_price_file": "original/imbalance_prices.csv",
   "retail_price_file": "original/retail_price.csv",
   "feedin_price_file": "original/feedin_price.csv",

@@ -1,0 +1,48 @@
+# Gurobi Remote Services Configuration File
+#
+# use 'grb_rs properties' to get a complete list of the properties and
+# their documentation.
+#
+#
+
+# HOSTNAME is the DNS name of the node that can be resolved from the other
+# nodes or the clients in your network. grb_rs tries to get a reasonable default
+# value, but this value may still not be resolved by clients and could generate
+# connection errors. It this case, uncomment and set the following property:
+#HOSTNAME=server1.company.com
+
+# CLUSTER_TOKEN is a private key that enables different nodes to join
+# the same cluster. All nodes of a cluster must have the same token.
+# It is recommended to generate a new token using the grb_rs token command.
+CLUSTER_TOKEN=GRBTK-BzlUTKg9M/+HUvOpy/EPebc1CsttzOfDouQvPxiyssy1n57LfCDHTJNKZJ8shL4QkLm1FA==
+
+# PASSWORD is the password for clients to access the cluster.
+# It is recommended to change the value by copying the output of the
+# 'grb_rs hash' command. The default value is the hash of 'pass'.
+PASSWORD=$$lyWcyHD11jkt6pnjJjXBn3ueMT-slRlx5Zkr5IRD9MjVeRUg
+
+# ADMINPASSWORD is the password for clients to access restricted administrative
+# job operations. It is recommended to change the value by copying the output of
+# the 'grb_rs hash' command. The default value is the hash of 'admin'.
+ADMINPASSWORD=$$JZXR_tT4kV425hBWtXdyoohKvbwtxgExpP8fJxV7Eoo5Xy5a
+
+# CLUSTER_ADMINPASSWORD is the password for clients to access restricted
+# administrative cluster operations. It is recommended to change the value by
+# copying the output of the 'grb_rs hash' command. The default value is the hash
+# of 'cluster'.
+CLUSTER_ADMINPASSWORD=$$8jHy63bUIaLYNIo46er_qc5AL3zBTaeldSxzsbOA-ltYnSsP
+
+# JOBLIMIT set the default value of the maximum number of jobs that can run
+# concurrently when using Compute Server. If the job limit is changed using the
+# 'grbcluster config' command, this value will be ignored.
+JOBLIMIT=2
+
+# NODE_THREADLIMIT A limit on the number of threads that are allowed to run on the server at a time.
+# 'grbcluster config' command, this value will be ignored.
+#NODE_THREADLIMIT=16
+
+# Cluster Manager URL, if using a Cluster Manager
+# MANAGER=http://localhost:61080
+
+# WLS On-Demand default config for jobs
+# WLS_JOB_CONFIG=CS_JOB_2

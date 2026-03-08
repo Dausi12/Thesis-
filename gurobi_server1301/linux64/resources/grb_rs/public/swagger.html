@@ -1,0 +1,141 @@
+<!-- Body for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+    <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+    <style>
+      html
+      {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+      }
+
+      *,
+      *:before,
+      *:after
+      {
+        box-sizing: inherit;
+      }
+
+      body
+      {
+        margin:0;
+        background: #fafafa;
+      }
+
+      #api_info {
+          display: none !important;
+      }
+
+      .swagger-ui.swagger-container > .topbar {
+        display: none;
+      }
+
+      .information-container.wrapper {
+        /* display: none; */
+      }
+
+      body > .gurobi-description {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="gurobi-description">
+      <p>
+          This REST API lets you build custom solutions when you need to monitor the cluster and take other
+          actions automatically. The API follows standard REST principles and can be used in various languages and
+          tools (Java, Pyhton, Node, curl...).
+      </p>
+      <p>
+          The following sections let you browse the reference documentation of the supported API.
+          We distinguish between the cluster and the node endpoints. Cluster endpoints provide cluster-wide APIs
+          and any of the nodes from the same cluster can be used. On the other hand, node endpoints provides node
+          specific APIs, for example to manage the configuration of a node or access a running or recently completed
+          job on a specific node.
+      </p>
+      <p>
+          The documentation is also interactive and lets you try out the API endpoints. To do so, you will need to
+          provide the client or administrator password in the X-GUROBI-CSPASSWORD header parameter. Note that this is
+          not a simulation and by interacting with the documentation, you are able to access active data of your
+          cluster.
+      </p>
+
+  </div>
+    <div id="swagger-ui"></div>
+
+    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
+    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    <script>
+    function initDescription() {
+      const desc = document.querySelector('body > .gurobi-description');
+      const parent = document.querySelector('.information-container .info .description');
+      parent.innerHTML = '';
+      parent.appendChild(desc);
+    }
+
+    window.onload = function() {
+      var url = "/swagger.json";
+      // Pre load translate...
+      if (window.SwaggerTranslator) {
+          window.SwaggerTranslator.translate();
+      }
+      // Begin Swagger UI call region
+      const ui = SwaggerUIBundle({
+        url,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        validatorUrl: null,
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        onComplete: function (swaggerApi, swaggerUi) {
+            if (typeof initOAuth == "function") {
+                initOAuth({
+                    clientId: "your-client-id",
+                    clientSecret: "your-client-secret-if-required",
+                    realm: "your-realms",
+                    appName: "your-app-name",
+                    scopeSeparator: ",",
+                    additionalQueryStringParams: {}
+                });
+            }
+
+            if (window.SwaggerTranslator) {
+                window.SwaggerTranslator.translate();
+            }
+
+            // $('pre code').each(function (i, e) {
+            //     hljs.highlightBlock(e)
+            // });
+
+            // addPassword();
+            initDescription();
+        },
+        onFailure: function (data) {
+            log("Unable to Load SwaggerUI");
+        },
+        jsonEditor: false,
+        apisSorter: "alpha",
+        defaultModelRendering: 'schema',
+        showRequestHeaders: false
+      });
+      // End Swagger UI call region
+
+      window.ui = ui;
+    };
+  </script>
+  </body>
+</html>

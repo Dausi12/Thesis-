@@ -2,6 +2,7 @@
   "energy_system": {
     "system_id": "ES_B1_MULTI_NOREC_001",
     "system_name": "Multiple Suppliers without REC - Scenario B1",
+    "simbench_network": "1-LV-rural3--2-no_sw",
     "description": "2 Suppliers serving consumers and prosumers independently. No REC structure. Each supplier manages their own balancing group with separate forecasting and settlement.",
     "location": {
       "latitude": 48.3069,
@@ -40,8 +41,8 @@
         "total_grid_fee_eur_per_kwh": 0.02
       },
       "rec_incentives": {
-        "shared_energy_bonus_eur_per_kwh": 0.00,
-        "self_consumption_bonus_eur_per_kwh": 0.00,
+        "shared_energy_bonus_eur_per_kwh": 0.0,
+        "self_consumption_bonus_eur_per_kwh": 0.0,
         "note": "No REC incentives in this scenario"
       }
     }
@@ -49,35 +50,33 @@
   "suppliers": [
     {
       "supplier_id": "SUP_A",
-      "supplier_name": "Energy Supplier A",
+      "supplier_name": "Supplier A",
       "balancing_groups": [
         {
-          "balancing_group_id": "BG_SUP_A_001"
+          "balancing_group_id": "BG_A",
+          "balancing_group_name": "Balancing Group A"
         }
       ],
       "retail_pricing": {
-        "csv_file": "data/prices.csv",
         "price": "retail_price"
       },
       "feedin_pricing": {
-        "csv_file": "data/prices.csv",
         "price": "feedin_price"
       }
     },
     {
       "supplier_id": "SUP_B",
-      "supplier_name": "Energy Supplier B",
+      "supplier_name": "Supplier B",
       "balancing_groups": [
         {
-          "balancing_group_id": "BG_SUP_B_001"
+          "balancing_group_id": "BG_B",
+          "balancing_group_name": "Balancing Group B"
         }
       ],
       "retail_pricing": {
-        "csv_file": "data/prices.csv",
         "price": "retail_price"
       },
       "feedin_pricing": {
-        "csv_file": "data/prices.csv",
         "price": "feedin_price"
       }
     }
@@ -86,169 +85,178 @@
   "prosumers": [
     {
       "meter_id": "prosumer_001",
-      "actor_type": "prosumer",
-      "res_type": "PV",
+      "name": "Fire Fighting Station",
+      "node_id": 2,
       "supplier": {
-        "supplier_id": "SUP_B",
-        "balancing_group_id": "BG_SUP_B_001"
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [G6]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "commercial",
-        "id": "LV3.101 Load 46 [G6-A]"
+        "profile": "G6"
       },
       "res": {
+        "id": "1-LV-rural3--2-no_sw SGen [PV4]",
         "csv_file": "data/res_actual.csv",
         "res_forecast_da_file": "data/res_forecast_da.csv",
         "res_forecast_id_file": "data/res_forecast_id.csv",
-        "id": "LV3.101 SGen 4 [PV4]"
+        "profile": "PV4"
       }
     },
     {
       "meter_id": "prosumer_002",
-      "actor_type": "prosumer",
-      "res_type": "PV",
+      "name": "Household",
+      "node_id": 6,
       "supplier": {
         "supplier_id": "SUP_B",
-        "balancing_group_id": "BG_SUP_B_001"
+        "balancing_group_id": "BG_B"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "id": "LV3.101 Load 31 [H0-A]"
+        "profile": "H0-L"
       },
       "res": {
+        "id": "1-LV-rural3--2-no_sw SGen [PV3]",
         "csv_file": "data/res_actual.csv",
         "res_forecast_da_file": "data/res_forecast_da.csv",
         "res_forecast_id_file": "data/res_forecast_id.csv",
-        "id": "LV3.101 SGen 1 [PV7]"
+        "profile": "PV3"
       }
     },
     {
       "meter_id": "prosumer_003",
-      "actor_type": "prosumer",
-      "res_type": "PV",
+      "name": "Household",
+      "node_id": 8,
       "supplier": {
         "supplier_id": "SUP_B",
-        "balancing_group_id": "BG_SUP_B_001"
+        "balancing_group_id": "BG_B"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "id": "LV3.101 Load 24 [H0-A]"
+        "profile": "H0-L"
       },
       "res": {
+        "id": "1-LV-rural3--2-no_sw SGen [PV1]",
         "csv_file": "data/res_actual.csv",
         "res_forecast_da_file": "data/res_forecast_da.csv",
         "res_forecast_id_file": "data/res_forecast_id.csv",
-        "id": "LV3.101 SGen 2 [PV3]"
+        "profile": "PV1"
       }
     }
   ],
   "consumers": [
     {
       "meter_id": "consumer_001",
-      "actor_type": "consumer",
+      "name": "Local Authority",
+      "node_id": 1,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [G4]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "commercial",
-        "id": "LV3.101 Load 90 [G4-A]"
+        "profile": "G4"
       }
     },
     {
       "meter_id": "consumer_002",
-      "actor_type": "consumer",
+      "name": "Apartment",
+      "node_id": 3,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "id": "LV3.101 Load 42 [H0-G]"
+        "profile": "H0-L"
       }
     },
     {
       "meter_id": "consumer_003",
-      "actor_type": "consumer",
+      "name": "Apartment",
+      "node_id": 4,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "id": "LV3.101 Load 27 [H0-A]"
+        "profile": "H0-L"
       }
     },
     {
       "meter_id": "consumer_004",
-      "actor_type": "consumer",
+      "name": "Apartment (Hot Water Boiler)",
+      "node_id": 5,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-G]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "id": "LV3.101 Load 28 [H0-A]"
+        "profile": "H0-G"
       }
     },
     {
       "meter_id": "consumer_005",
-      "actor_type": "consumer",
+      "name": "Bank",
+      "node_id": 7,
       "supplier": {
-        "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [G1]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "commercial",
-        "id": "LV3.101 Load 97 [G1-C]"
+        "profile": "G1"
       }
     },
     {
       "meter_id": "consumer_006",
-      "actor_type": "consumer",
+      "name": "Household",
+      "node_id": 9,
       "supplier": {
-        "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
       },
-      "rec": "",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
         "load_forecast_da_file": "data/load_forecast_da.csv",
         "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "id": "LV3.101 Load 35 [H0-A]"
+        "profile": "H0-L"
       }
     }
   ],

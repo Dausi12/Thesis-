@@ -78,18 +78,17 @@
   "suppliers": [
     {
       "supplier_id": "SUP_A",
-      "supplier_name": "Energy Supplier A",
+      "supplier_name": "Supplier A",
       "balancing_groups": [
         {
-          "balancing_group_id": "BG_SUP_A_001"
+          "balancing_group_id": "BG_A",
+          "balancing_group_name": "Balancing Group A"
         }
       ],
       "retail_pricing": {
-        "csv_file": "data/prices.csv",
         "price": "retail_price"
       },
       "feedin_pricing": {
-        "csv_file": "data/prices.csv",
         "price": "feedin_price"
       }
     }
@@ -97,256 +96,210 @@
   "recs": [
     {
       "rec_id": "REC_01",
-      "rec_name": "Energy Community 01 with Battery",
-      "rec_type": "mixed_community_with_battery",
-      "internal_pricing": {
-        "sharing_price_eur_per_kwh": 0.08,
-        "allocation_method": "proportional_to_load_and_generation"
-      }
+      "rec_name": "Renewable Energy Community 1",
+      "settlement_method": "proportional"
     }
   ],
   "prosumers": [
     {
-      "meter_id": "prosumer_002",
-      "node_id": "2",
-      "node_name": "Fire Fighting Station",
-      "actor_type": "prosumer",
-      "res_type": "PV",
-      "peak_kw": 1.98,
-      "annual_load_kwh": 5171.55,
-      "annual_pv_kwh": 18115.65,
-      "estimated_pv_kwp": 17.68,
+      "meter_id": "prosumer_001",
+      "name": "Fire Fighting Station",
+      "node_id": 2,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [G6]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "commercial",
-        "profile": "G6",
-        "id": "1-LV-rural3--2-no_sw Load [G6]"
+        "profile": "G6"
       },
       "res": {
+        "id": "1-LV-rural3--2-no_sw SGen [PV4]",
         "csv_file": "data/res_actual.csv",
-        "res_forecast_da_file": "data/rec_res_forecast_da.csv",
-        "res_forecast_id_file": "data/rec_res_forecast_id.csv",
-        "profile": "PV4",
-        "id": "1-LV-rural3--2-no_sw SGen [PV4]"
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV4"
       },
+      "rec": "REC_01",
       "storage": {
+        "id": "1-LV-rural3--2-no_sw Storage [Storage_PV4_H0-G]",
         "csv_file": "data/storage_actual.csv",
-        "storage_forecast_da_file": "data/rec_storage_forecast_da.csv",
-        "storage_forecast_id_file": "data/rec_storage_forecast_id.csv",
-        "profile": "Storage_PV4_H0-G",
-        "id": "1-LV-rural3--2-no_sw Storage [Storage_PV4_H0-G]"
+        "profile": "Storage_PV4_H0-G"
       }
     },
     {
-      "meter_id": "prosumer_006",
-      "node_id": "6",
-      "node_name": "Household",
-      "actor_type": "prosumer",
-      "res_type": "PV",
-      "peak_kw": 5.03,
-      "annual_load_kwh": 14093.83,
-      "annual_pv_kwh": 4303.49,
-      "estimated_pv_kwp": 4.2,
+      "meter_id": "prosumer_002",
+      "name": "Household",
+      "node_id": 6,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "profile": "H0-L",
-        "id": "1-LV-rural3--2-no_sw Load [H0-L]"
+        "profile": "H0-L"
       },
       "res": {
+        "id": "1-LV-rural3--2-no_sw SGen [PV3]",
         "csv_file": "data/res_actual.csv",
-        "res_forecast_da_file": "data/rec_res_forecast_da.csv",
-        "res_forecast_id_file": "data/rec_res_forecast_id.csv",
-        "profile": "PV3",
-        "id": "1-LV-rural3--2-no_sw SGen [PV3]"
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV3"
       },
+      "rec": "REC_01",
       "storage": {
+        "id": "1-LV-rural3--2-no_sw Storage [Storage_PV3_H0-L]",
         "csv_file": "data/storage_actual.csv",
-        "storage_forecast_da_file": "data/rec_storage_forecast_da.csv",
-        "storage_forecast_id_file": "data/rec_storage_forecast_id.csv",
-        "profile": "Storage_PV3_H0-L",
-        "id": "1-LV-rural3--2-no_sw Storage [Storage_PV3_H0-L]"
+        "profile": "Storage_PV3_H0-L"
       }
     },
     {
-      "meter_id": "prosumer_008",
-      "node_id": "8",
-      "node_name": "Household",
-      "actor_type": "prosumer",
-      "res_type": "PV",
-      "peak_kw": 2.23,
-      "annual_load_kwh": 1803.63,
-      "annual_pv_kwh": 2664.07,
-      "estimated_pv_kwp": 2.6,
+      "meter_id": "prosumer_003",
+      "name": "Household",
+      "node_id": 8,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "profile": "H0-L",
-        "id": "1-LV-rural3--2-no_sw Load [H0-L]"
+        "profile": "H0-L"
       },
       "res": {
+        "id": "1-LV-rural3--2-no_sw SGen [PV1]",
         "csv_file": "data/res_actual.csv",
-        "res_forecast_da_file": "data/rec_res_forecast_da.csv",
-        "res_forecast_id_file": "data/rec_res_forecast_id.csv",
-        "profile": "PV1",
-        "id": "1-LV-rural3--2-no_sw SGen [PV1]"
+        "res_forecast_da_file": "data/res_forecast_da.csv",
+        "res_forecast_id_file": "data/res_forecast_id.csv",
+        "profile": "PV1"
       },
+      "rec": "REC_01",
       "storage": {
+        "id": "1-LV-rural3--2-no_sw Storage [Storage_PV1_H0-L]",
         "csv_file": "data/storage_actual.csv",
-        "storage_forecast_da_file": "data/rec_storage_forecast_da.csv",
-        "storage_forecast_id_file": "data/rec_storage_forecast_id.csv",
-        "profile": "Storage_PV1_H0-L",
-        "id": "1-LV-rural3--2-no_sw Storage [Storage_PV1_H0-L]"
+        "profile": "Storage_PV1_H0-L"
       }
     }
   ],
   "consumers": [
     {
       "meter_id": "consumer_001",
-      "node_id": "1",
-      "node_name": "Local Authority",
-      "actor_type": "consumer",
-      "peak_kw": 10.52,
-      "annual_load_kwh": 19972.69,
+      "name": "Local Authority",
+      "node_id": 1,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [G4]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "commercial",
-        "profile": "G4",
-        "id": "1-LV-rural3--2-no_sw Load [G4]"
-      }
+        "profile": "G4"
+      },
+      "rec": "REC_01"
+    },
+    {
+      "meter_id": "consumer_002",
+      "name": "Apartment",
+      "node_id": 3,
+      "supplier": {
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
     },
     {
       "meter_id": "consumer_003",
-      "node_id": "3",
-      "node_name": "Apartment",
-      "actor_type": "consumer",
-      "peak_kw": 1.26,
-      "annual_load_kwh": 378.1,
+      "name": "Apartment",
+      "node_id": 4,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "profile": "H0-L",
-        "id": "1-LV-rural3--2-no_sw Load [H0-L]"
-      }
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
     },
     {
       "meter_id": "consumer_004",
-      "node_id": "4",
-      "node_name": "Apartment",
-      "actor_type": "consumer",
-      "peak_kw": 1.65,
-      "annual_load_kwh": 1395.14,
+      "name": "Apartment (Hot Water Boiler)",
+      "node_id": 5,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-G]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "profile": "H0-L",
-        "id": "1-LV-rural3--2-no_sw Load [H0-L]"
-      }
+        "profile": "H0-G"
+      },
+      "rec": "REC_01"
     },
     {
       "meter_id": "consumer_005",
-      "node_id": "5",
-      "node_name": "Apartment (Hot Water Boiler)",
-      "actor_type": "consumer",
-      "peak_kw": 2.84,
-      "annual_load_kwh": 1816.81,
+      "name": "Bank",
+      "node_id": 7,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [G1]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
-        "load_type": "residential",
-        "profile": "H0-G",
-        "id": "1-LV-rural3--2-no_sw Load [H0-G]"
-      }
-    },
-    {
-      "meter_id": "consumer_007",
-      "node_id": "7",
-      "node_name": "Bank",
-      "actor_type": "consumer",
-      "peak_kw": 3.13,
-      "annual_load_kwh": 9452.83,
-      "supplier": {
-        "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
-      },
-      "rec": "REC_01",
-      "load": {
-        "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "commercial",
-        "profile": "G1",
-        "id": "1-LV-rural3--2-no_sw Load [G1]"
-      }
+        "profile": "G1"
+      },
+      "rec": "REC_01"
     },
     {
-      "meter_id": "consumer_009",
-      "node_id": "9",
-      "node_name": "Household",
-      "actor_type": "consumer",
-      "peak_kw": 3.25,
-      "annual_load_kwh": 9817.13,
+      "meter_id": "consumer_006",
+      "name": "Household",
+      "node_id": 9,
       "supplier": {
         "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_SUP_A_001"
+        "balancing_group_id": "BG_A"
       },
-      "rec": "REC_01",
       "load": {
+        "id": "1-LV-rural3--2-no_sw Load [H0-L]",
         "csv_file": "data/load_actual.csv",
-        "load_forecast_da_file": "data/rec_load_forecast_da.csv",
-        "load_forecast_id_file": "data/rec_load_forecast_id.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
         "load_type": "residential",
-        "profile": "H0-L",
-        "id": "1-LV-rural3--2-no_sw Load [H0-L]"
-      }
+        "profile": "H0-L"
+      },
+      "rec": "REC_01"
     }
   ]
 }

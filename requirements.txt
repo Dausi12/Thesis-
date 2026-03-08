@@ -1,0 +1,15 @@
+# Core data & numerical
+pandas
+numpy
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Power systems & network simulation
+simbench
+pandapower
+
+# Optimization
+pyomo

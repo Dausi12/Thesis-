@@ -1,0 +1,694 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+
+\geometry{margin=2.5cm}
+
+\crefname{equation}{Eq.}{Eqs.}
+\Crefname{equation}{Equation}{Equations}
+
+\title{\textbf{Mathematical Formulation of Energy Market Operations:\\
+Renewable Energy Communities and Supplier Competition Analysis}}
+\author{Energy Systems Analysis}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%%=============================================================================
+\section{Introduction}
+%%=============================================================================
+
+This document provides the complete mathematical formulation for analysing
+energy market operations under five scenarios that span single- and
+multi-supplier structures, the presence or absence of a Renewable Energy
+Community (REC), and centrally optimised battery storage.  The simulation
+period covers one full calendar year (\textit{2016-01-01} to
+\textit{2016-12-31}) at 15-minute resolution, yielding $T = 35{,}136$
+settlement intervals.
+
+The physical case study is a nine-node low-voltage distribution community in
+rural Carinthia, Austria, with three prosumers (nodes 2, 6, 8) and six
+consumers (nodes 1, 3, 4, 5, 7, 9), mapped to the SimBench reference network
+\textit{1-LV-rural3--2-no\_sw}.  The total installed PV capacity is
+24.48~kWp and the total annual community load is approximately 63\,900~kWh.
+
+%%=============================================================================
+\section{Notation}
+%%=============================================================================
+
+\subsection{Index Sets}
+
+\begin{description}[leftmargin=4em, labelwidth=3.5em]
+  \item[$\mathcal{T}$] Set of settlement intervals, $t \in \{1, \ldots, T\}$,
+        $T = 35{,}136$ (quarter-hours in 2016)
+  \item[$\mathcal{N}$] Set of all nine community participants (nodes)
+  \item[$\mathcal{P}$] Set of prosumers $\mathcal{P} \subset \mathcal{N}$,
+        $|\mathcal{P}| = 3$ (nodes 2, 6, 8)
+  \item[$\mathcal{C}$] Set of consumers $\mathcal{C} \subset \mathcal{N}$,
+        $|\mathcal{C}| = 6$ (nodes 1, 3, 4, 5, 7, 9)
+  \item[$\mathcal{S}$] Set of energy suppliers
+  \item[$\mathcal{G}_{s}$] Set of balancing groups belonging to supplier
+        $s \in \mathcal{S}$
+  \item[$\mathcal{R}$] Set of RECs; $|\mathcal{R}| \in \{0, 1\}$ depending on
+        scenario
+  \item[$\mathcal{M}_{r}$] Set of participants belonging to REC
+        $r \in \mathcal{R}$
+\end{description}
+
+\subsection{Time Resolution}
+
+Each interval has duration $\Delta t = 0.25$~h.
+A quantity $Q_{(\cdot)}^{t}$ expressed in \textit{kW} at interval $t$
+corresponds to an energy volume of $Q_{(\cdot)}^{t} \cdot \Delta t$~kWh.
+For brevity, all power quantities are given in kW and all energy quantities in
+kWh throughout; the factor $\Delta t$ is therefore omitted from the flow
+equations where both sides are expressed consistently.
+
+\subsection{Parameters}
+
+\begin{description}[leftmargin=4em, labelwidth=3.5em]
+  \item[$\ell_{n}^{t}$]   Actual metered load of participant $n$ at interval
+        $t$~(kWh)
+  \item[$g_{n}^{t}$]      Actual metered generation of prosumer $n$ at
+        interval $t$~(kWh)
+  \item[$\hat{\ell}_{n,\mathrm{DA}}^{t}$] Day-ahead load forecast for
+        participant $n$
+  \item[$\hat{g}_{n,\mathrm{DA}}^{t}$]   Day-ahead generation forecast for
+        prosumer $n$
+  \item[$\hat{\ell}_{n,\mathrm{ID}}^{t}$] Intra-day load forecast for
+        participant $n$
+  \item[$\hat{g}_{n,\mathrm{ID}}^{t}$]   Intra-day generation forecast for
+        prosumer $n$
+  \item[$\pi_{\mathrm{DA}}^{t}$] Day-ahead market clearing price
+        (EUR/kWh)
+  \item[$\pi_{\mathrm{ID}}^{t}$] Intra-day market price (EUR/kWh)
+  \item[$\pi_{\mathrm{imb}}^{t}$] System imbalance price (EUR/kWh)
+  \item[$\pi_{\mathrm{ret},s}^{t}$] Retail tariff of supplier $s$ (EUR/kWh)
+  \item[$\pi_{\mathrm{fi},s}^{t}$]  Feed-in tariff of supplier $s$ (EUR/kWh)
+  \item[$E_{\max}$] Battery usable capacity (kWh); $E_{\max} = 200$~kWh in
+        scenario~C3
+  \item[$P_{\mathrm{c}}^{\max}$, $P_{\mathrm{d}}^{\max}$] Maximum charge /
+        discharge power (kW)
+  \item[$\eta_{\mathrm{c}}, \eta_{\mathrm{d}}$] Charge / discharge efficiency;
+        $\eta_{\mathrm{c}} = \eta_{\mathrm{d}} = 0.95$
+  \item[$E_{\min}, E_{0}$] Minimum SoC and initial SoC (kWh)
+\end{description}
+
+\subsection{Decision Variables (Battery, Scenario C3 only)}
+
+\begin{description}[leftmargin=4em, labelwidth=3.5em]
+  \item[$P_{\mathrm{c}}^{t}$]  Charge power at interval $t$ (kW),
+        $P_{\mathrm{c}}^{t} \geq 0$
+  \item[$P_{\mathrm{d}}^{t}$]  Discharge power at interval $t$ (kW),
+        $P_{\mathrm{d}}^{t} \geq 0$
+  \item[$E^{t}$]               State of charge at end of interval $t$ (kWh)
+  \item[$u^{t}$]               Binary mode indicator: $u^{t} = 1$ if charging,
+        $u^{t} = 0$ if discharging
+  \item[$I^{t}$]               Net grid import (kWh), $I^{t} \geq 0$
+  \item[$X^{t}$]               Net grid export (kWh), $X^{t} \geq 0$
+\end{description}
+
+%%=============================================================================
+\section{Scenario Definitions}
+%%=============================================================================
+
+All five scenarios share the same nine-node community and the same SimBench
+reference network \textit{1-LV-rural3--2-no\_sw}.  They differ only in market
+structure, REC activation, and battery presence.
+
+\begin{table}[H]
+\centering
+\caption{Scenario overview}
+\label{tab:scenarios}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Scenario & Description & Suppliers & REC & Battery\\
+\midrule
+A1 & Single supplier, no REC          & 1 ($|\mathcal{S}|=1$) & No  & No \\
+A2 & Single supplier, with REC        & 1                     & Yes & No \\
+B1 & Multiple suppliers, no REC       & 2 ($|\mathcal{S}|=2$) & No  & No \\
+B2 & Multiple suppliers, with REC     & 2                     & Yes & No \\
+C3 & Single supplier, REC + battery   & 1                     & Yes & Yes\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+In scenarios A1 and A2 all participants are served by a single supplier
+$s^{*}$ with one balancing group.  In scenarios B1 and B2 participants are
+distributed across two suppliers, each managing one balancing group.  Scenario
+C3 extends A2 by adding a centralised 200-kWh MILP-optimised battery whose
+schedule is determined before the REC settlement and balancing steps.
+
+The sequential market pipeline executed for each scenario is:
+
+\begin{equation}
+\text{Step~i} \;\rightarrow\; \text{Step~ii}
+\;\xrightarrow{\text{C3 only}}\; \text{Step~ii-b (battery)}
+\;\xrightarrow{\text{A2/B2/C3}}\; \text{Step~iii (REC)}
+\;\rightarrow\; \text{Step~iv} \;\rightarrow\; \text{Step~v}
+\label{eq:pipeline}
+\end{equation}
+
+%%=============================================================================
+\section{Step~i: Day-Ahead Market}
+%%=============================================================================
+
+\subsection{Balancing-Group Aggregation}
+
+For each balancing group $g \in \mathcal{G}_{s}$ of supplier $s$, the
+aggregated day-ahead forecasts are
+
+\begin{equation}
+L_{g,\mathrm{DA}}^{t}
+  = \sum_{n \in \mathcal{N}_{g}} \hat{\ell}_{n,\mathrm{DA}}^{t}, \qquad
+G_{g,\mathrm{DA}}^{t}
+  = \sum_{n \in \mathcal{P}_{g}} \hat{g}_{n,\mathrm{DA}}^{t}
+\label{eq:bg_da_agg}
+\end{equation}
+
+where $\mathcal{N}_{g}$ and $\mathcal{P}_{g}$ denote the participants and the
+prosumers assigned to group $g$, respectively.
+
+\subsection{Net Position and Market Commitment}
+
+The net position of balancing group $g$ in the day-ahead market is
+
+\begin{equation}
+Q_{g,\mathrm{DA}}^{t} = G_{g,\mathrm{DA}}^{t} - L_{g,\mathrm{DA}}^{t}
+\label{eq:da_net}
+\end{equation}
+
+The signed position is split into a purchase volume and a sale volume:
+
+\begin{align}
+Q_{g,\mathrm{DA}}^{t,+} &= \max\!\bigl(-Q_{g,\mathrm{DA}}^{t},\;0\bigr)
+  &&\text{(net purchase commitment)} \label{eq:da_buy}\\
+Q_{g,\mathrm{DA}}^{t,-} &= \max\!\bigl(\phantom{-}Q_{g,\mathrm{DA}}^{t},\;0\bigr)
+  &&\text{(net sale commitment)} \label{eq:da_sell}
+\end{align}
+
+so that only one of $Q_{g,\mathrm{DA}}^{t,+}$ and $Q_{g,\mathrm{DA}}^{t,-}$
+is non-zero at any $t$.  The associated financial commitments are
+
+\begin{align}
+C_{g,\mathrm{DA}}^{t} &= Q_{g,\mathrm{DA}}^{t,+} \cdot \pi_{\mathrm{DA}}^{t}
+  \label{eq:da_cost}\\
+R_{g,\mathrm{DA}}^{t} &= Q_{g,\mathrm{DA}}^{t,-} \cdot \pi_{\mathrm{DA}}^{t}
+  \label{eq:da_rev}
+\end{align}
+
+and the net day-ahead settlement per interval is
+
+\begin{equation}
+S_{g,\mathrm{DA}}^{t} = R_{g,\mathrm{DA}}^{t} - C_{g,\mathrm{DA}}^{t}
+\label{eq:da_net_settlement}
+\end{equation}
+
+%%=============================================================================
+\section{Step~ii: Intra-Day Market}
+%%=============================================================================
+
+\subsection{Updated Aggregation}
+
+Updated intra-day forecasts yield revised balancing-group totals:
+
+\begin{equation}
+L_{g,\mathrm{ID}}^{t}
+  = \sum_{n \in \mathcal{N}_{g}} \hat{\ell}_{n,\mathrm{ID}}^{t}, \qquad
+G_{g,\mathrm{ID}}^{t}
+  = \sum_{n \in \mathcal{P}_{g}} \hat{g}_{n,\mathrm{ID}}^{t}
+\label{eq:bg_id_agg}
+\end{equation}
+
+\subsection{Adjustment Volumes}
+
+The intra-day adjustment relative to the day-ahead commitment is
+
+\begin{align}
+\Delta Q_{g}^{t,+}
+  &= Q_{g,\mathrm{ID}}^{t,+} - Q_{g,\mathrm{DA}}^{t,+}
+  \label{eq:id_adj_buy}\\
+\Delta Q_{g}^{t,-}
+  &= Q_{g,\mathrm{ID}}^{t,-} - Q_{g,\mathrm{DA}}^{t,-}
+  \label{eq:id_adj_sell}
+\end{align}
+
+where $Q_{g,\mathrm{ID}}^{t,\pm}$ are defined analogously to
+\cref{eq:da_buy,eq:da_sell} using $G_{g,\mathrm{ID}}^{t} - L_{g,\mathrm{ID}}^{t}$.
+
+\subsection{Intra-Day Settlement}
+
+\begin{align}
+C_{g,\mathrm{ID}}^{t} &= \max\!\bigl(\Delta Q_{g}^{t,+},\;0\bigr)
+  \cdot \pi_{\mathrm{ID}}^{t}
+  \label{eq:id_cost}\\
+R_{g,\mathrm{ID}}^{t} &= \max\!\bigl(\Delta Q_{g}^{t,-},\;0\bigr)
+  \cdot \pi_{\mathrm{ID}}^{t}
+  \label{eq:id_rev}
+\end{align}
+
+\subsection{Closing Position}
+
+The closing commitment — used as the reference for the balancing market — is
+
+\begin{align}
+\bar{Q}_{g}^{t,+} &= Q_{g,\mathrm{ID}}^{t,+} \label{eq:closing_buy}\\
+\bar{Q}_{g}^{t,-} &= Q_{g,\mathrm{ID}}^{t,-} \label{eq:closing_sell}\\
+\bar{S}_{g}^{t}   &= \bigl(C_{g,\mathrm{DA}}^{t} + C_{g,\mathrm{ID}}^{t}\bigr)
+         - \bigl(R_{g,\mathrm{DA}}^{t} + R_{g,\mathrm{ID}}^{t}\bigr)
+  \label{eq:closing_cost}
+\end{align}
+
+%%=============================================================================
+\section{Step~ii-b: Battery Optimisation (Scenario C3 Only)}
+%%=============================================================================
+
+After the intra-day step, a MILP problem is solved to determine an optimal
+charge/discharge schedule for the 200-kWh community battery.  The optimisation
+uses intra-day forecasts as the best available information at decision time.
+
+\subsection{Objective Function}
+
+\begin{equation}
+\min_{P_{\mathrm{c}},\,P_{\mathrm{d}},\,E,\,u,\,I,\,X}
+\quad
+\sum_{t \in \mathcal{T}}\Bigl[
+  I^{t} \cdot \pi_{\mathrm{ret},s}^{t}
+  - X^{t} \cdot \pi_{\mathrm{fi},s}^{t}
+\Bigr]
+\label{eq:battery_obj}
+\end{equation}
+
+\subsection{State-of-Charge Dynamics}
+
+\begin{equation}
+E^{t} =
+\begin{cases}
+  E_{0} + \eta_{\mathrm{c}}\,P_{\mathrm{c}}^{t}\,\Delta t
+       - \dfrac{P_{\mathrm{d}}^{t}\,\Delta t}{\eta_{\mathrm{d}}}
+  & t = 1\\[8pt]
+  E^{t-1} + \eta_{\mathrm{c}}\,P_{\mathrm{c}}^{t}\,\Delta t
+           - \dfrac{P_{\mathrm{d}}^{t}\,\Delta t}{\eta_{\mathrm{d}}}
+  & t \geq 2
+\end{cases}
+\label{eq:soc_dynamics}
+\end{equation}
+
+\subsection{Power and SoC Bounds}
+
+\begin{align}
+E_{\min} &\leq E^{t} \leq E_{\max}
+  &&\forall\, t \in \mathcal{T} \label{eq:soc_bounds}\\
+0 &\leq P_{\mathrm{c}}^{t} \leq P_{\mathrm{c}}^{\max}\,u^{t}
+  &&\forall\, t \in \mathcal{T} \label{eq:charge_limit}\\
+0 &\leq P_{\mathrm{d}}^{t} \leq P_{\mathrm{d}}^{\max}(1 - u^{t})
+  &&\forall\, t \in \mathcal{T} \label{eq:discharge_limit}\\
+u^{t} &\in \{0,1\}
+  &&\forall\, t \in \mathcal{T} \label{eq:binary}
+\end{align}
+
+Constraints \cref{eq:charge_limit,eq:discharge_limit} enforce that the battery
+cannot charge and discharge simultaneously.
+
+\subsection{Net Power Balance}
+
+Let $\tilde{L}^{t} = \sum_{n \in \mathcal{N}} \hat{\ell}_{n,\mathrm{ID}}^{t}$
+and $\tilde{G}^{t} = \sum_{n \in \mathcal{P}} \hat{g}_{n,\mathrm{ID}}^{t}$
+be community-level ID forecasts.  The net load including battery is
+
+\begin{equation}
+\tilde{N}^{t} = \tilde{L}^{t} - \tilde{G}^{t}
+         + P_{\mathrm{c}}^{t} - P_{\mathrm{d}}^{t}
+\label{eq:net_with_battery}
+\end{equation}
+
+and the grid boundary condition is
+
+\begin{equation}
+I^{t} - X^{t} = \tilde{N}^{t}, \qquad I^{t} \geq 0,\quad X^{t} \geq 0
+\label{eq:grid_balance}
+\end{equation}
+
+\noindent
+The MILP is solved with a GLPK/CBC solver via Pyomo before the REC settlement
+and balancing steps, and the resulting net battery output
+$(P_{\mathrm{d}}^{t} - P_{\mathrm{c}}^{t})$ is applied as an additional
+generation signal in the downstream steps.
+
+%%=============================================================================
+\section{Step~iii: REC Settlement (Scenarios A2, B2, C3)}
+%%=============================================================================
+
+The REC settlement operates on \emph{actual} meter readings.  In scenario~C3
+the battery schedule from Step~ii-b is incorporated beforehand so that the
+prosumer hosting the battery has its net generation updated accordingly.
+
+\subsection{Community Totals}
+
+For REC $r \in \mathcal{R}$:
+
+\begin{align}
+G_{r}^{t} &= \sum_{n \in \mathcal{P} \cap \mathcal{M}_{r}} g_{n}^{t}
+\label{eq:rec_gen_total}\\
+L_{r}^{t} &= \sum_{n \in \mathcal{M}_{r}} \ell_{n}^{t}
+\label{eq:rec_load_total}
+\end{align}
+
+\subsection{Shared Energy}
+
+The internally shared (self-consumed) energy quantum is
+
+\begin{equation}
+E_{r}^{\mathrm{shared},t} = \min\!\bigl(G_{r}^{t},\; L_{r}^{t}\bigr)
+\label{eq:shared_energy}
+\end{equation}
+
+\subsection{Corrected Meter Readings}
+
+The REC redistribution proportionally reduces participant meters.
+
+\paragraph{Generation correction.}
+For each prosumer $n \in \mathcal{P} \cap \mathcal{M}_{r}$:
+
+\begin{equation}
+\tilde{g}_{n}^{t} = g_{n}^{t}
+  - \frac{g_{n}^{t}}{G_{r}^{t}}\,E_{r}^{\mathrm{shared},t}
+  \qquad \bigl(G_{r}^{t} > 0\bigr)
+\label{eq:gen_correction}
+\end{equation}
+
+\paragraph{Load correction.}
+For each member $n \in \mathcal{M}_{r}$:
+
+\begin{equation}
+\tilde{\ell}_{n}^{t} = \ell_{n}^{t}
+  - \frac{\ell_{n}^{t}}{L_{r}^{t}}\,E_{r}^{\mathrm{shared},t}
+  \qquad \bigl(L_{r}^{t} > 0\bigr)
+\label{eq:load_correction}
+\end{equation}
+
+Equations \cref{eq:gen_correction,eq:load_correction} are consistent with the
+three limiting cases:
+\begin{itemize}
+\item \textbf{Perfect balance} ($G_{r}^{t} = L_{r}^{t}$): all generation is
+  consumed internally; both corrected quantities equal zero.
+\item \textbf{Community deficit} ($G_{r}^{t} < L_{r}^{t}$): all generation is
+  consumed; $\tilde{g}_{n}^{t} = 0$; residual import is
+  $\tilde{\ell}_{n}^{t} = \ell_{n}^{t}\!\left(1 - G_{r}^{t}/L_{r}^{t}\right)$.
+\item \textbf{Community surplus} ($G_{r}^{t} > L_{r}^{t}$): all load is
+  satisfied; $\tilde{\ell}_{n}^{t} = 0$; residual export is
+  $\tilde{g}_{n}^{t} = g_{n}^{t}\!\left(1 - L_{r}^{t}/G_{r}^{t}\right)$.
+\end{itemize}
+
+\subsection{Corrected Balancing-Group Net Load}
+
+For each balancing group $g$ containing REC members, the post-REC net
+load used in the balancing and billing steps is
+
+\begin{equation}
+\tilde{N}_{g}^{t}
+  = \sum_{n \in \mathcal{N}_{g} \cap \mathcal{M}_{r}} \tilde{\ell}_{n}^{t}
+  - \sum_{n \in \mathcal{P}_{g} \cap \mathcal{M}_{r}} \tilde{g}_{n}^{t}
+\label{eq:bg_corrected_net}
+\end{equation}
+
+In scenarios without a REC (A1, B1) the corrected metres equal the originals:
+$\tilde{\ell}_{n}^{t} = \ell_{n}^{t}$ and
+$\tilde{g}_{n}^{t} = g_{n}^{t}$ for all $n \in \mathcal{N}$.
+
+%%=============================================================================
+\section{Step~iv: Balancing Market}
+%%=============================================================================
+
+\subsection{Actual Balancing-Group Position}
+
+For each group $g$, the realised net position using corrected metres is
+
+\begin{equation}
+A_{g}^{t} =
+  \sum_{n \in \mathcal{N}_{g}} \tilde{\ell}_{n}^{t}
+  - \sum_{n \in \mathcal{P}_{g}} \tilde{g}_{n}^{t}
+\label{eq:bg_actual}
+\end{equation}
+
+\subsection{Imbalance}
+
+The deviation from the closing intra-day commitment defines the imbalance:
+
+\begin{equation}
+\varepsilon_{g}^{t} = A_{g}^{t} - \bigl(\bar{Q}_{g}^{t,+} - \bar{Q}_{g}^{t,-}\bigr)
+\label{eq:imbalance}
+\end{equation}
+
+A positive $\varepsilon_{g}^{t}$ means the group consumed more than
+contracted; a negative value means it over-generated or under-consumed.
+
+\subsection{Balancing Settlement}
+
+\begin{equation}
+\sigma_{g}^{t} = \varepsilon_{g}^{t} \cdot \pi_{\mathrm{imb}}^{t}
+\label{eq:balancing_settlement}
+\end{equation}
+
+Decomposed into penalty and reward components:
+
+\begin{equation}
+\Pi_{g}^{t} = \max(-\sigma_{g}^{t},\;0), \qquad
+\Rho_{g}^{t} = \max(\;\sigma_{g}^{t},\;0)
+\label{eq:penalty_reward}
+\end{equation}
+
+%%=============================================================================
+\section{Step~v: Supplier Billing}
+%%=============================================================================
+
+\subsection{Individual Member Settlement}
+
+For each prosumer $n \in \mathcal{P}$ the corrected net exchange with the
+grid is
+
+\begin{equation}
+\tilde{m}_{n}^{t} = \tilde{\ell}_{n}^{t} - \tilde{g}_{n}^{t}
+\label{eq:prosumer_net}
+\end{equation}
+
+The supplier charges for import and credits for export:
+
+\begin{equation}
+\text{Bill}_{n}^{t}
+  = \max\!\bigl(\tilde{m}_{n}^{t},\;0\bigr)
+     \cdot \pi_{\mathrm{ret},s(n)}^{t}
+   + \max\!\bigl(-\tilde{m}_{n}^{t},\;0\bigr)
+     \cdot \pi_{\mathrm{fi},s(n)}^{t}
+\label{eq:prosumer_bill}
+\end{equation}
+
+where $s(n)$ denotes the supplier of participant $n$.  For a consumer
+($n \in \mathcal{C}$) there is no generation, so
+$\text{Bill}_{n}^{t} = \tilde{\ell}_{n}^{t} \cdot \pi_{\mathrm{ret},s(n)}^{t}$.
+
+\subsection{Retail Revenue and Feed-in Cost of Supplier}
+
+\begin{align}
+R_{s}^{\mathrm{ret},t}
+  &= \sum_{n \in \mathcal{N}_{s}}
+     \max\!\bigl(\tilde{m}_{n}^{t},\;0\bigr)
+     \cdot \pi_{\mathrm{ret},s}^{t}
+\label{eq:retail_revenue}\\
+C_{s}^{\mathrm{fi},t}
+  &= \sum_{n \in \mathcal{P}_{s}}
+     \max\!\bigl(-\tilde{m}_{n}^{t},\;0\bigr)
+     \cdot \pi_{\mathrm{fi},s}^{t}
+\label{eq:feedin_cost}
+\end{align}
+
+%%=============================================================================
+\section{Profit and Loss}
+%%=============================================================================
+
+\subsection{Revenue Components}
+
+For supplier $s$ over the full simulation year:
+
+\begin{align}
+R_{s}^{\mathrm{mkt}} &= \sum_{t \in \mathcal{T}}\;\sum_{g \in \mathcal{G}_{s}}
+  \Bigl(R_{g,\mathrm{DA}}^{t} + R_{g,\mathrm{ID}}^{t}\Bigr)
+  \label{eq:rev_mkt}\\
+R_{s}^{\mathrm{bal}} &= \sum_{t \in \mathcal{T}}\;\sum_{g \in \mathcal{G}_{s}}
+  \Rho_{g}^{t}
+  \label{eq:rev_bal}\\
+R_{s}^{\mathrm{ret}} &= \sum_{t \in \mathcal{T}} R_{s}^{\mathrm{ret},t}
+  \label{eq:rev_ret}\\
+R_{s}^{\mathrm{total}} &= R_{s}^{\mathrm{mkt}} + R_{s}^{\mathrm{bal}}
+  + R_{s}^{\mathrm{ret}}
+  \label{eq:rev_total}
+\end{align}
+
+\subsection{Cost Components}
+
+\begin{align}
+C_{s}^{\mathrm{mkt}} &= \sum_{t \in \mathcal{T}}\;\sum_{g \in \mathcal{G}_{s}}
+  \Bigl(C_{g,\mathrm{DA}}^{t} + C_{g,\mathrm{ID}}^{t}\Bigr)
+  \label{eq:cost_mkt}\\
+C_{s}^{\mathrm{bal}} &= \sum_{t \in \mathcal{T}}\;\sum_{g \in \mathcal{G}_{s}}
+  \Pi_{g}^{t}
+  \label{eq:cost_bal}\\
+C_{s}^{\mathrm{fi}}  &= \sum_{t \in \mathcal{T}} C_{s}^{\mathrm{fi},t}
+  \label{eq:cost_fi}\\
+C_{s}^{\mathrm{total}} &= C_{s}^{\mathrm{mkt}} + C_{s}^{\mathrm{bal}}
+  + C_{s}^{\mathrm{fi}}
+  \label{eq:cost_total}
+\end{align}
+
+\subsection{Annual Profit / Loss}
+
+\begin{equation}
+\Pi_{s}^{\mathrm{annual}} = R_{s}^{\mathrm{total}} - C_{s}^{\mathrm{total}}
+\label{eq:pl}
+\end{equation}
+
+%%=============================================================================
+\section{Scenario Comparison Framework}
+%%=============================================================================
+
+\subsection{REC Impact}
+
+Comparing scenarios with and without the energy community, holding market
+structure fixed, isolates the REC effect on supplier cost:
+
+\begin{equation}
+\Delta C^{\mathrm{REC}} = C^{\mathrm{total}}_{\text{A2}} - C^{\mathrm{total}}_{\text{A1}}
+\label{eq:rec_impact}
+\end{equation}
+
+\subsection{Supplier Competition Effect}
+
+Comparing single- against multi-supplier scenarios without REC isolates
+market-structure effects:
+
+\begin{equation}
+\Delta C^{\mathrm{comp}} = C^{\mathrm{total}}_{\text{B1}} - C^{\mathrm{total}}_{\text{A1}}
+\label{eq:competition_impact}
+\end{equation}
+
+\subsection{Interaction Effect}
+
+The joint effect from combining REC and competition is
+
+\begin{equation}
+\Delta C^{\mathrm{int}} =
+  \Bigl(C^{\mathrm{total}}_{\text{B2}} - C^{\mathrm{total}}_{\text{A1}}\Bigr)
+  - \Delta C^{\mathrm{REC}} - \Delta C^{\mathrm{comp}}
+\label{eq:interaction}
+\end{equation}
+
+\subsection{Battery Value}
+
+The incremental value of battery optimisation relative to the REC-only baseline is
+
+\begin{equation}
+\Delta C^{\mathrm{batt}} = C^{\mathrm{total}}_{\text{C3}} - C^{\mathrm{total}}_{\text{A2}}
+\label{eq:battery_value}
+\end{equation}
+
+A negative value indicates that the centrally optimised battery reduces total
+supplier cost.
+
+\subsection{Performance Indicators}
+
+\paragraph{Forecast accuracy (MAPE).}
+
+\begin{equation}
+\mathrm{MAPE}_{n} = \frac{100\%}{T}
+  \sum_{t \in \mathcal{T}}
+  \left|\frac{\ell_{n}^{t} - \hat{\ell}_{n,\mathrm{ID}}^{t}}{\ell_{n}^{t}}\right|
+\label{eq:mape}
+\end{equation}
+
+\paragraph{Relative imbalance exposure.}
+
+\begin{equation}
+R_{g}^{\mathrm{imb}} =
+  \frac{\displaystyle\sum_{t \in \mathcal{T}} |\varepsilon_{g}^{t}|}
+       {\displaystyle\sum_{t \in \mathcal{T}} |A_{g}^{t}|}
+  \times 100\%
+\label{eq:rel_imbalance}
+\end{equation}
+
+\paragraph{Average wholesale cost per kWh traded.}
+
+\begin{equation}
+\bar{c}_{s} =
+  \frac{C_{s}^{\mathrm{total}}}
+       {\displaystyle\sum_{t \in \mathcal{T}}\;\sum_{g \in \mathcal{G}_{s}} |A_{g}^{t}|}
+\label{eq:avg_cost}
+\end{equation}
+
+%%=============================================================================
+\section{Implementation Notes}
+%%=============================================================================
+
+\subsection{Temporal Resolution and Profile Scaling}
+
+All physical quantities are read from 15-minute CSV files.  The mapping
+between a normalised SimBench profile $\phi_{n}^{t}$ and the actual energy
+volume is
+
+\begin{equation}
+\ell_{n}^{t} = \phi_{n}^{t} \cdot S_{n} \cdot \Delta t, \qquad
+S_{n} = \frac{E_{n}^{\mathrm{target}}}{\sum_{t}\phi_{n}^{t}\,\Delta t}
+\label{eq:profile_scaling}
+\end{equation}
+
+where $E_{n}^{\mathrm{target}}$ is the participant's annual energy target from
+Table~1 in the profile mapping.
+
+\subsection{Pipeline Activation per Scenario}
+
+\begin{table}[H]
+\centering
+\caption{Market pipeline steps active in each scenario}
+\label{tab:step_scope}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Step & A1 & A2 & B1 & B2 & C3\\
+\midrule
+i\;\; Day-Ahead Market        & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+ii\;\ Intra-Day Market        & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+ii-b Battery Optimisation     & --           & --           & --           & --           & $\checkmark$\\
+iii\ REC Settlement           & --           & $\checkmark$ & --           & $\checkmark$ & $\checkmark$\\
+iv\;\ Balancing Market        & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+v\;\;\ Supplier Billing       & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Computational Complexity}
+
+For $|\mathcal{S}|$ suppliers, $|\mathcal{G}|$ balancing groups, and
+$|\mathcal{N}|$ participants, the simulation complexity of Steps~i--iii and~v
+is $\mathcal{O}(T \cdot |\mathcal{N}| \cdot |\mathcal{G}|)$.  Step~ii-b
+(MILP) adds $\mathcal{O}(T \cdot B)$ where $B = T = 35{,}136$ is the number
+of binary variables.
+
+\bibliography{references}
+\bibliographystyle{plain}
+
+\end{document}

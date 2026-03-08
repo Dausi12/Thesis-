@@ -1,0 +1,241 @@
+% ============================================================
+%  Economic Key Performance Indicators for Suppliers and RECs
+%  Methodology Section – Thesis Chapter
+% ============================================================
+
+\section{Economic Key Performance Indicators for Suppliers and Renewable Energy Communities}
+\label{sec:economic_kpis}
+
+To evaluate the outcomes of the simulation scenarios, a structured set of economic key performance indicators (KPIs) is defined at two levels: the \textbf{energy supplier} and the \textbf{Renewable Energy Community (REC)}. These indicators capture the financial performance of the supply chain from wholesale market procurement through to retail billing and community settlement, enabling direct comparison across scenarios with and without RECs, battery storage, and forecasting uncertainty.
+
+All indicators are computed at the 15-minute timestep level and subsequently aggregated to monthly and annual totals, with prices averaged where applicable. The following subsections define each indicator, identify the entity it belongs to, and describe how it is derived from the simulation data.
+
+% ------------------------------------------------------------
+\subsection{Day-Ahead Market Commitments}
+\label{sec:kpi_da}
+
+\paragraph{Entity:} Energy Supplier / Balancing Group.
+
+The day-ahead (DA) market step establishes the supplier's initial wholesale position for each balancing group. For each 15-minute interval $t$, the net position of a balancing group $b$ is derived from the aggregated day-ahead load forecast $\hat{L}^{\mathrm{DA}}_{b,t}$ and renewable generation forecast $\hat{G}^{\mathrm{DA}}_{b,t}$ across all members:
+
+\begin{equation}
+    \hat{P}^{\mathrm{DA}}_{b,t} = \hat{G}^{\mathrm{DA}}_{b,t} - \hat{L}^{\mathrm{DA}}_{b,t}
+    \label{eq:da_net}
+\end{equation}
+
+When $\hat{P}^{\mathrm{DA}}_{b,t} < 0$, the supplier is a \emph{net buyer} in the DA market; when $\hat{P}^{\mathrm{DA}}_{b,t} > 0$, the supplier is a \emph{net seller}. The corresponding financial commitments are:
+
+\begin{align}
+    C^{\mathrm{DA,buy}}_{b,t}  &= \max\!\left(0,\; -\hat{P}^{\mathrm{DA}}_{b,t}\right) \cdot p^{\mathrm{DA}}_t
+    \label{eq:da_buy} \\[4pt]
+    C^{\mathrm{DA,sell}}_{b,t} &= \max\!\left(0,\; \hat{P}^{\mathrm{DA}}_{b,t}\right) \cdot p^{\mathrm{DA}}_t
+    \label{eq:da_sell}
+\end{align}
+
+\noindent where $p^{\mathrm{DA}}_t$ is the day-ahead market clearing price at time $t$ (\euro/MWh). $C^{\mathrm{DA,buy}}_{b,t}$ represents the \textbf{DA purchase commitment} and $C^{\mathrm{DA,sell}}_{b,t}$ the \textbf{DA sale commitment}. These serve as the baseline against which intra-day corrections are measured.
+
+% ------------------------------------------------------------
+\subsection{Intra-Day Market Adjustments}
+\label{sec:kpi_id}
+
+\paragraph{Entity:} Energy Supplier / Balancing Group.
+
+The intra-day (ID) market step corrects the DA position using updated forecasts available at the intra-day gate closure. Let $\hat{L}^{\mathrm{ID}}_{b,t}$ and $\hat{G}^{\mathrm{ID}}_{b,t}$ denote the revised load and generation forecasts. The load and generation adjustments are defined as the deviations from the DA position:
+
+\begin{equation}
+    \Delta L_{b,t} = \hat{L}^{\mathrm{ID}}_{b,t} - \hat{L}^{\mathrm{DA}}_{b,t}, \qquad
+    \Delta G_{b,t} = \hat{G}^{\mathrm{ID}}_{b,t} - \hat{G}^{\mathrm{DA}}_{b,t}
+    \label{eq:id_adj}
+\end{equation}
+
+The financial values of these adjustments at the intra-day price $p^{\mathrm{ID}}_t$ are:
+
+\begin{align}
+    C^{\mathrm{ID,buy}}_{b,t}  &= \Delta L_{b,t} \cdot p^{\mathrm{ID}}_t
+    \label{eq:id_buy} \\[4pt]
+    C^{\mathrm{ID,sell}}_{b,t} &= \Delta G_{b,t} \cdot p^{\mathrm{ID}}_t
+    \label{eq:id_sell}
+\end{align}
+
+These adjustments are netted against the DA commitments to obtain the \textbf{closing position} — the final wholesale market obligation entering the delivery period:
+
+\begin{align}
+    C^{\mathrm{close,buy}}_{b,t}  &= C^{\mathrm{DA,buy}}_{b,t}  + C^{\mathrm{ID,buy}}_{b,t}
+    \label{eq:close_buy} \\[4pt]
+    C^{\mathrm{close,sell}}_{b,t} &= C^{\mathrm{DA,sell}}_{b,t} + C^{\mathrm{ID,sell}}_{b,t}
+    \label{eq:close_sell}
+\end{align}
+
+The closing sale commitment $C^{\mathrm{close,sell}}_{b,t}$ is directly recorded as \textbf{energy market sales revenue} in the profit and loss calculation.
+
+% ------------------------------------------------------------
+\subsection{Balancing Market Settlement}
+\label{sec:kpi_balancing}
+
+\paragraph{Entity:} Energy Supplier / Balancing Group.
+
+After physical delivery, the \textbf{imbalance} between the closing forecast position and the measured actual consumption and generation is settled through the balancing market. For each balancing group $b$ at time $t$, the actual and forecasted net load are respectively:
+
+\begin{align}
+    P^{\mathrm{actual}}_{b,t}   &= L^{\mathrm{actual}}_{b,t}   - G^{\mathrm{actual}}_{b,t}
+    \label{eq:actual_net} \\[4pt]
+    P^{\mathrm{forecast}}_{b,t} &= \hat{L}^{\mathrm{ID}}_{b,t} - \hat{G}^{\mathrm{ID}}_{b,t}
+    \label{eq:forecast_net}
+\end{align}
+
+The \textbf{imbalance volume} is:
+
+\begin{equation}
+    \varepsilon_{b,t} = P^{\mathrm{actual}}_{b,t} - P^{\mathrm{forecast}}_{b,t}
+    \label{eq:imbalance}
+\end{equation}
+
+A positive $\varepsilon_{b,t}$ indicates a \emph{short position} (actual consumption exceeded the forecast purchase), while a negative value indicates a \emph{long position} (actual generation exceeded the forecast sale). Each unit of imbalance is settled at the imbalance price $p^{\mathrm{imb}}_t$:
+
+\begin{equation}
+    S_{b,t} = \varepsilon_{b,t} \cdot p^{\mathrm{imb}}_t
+    \label{eq:imbalance_settlement}
+\end{equation}
+
+When $S_{b,t} < 0$, the supplier incurs an \textbf{imbalance penalty} (cost); when $S_{b,t} > 0$, the supplier receives a \textbf{balancing reward} (revenue). These are recorded separately as:
+
+\begin{align}
+    \text{Imbalance Penalty}_{b,t} &= \left|S_{b,t}\right| \cdot \mathbf{1}\!\left[S_{b,t} < 0\right]
+    \label{eq:penalty} \\[4pt]
+    \text{Balancing Reward}_{b,t}  &= S_{b,t} \cdot \mathbf{1}\!\left[S_{b,t} > 0\right]
+    \label{eq:reward}
+\end{align}
+
+Three aggregate imbalance KPIs are reported annually: the \textbf{total imbalance volume} (MWh), the \textbf{total BG actual position} (MWh), and the \textbf{total BG forecast position} (MWh), together with a qualitative \textbf{system position} label (\textsc{short} / \textsc{long} / \textsc{balanced}).
+
+% ------------------------------------------------------------
+\subsection{Retail Billing — Sales Revenue and Purchase Costs}
+\label{sec:kpi_retail}
+
+\paragraph{Entity:} Energy Supplier (per customer).
+
+Following wholesale settlement, the supplier bills each prosumer and consumer individually based on their corrected metered values (i.e., after any REC energy-sharing deduction — see Section~\ref{sec:kpi_shared_energy}). For a customer $i$ connected to supplier $s$ at time $t$, the grid import and export are:
+
+\begin{align}
+    P^{\mathrm{imp}}_{i,t} &= \max\!\left(0,\; L^{\mathrm{actual}}_{i,t} - G^{\mathrm{actual}}_{i,t}\right)
+    \label{eq:grid_import} \\[4pt]
+    P^{\mathrm{exp}}_{i,t} &= \max\!\left(0,\; G^{\mathrm{actual}}_{i,t} - L^{\mathrm{actual}}_{i,t}\right)
+    \label{eq:grid_export}
+\end{align}
+
+The supplier earns \textbf{retail sales revenue} by selling grid electricity to customers at the retail tariff $p^{\mathrm{retail}}_{s,t}$, and incurs \textbf{retail purchase costs} by compensating prosumers for exported generation at the feed-in tariff $p^{\mathrm{feedin}}_{s,t}$:
+
+\begin{align}
+    R^{\mathrm{retail}}_{i,t} &= P^{\mathrm{imp}}_{i,t} \cdot p^{\mathrm{retail}}_{s,t}
+    \label{eq:retail_revenue} \\[4pt]
+    C^{\mathrm{feedin}}_{i,t} &= P^{\mathrm{exp}}_{i,t} \cdot p^{\mathrm{feedin}}_{s,t}
+    \label{eq:feedin_cost}
+\end{align}
+
+Consumer records contain no export term ($P^{\mathrm{exp}}_{i,t} = 0$), so $C^{\mathrm{feedin}}_{i,t}$ is only non-zero for prosumers. Both quantities are aggregated to the balancing group and supplier level before inclusion in the profit and loss statement.
+
+% ------------------------------------------------------------
+\subsection{Supplier Profit and Loss}
+\label{sec:kpi_pnl}
+
+\paragraph{Entity:} Energy Supplier.
+
+The supplier's annual financial performance is summarised through three revenue components and three cost components, aggregated over all months and balancing groups:
+
+\begin{equation}
+    \text{Total Revenue} =
+        \underbrace{\sum_{b,t} C^{\mathrm{close,sell}}_{b,t}}_{\text{Market Sales}}
+        +\; \underbrace{\sum_{b,t} \text{Balancing Reward}_{b,t}}_{\text{Balancing Rewards}}
+        +\; \underbrace{\sum_{i,t} R^{\mathrm{retail}}_{i,t}}_{\text{Retail Sales}}
+    \label{eq:total_revenue}
+\end{equation}
+
+\begin{equation}
+    \text{Total Costs} =
+        \underbrace{\sum_{b,t} C^{\mathrm{close,buy}}_{b,t}}_{\text{Market Purchases}}
+        +\; \underbrace{\sum_{b,t} \text{Imbalance Penalty}_{b,t}}_{\text{Balancing Penalties}}
+        +\; \underbrace{\sum_{i,t} C^{\mathrm{feedin}}_{i,t}}_{\text{Retail Purchases}}
+    \label{eq:total_costs}
+\end{equation}
+
+\begin{equation}
+    \Pi = \text{Total Revenue} - \text{Total Costs}
+    \label{eq:profit_loss}
+\end{equation}
+
+The resulting \textbf{annual profit / loss} $\Pi$ (\euro) is the primary economic performance indicator for the supplier. The \textbf{monthly average profit / loss} is reported alongside it to capture seasonal variation. This formulation allows direct scenario comparison — in particular, whether the introduction of a REC or battery storage improves or deteriorates the supplier's financial position.
+
+% ------------------------------------------------------------
+\subsection{Internal Shared Energy (REC)}
+\label{sec:kpi_shared_energy}
+
+\paragraph{Entity:} Renewable Energy Community.
+
+The \textbf{internal shared energy} is the defining economic indicator of REC participation. For a given REC $r$ and timestep $t$, the total generation $G^{\mathrm{REC}}_{r,t}$ and total load $L^{\mathrm{REC}}_{r,t}$ are aggregated across all members. The quantity of energy exchanged internally — without transiting the public grid — is:
+
+\begin{equation}
+    E^{\mathrm{shared}}_{r,t} = \min\!\left(G^{\mathrm{REC}}_{r,t},\; L^{\mathrm{REC}}_{r,t}\right)
+    \label{eq:shared_energy}
+\end{equation}
+
+This formulation is consistent with the net-metering accounting framework required under Austrian and EU energy community regulation (Directive 2019/944/EU \cite{EU2019944}), whereby internal sharing is bounded by the lesser of available generation and demand at each interval. Each member's metered value is proportionally reduced. For a consumer $i$ with load fraction $\alpha_{i,t} = L_{i,t}\, /\, L^{\mathrm{REC}}_{r,t}$, the corrected load becomes:
+
+\begin{equation}
+    L^{\mathrm{corr}}_{i,t} = L_{i,t} - \alpha_{i,t} \cdot E^{\mathrm{shared}}_{r,t}
+    \label{eq:corrected_load}
+\end{equation}
+
+and equivalently for prosumer generation, with fraction $\beta_{i,t} = G_{i,t}\, /\, G^{\mathrm{REC}}_{r,t}$:
+
+\begin{equation}
+    G^{\mathrm{corr}}_{i,t} = G_{i,t} - \beta_{i,t} \cdot E^{\mathrm{shared}}_{r,t}
+    \label{eq:corrected_gen}
+\end{equation}
+
+The corrected metered values $L^{\mathrm{corr}}_{i,t}$ and $G^{\mathrm{corr}}_{i,t}$ flow directly into the balancing market (Section~\ref{sec:kpi_balancing}) and retail billing (Section~\ref{sec:kpi_retail}) steps. Consequently, $E^{\mathrm{shared}}_{r,t}$ quantifies the volume of electricity that is effectively shielded from grid tariffs and wholesale settlement costs.
+
+The \textbf{annual total shared energy} $E^{\mathrm{shared}}_r = \sum_t E^{\mathrm{shared}}_{r,t}$ (MWh) is used as the primary REC-level KPI, representing the productive output of the community's collective self-organisation. A higher shared energy implies a greater displacement of costly grid imports, directly reducing the net billing exposure of REC members and, in turn, the retail purchase costs incurred by the supplier.
+
+% ------------------------------------------------------------
+\subsection{Relationship Between KPIs Across Scenarios}
+\label{sec:kpi_relationships}
+
+The KPIs defined above are designed to be comparable across all simulation scenarios. In Scenarios~A and~B, which test single and multiple supplier configurations without and with RECs respectively, the supplier profit / loss $\Pi$ and the internal shared energy $E^{\mathrm{shared}}_r$ are the primary discriminants. In Scenario~C, which introduces battery energy storage systems (BESS) and a two-stage hierarchical optimisation framework (see Section~\ref{sec:c3_optimization}), the battery's contribution is captured indirectly through a reduction in grid import costs and an increase in shared energy. The net effect on $\Pi$ therefore provides an end-to-end quantitative measure of the economic value of coordinated storage operation within the REC.
+
+Table~\ref{tab:kpi_summary} provides a consolidated overview of all economic KPIs, their associated entities, units, and the simulation pipeline step in which they are produced.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of economic KPIs used in the scenario analysis.}
+\label{tab:kpi_summary}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{KPI} & \textbf{Entity} & \textbf{Unit} & \textbf{Pipeline Step} \\
+\midrule
+DA purchase commitment        & Supplier / BG  & \euro      & Day-Ahead Market \\
+DA sale commitment            & Supplier / BG  & \euro      & Day-Ahead Market \\
+ID purchase adjustment        & Supplier / BG  & \euro      & Intra-Day Market \\
+ID sale adjustment            & Supplier / BG  & \euro      & Intra-Day Market \\
+Closing purchase commitment   & Supplier / BG  & \euro      & Intra-Day Market \\
+Closing sale commitment       & Supplier / BG  & \euro      & Intra-Day Market \\
+\addlinespace
+Imbalance volume              & Supplier / BG  & MWh        & Balancing Market \\
+BG actual position            & Supplier / BG  & MWh        & Balancing Market \\
+BG forecast position          & Supplier / BG  & MWh        & Balancing Market \\
+Imbalance penalty             & Supplier / BG  & \euro      & Balancing Market \\
+Balancing reward              & Supplier / BG  & \euro      & Balancing Market \\
+System position               & Supplier / BG  & ---        & Balancing Market \\
+\addlinespace
+Retail sales revenue          & Supplier / Customer & \euro & Supplier Billing \\
+Retail purchase costs         & Supplier / Customer & \euro & Supplier Billing \\
+\addlinespace
+Total revenue                 & Supplier       & \euro      & Profit / Loss    \\
+Total costs                   & Supplier       & \euro      & Profit / Loss    \\
+Annual profit / loss          & Supplier       & \euro      & Profit / Loss    \\
+Monthly avg.\ profit / loss   & Supplier       & \euro      & Profit / Loss    \\
+\addlinespace
+Internal shared energy        & REC            & MWh        & REC Settlement   \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,27 @@
+\subsubsection*{Reference Network Selection}
+
+The reference network is obtained from the publicly available SimBench dataset \cite{SarajlicRehtanz2019}, which provides benchmark low-voltage (LV) distribution network models together with normalised annual time series for load, generation, and battery storage. Since the case study represents a rural LV municipality, the candidate pool is restricted to LV network topologies only.
+
+\paragraph{Requirement extraction.}
+Prior to network evaluation, the functional requirements of the nine-node REC are analysed as an ordered mapping in which each participant node is associated with a ranked list of compatible BDEW standard load profiles (e.g.\ G4 for the local authority, G6 for the fire station, G1 for the bank, and H0 variants for residential participants), the required photovoltaic profile classes for prosumer nodes, and the paired battery storage profile classes where applicable. Two mandatory class sets are extracted from this mapping automatically: nine distinct BDEW load classes and four PV classes (PV1, PV3, PV4, PV7). Any SimBench network that cannot provide at least one profile from each mandatory commercial class group (G1, G4, G6) is considered infeasible for the case study.
+
+\paragraph{Network screening.}
+All available LV network codes are enumerated via \texttt{sb.collect\_all\_simbench\_codes()} and loaded individually using \texttt{get\_simbench\_net()}. For each network, the available BDEW load classes are extracted from \texttt{net.load['profile']}, the PV classes from \texttt{net.sgen['profile']}, and the storage classes together with installed capacity from \texttt{net.storage['profile']} and \texttt{net.storage['max\_e\_mwh']}.
+
+\paragraph{Scoring.}
+Each candidate network receives a composite functional score. A match for each mandatory commercial load class (G1, G4, H0-A) contributes $+25$ points each, for a maximum of $75$ points from load coverage alone. An optional commercial class match (G6 or G3) adds $+15$ points, and the presence of residential sub-variants (H0-L, H0-C, or H0-G) adds $+10$ points. Availability of PV generation profiles contributes $+20$ points. Battery storage coverage is scored as follows: $\geq10$ units add $+30$ points; 5--9 units add $+20$; 1--4 units add $+10$; networks with no storage incur a $-15$ point deduction. A load profile diversity bonus of $+\min(25,\,n_{\mathrm{classes}})$ is applied, where $n_{\mathrm{classes}}$ is the number of distinct BDEW load profile classes present in the network.
+
+\paragraph{Selection outcome.}
+The network \textit{1-LV-rural3--2-no\_sw} is adopted as the single reference for all scenarios (A1, A2, B1, B2, and C3), achieving the highest composite score of $105$ across all evaluated candidates. It provides 153 load units and 27 PV generators covering the full set of required BDEW classes, together with 16 distributed residential battery units with a total installed capacity of approximately $185.9\,\mathrm{kWh}$. Its rural LV topology is consistent with the Austrian village setting of the case study. The battery storage elements are activated in scenario C3 and disregarded in the remaining scenarios, ensuring a consistent network topology across the entire case study.
+
+
+
+\subsubsection*{Profile Selection}
+
+Within the selected network, profiles are assigned by matching each participant's functional type to the corresponding BDEW class. The assignment follows three principles:
+
+\begin{enumerate}
+    \item Functional class consistency: participants are mapped strictly to their appropriate BDEW category.
+    \item Quantitative similarity: among profiles of the same class, the instance with the smallest combined deviation in annual energy (70\% weight) and peak power (30\% weight) is selected.
+    \item Structural preservation: selected SimBench profiles are used without structural modification, maintaining their original temporal characteristics.
+\end{enumerate}

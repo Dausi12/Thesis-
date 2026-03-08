@@ -1,0 +1,17 @@
+{
+  "name": "Gurobi Remote Services",
+  "version": "1.0.0",
+  "authors": [
+    "Michel Jaczynski <jaczynski@gurobi.com>"
+  ],
+  "license": "Gurobi",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "build",
+    "tests"
+  ],
+  "dependencies": {
+    "swagger-ui": "2.2.0"
+  }
+}

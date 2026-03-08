@@ -5,9 +5,13 @@
     "peak_kw": 10.52,
     "annual_load_kwh": 19972.69,
     "annual_pv_kwh": 0,
-    "load_profile": "G4",
-    "pv_profile": null,
-    "storage_profile": null
+    "load_classes": [
+      "G4",
+      "G3",
+      "G0"
+    ],
+    "pv_classes": [],
+    "storage_classes": {}
   },
   "2": {
     "name": "Fire Fighting Station",
@@ -16,9 +20,25 @@
     "annual_load_kwh": 5171.55,
     "annual_pv_kwh": 18115.65,
     "estimated_pv_kwp": 17.68,
-    "load_profile": "G6",
-    "pv_profile": "PV4",
-    "storage_profile": "Storage_PV4_H0-G"
+    "load_classes": [
+      "G6",
+      "G4",
+      "G3"
+    ],
+    "pv_classes": [
+      "PV4",
+      "PV5"
+    ],
+    "storage_classes": {
+      "PV4": [
+        "Storage_PV4_H0-A",
+        "Storage_PV4_H0-B",
+        "Storage_PV4_H0-C",
+        "Storage_PV4_H0-G",
+        "Storage_PV4_H0-L"
+      ],
+      "PV5": []
+    }
   },
   "3": {
     "name": "Apartment",
@@ -26,9 +46,14 @@
     "peak_kw": 1.26,
     "annual_load_kwh": 378.1,
     "annual_pv_kwh": 0,
-    "load_profile": "H0-L",
-    "pv_profile": null,
-    "storage_profile": null
+    "load_classes": [
+      "H0",
+      "H0-A",
+      "H0-B",
+      "H0-C"
+    ],
+    "pv_classes": [],
+    "storage_classes": {}
   },
   "4": {
     "name": "Apartment",
@@ -36,9 +61,14 @@
     "peak_kw": 1.65,
     "annual_load_kwh": 1395.14,
     "annual_pv_kwh": 0,
-    "load_profile": "H0-L",
-    "pv_profile": null,
-    "storage_profile": null
+    "load_classes": [
+      "H0",
+      "H0-A",
+      "H0-B",
+      "H0-C"
+    ],
+    "pv_classes": [],
+    "storage_classes": {}
   },
   "5": {
     "name": "Apartment (Hot Water Boiler)",
@@ -46,9 +76,13 @@
     "peak_kw": 2.84,
     "annual_load_kwh": 1816.81,
     "annual_pv_kwh": 0,
-    "load_profile": "H0-G",
-    "pv_profile": null,
-    "storage_profile": null
+    "load_classes": [
+      "H0-G",
+      "H0",
+      "H0-L"
+    ],
+    "pv_classes": [],
+    "storage_classes": {}
   },
   "6": {
     "name": "Household",
@@ -57,9 +91,32 @@
     "annual_load_kwh": 14093.83,
     "annual_pv_kwh": 4303.49,
     "estimated_pv_kwp": 4.2,
-    "load_profile": "H0-L",
-    "pv_profile": "PV3",
-    "storage_profile": "Storage_PV3_H0-L"
+    "load_classes": [
+      "H0",
+      "H0-A",
+      "H0-B",
+      "H0-G"
+    ],
+    "pv_classes": [
+      "PV2",
+      "PV3"
+    ],
+    "storage_classes": {
+      "PV2": [
+        "Storage_PV2_H0-A",
+        "Storage_PV2_H0-B",
+        "Storage_PV2_H0-C",
+        "Storage_PV2_H0-G",
+        "Storage_PV2_H0-L"
+      ],
+      "PV3": [
+        "Storage_PV3_H0-A",
+        "Storage_PV3_H0-B",
+        "Storage_PV3_H0-C",
+        "Storage_PV3_H0-G",
+        "Storage_PV3_H0-L"
+      ]
+    }
   },
   "7": {
     "name": "Bank",
@@ -67,9 +124,13 @@
     "peak_kw": 3.13,
     "annual_load_kwh": 9452.83,
     "annual_pv_kwh": 0,
-    "load_profile": "G1",
-    "pv_profile": null,
-    "storage_profile": null
+    "load_classes": [
+      "G1",
+      "G2",
+      "G0"
+    ],
+    "pv_classes": [],
+    "storage_classes": {}
   },
   "8": {
     "name": "Household",
@@ -78,9 +139,32 @@
     "annual_load_kwh": 1803.63,
     "annual_pv_kwh": 2664.07,
     "estimated_pv_kwp": 2.6,
-    "load_profile": "H0-L",
-    "pv_profile": "PV1",
-    "storage_profile": "Storage_PV1_H0-L"
+    "load_classes": [
+      "H0",
+      "H0-A",
+      "H0-B",
+      "H0-C"
+    ],
+    "pv_classes": [
+      "PV1",
+      "PV2"
+    ],
+    "storage_classes": {
+      "PV1": [
+        "Storage_PV1_H0-A",
+        "Storage_PV1_H0-B",
+        "Storage_PV1_H0-C",
+        "Storage_PV1_H0-G",
+        "Storage_PV1_H0-L"
+      ],
+      "PV2": [
+        "Storage_PV2_H0-A",
+        "Storage_PV2_H0-B",
+        "Storage_PV2_H0-C",
+        "Storage_PV2_H0-G",
+        "Storage_PV2_H0-L"
+      ]
+    }
   },
   "9": {
     "name": "Household",
@@ -88,8 +172,13 @@
     "peak_kw": 3.25,
     "annual_load_kwh": 9817.13,
     "annual_pv_kwh": 0,
-    "load_profile": "H0-L",
-    "pv_profile": null,
-    "storage_profile": null
+    "load_classes": [
+      "H0",
+      "H0-A",
+      "H0-B",
+      "H0-C"
+    ],
+    "pv_classes": [],
+    "storage_classes": {}
   }
 }

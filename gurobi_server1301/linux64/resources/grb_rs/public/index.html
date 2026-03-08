@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gurobi Remote Services Agent</title>
+  <link rel="icon" type="image/png" href="/img/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
+  <link href="/css/grbrs.css" rel="stylesheet">
+  <style>
+    p {
+      max-width: 800px;
+    }
+    a {
+      color: #caf7ff; !important;
+    }
+  </style>
+</head>
+<body>
+
+<a href="https://www.gurobi.com"> <img src="img/gurobi-logo.png"></img></a>
+<h1>The Gurobi Remote Services Agent is functioning normally.</h1>
+
+<p>
+  The Remote Services agent must be running on all the nodes that will form a Gurobi cluster.
+  Within a cluster, the agents are connected together to monitor themselves and to keep updated the status of the
+  cluster. In addition, the agent provides an interface so that client programs or client tools (grbcluster and
+  gurobi_cl) can communicate with the cluster. When a client submits an optimization job, the agents will coordinate
+  among themselves to decide where to execute the job.
+</p>
+<p>
+  The agent also provides a <a href="swagger.html">REST API</a> for advanced integration.
+</p>
+</body>
+</html>

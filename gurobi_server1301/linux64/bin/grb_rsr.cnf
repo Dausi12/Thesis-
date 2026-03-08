@@ -1,0 +1,22 @@
+# Gurobi Router Configuration File
+#
+# use 'grb_rsr properties' to get a complete list of the properties and
+# their documentation.
+#
+#
+
+# By default, communication uses the HTTP protocol. If you wish to encrypt the
+# data using standard HTTPS between the clients and the router, you must enable
+# TLS using the following property.
+#TLS=true
+
+# TLS_KEY and TLS_CERT indicate the path to the private key and certificate. If
+# you do not provide them, a self-signed certificate will be used.
+#TLS_KEY=company.key
+#TLS_CERT=company.crt
+
+# PORT indicates what port to use for HTTP and HTTPS communication between the clients
+# and the router. By default, HTTP will use the port 80 and HTTPS the port 443. If you wish
+# to use a different port, set this property.
+#PORT=61001
+

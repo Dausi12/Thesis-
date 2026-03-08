@@ -1,11 +1,12 @@
 # Large data files
 data/load_actual.csv
+*.zip
 
 # Large zip files
 simbench-develop.zip
 simBench2PowerFactory-main.zip
 modeling-examples-master.zip
-
+gurobi_server1301.zip
 # Large PDF documentation
 simbench_documentation_en_1.1.0.pdf
 

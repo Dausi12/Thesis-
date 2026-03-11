@@ -16,7 +16,7 @@
       "total_annual_load_kwh": 63899.61,
       "total_annual_pv_kwh": 25083.21
     },
-    "description": " Prosumers are net generators (RES only, no local load in billing)."
+    "description": "Single supplier mandate with REC and battery optimization. Prosumers are mixed (load + RES generation + storage)."
   },
   "energy_market": {
     "market_id": "MARKET_001",
@@ -51,15 +51,42 @@
   },
   "battery_optimization": {
     "optimization_framework": "pyomo",
-    "solver": "glpk",
+    "solver": "gurobi",
     "formulation": "MILP",
-    "objective_function": "minimize_total_rec_cost",
+    "approach": "two_stage_hierarchical",
+    "stage_1": {
+      "description": "Individual optimization — each participant minimizes their own energy cost independently to establish baseline cost caps.",
+      "objective": "minimize_individual_cost"
+    },
+    "stage_2": {
+      "description": "Collective REC optimization — minimize aggregate community cost with battery dispatch, internal energy trades, and Pareto fairness guarantees.",
+      "objective": "minimize_total_community_cost",
+      "internal_pricing": {
+        "strategy": "feed_in_parity",
+        "rule": "p2p_price_equals_feed_in_price",
+        "note": "Internal REC price set equal to feed-in (export) price. Prosumers are indifferent between selling internally or to the grid; consumers benefit because internal price is strictly below retail import tariff."
+      },
+      "fairness_constraint": {
+        "type": "pareto_optimality",
+        "rule": "C_rec_i <= C_ind_i for all participants",
+        "note": "Each participant's Stage 2 cost must not exceed their Stage 1 individual baseline cost."
+      }
+    },
+    "mpc": {
+      "horizon_hours": 24,
+      "timestep_minutes": 15,
+      "steps_per_horizon": 96,
+      "execution": "rolling_horizon_daily"
+    },
     "constraints": [
       "battery_capacity_limits",
       "charging_discharging_power_limits",
       "state_of_charge_bounds",
       "energy_balance",
-      "no_simultaneous_charge_discharge"
+      "no_simultaneous_charge_discharge",
+      "internal_trade_balance",
+      "pareto_fairness",
+      "terminal_soc"
     ]
   },
   "batteries": [
@@ -126,6 +153,14 @@
         "supplier_id": "SUP_A",
         "balancing_group_id": "BG_A"
       },
+      "load": {
+        "id": "LV3.101 Load 97 [G1-C]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "commercial",
+        "profile": "G1-C"
+      },
       "res": {
         "id": "LV3.101 SGen 1 [PV7]",
         "csv_file": "data/res_actual.csv",
@@ -148,6 +183,14 @@
         "supplier_id": "SUP_A",
         "balancing_group_id": "BG_A"
       },
+      "load": {
+        "id": "LV3.101 Load 31 [H0-A]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-A"
+      },
       "res": {
         "id": "LV3.101 SGen 2 [PV3]",
         "csv_file": "data/res_actual.csv",
@@ -169,6 +212,14 @@
       "supplier": {
         "supplier_id": "SUP_A",
         "balancing_group_id": "BG_A"
+      },
+      "load": {
+        "id": "LV3.101 Load 42 [H0-G]",
+        "csv_file": "data/load_actual.csv",
+        "load_forecast_da_file": "data/load_forecast_da.csv",
+        "load_forecast_id_file": "data/load_forecast_id.csv",
+        "load_type": "residential",
+        "profile": "H0-G"
       },
       "res": {
         "id": "LV3.101 SGen 3 [PV3]",

@@ -1177,30 +1177,40 @@ class EnergyMarketOperations:
             ax.axhline(0, color='k', lw=0.5, alpha=0.3)
             ax.set_xticks(list(x))
             ax.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax.set_title(f'{label} – Financial Overview ({self.scenario_name})', fontweight='bold')
+            ax.set_title(f'Financial Overview – {self.scenario_name}', fontweight='bold')
             ax.set_ylabel('EUR')
             ax.legend()
             ax.grid(alpha=0.3)
             ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
             ax.set_ylim(fin_lim)
 
-            # Right: grouped bar (revenue components)
+            # Right: dual-axis bar (revenue components)
             ax2 = axes[idx, 1]
-            bw = 0.25
+            ax2r = ax2.twinx()
+            bw = 0.35
             xp = np.arange(len(sd))
-            for i, (col, lbl, clr) in enumerate([
-                ('revenue_energy_market_sales_eur', 'Market Sales', '#27ae60'),
-                ('revenue_balancing_rewards_eur', 'Balancing Rewards', '#f39c12'),
-                ('revenue_retail_sales_eur', 'Retail Sales', '#3498db'),
-            ]):
-                ax2.bar(xp + (i - 1) * bw, sd[col].values, width=bw, label=lbl, color=clr, alpha=0.8)
+            # Primary axis (left): Retail Sales
+            ax2.bar(xp - bw/2, sd['revenue_retail_sales_eur'].values, width=bw,
+                    label='Retail Sales', color='#3498db', alpha=0.8)
+            ax2.set_ylabel('Retail Sales (EUR)', color='#3498db')
+            ax2.tick_params(axis='y', labelcolor='#3498db')
+            ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
+            # Secondary axis (right): small components
+            ax2r.bar(xp + bw/2, sd['revenue_energy_market_sales_eur'].values, width=bw/2,
+                     label='Market Sales', color='#27ae60', alpha=0.8)
+            ax2r.bar(xp + bw/2 + bw/2, sd['revenue_balancing_rewards_eur'].values, width=bw/2,
+                     label='Balancing Rewards', color='#f39c12', alpha=0.8)
+            ax2r.set_ylabel('Market Sales / Bal. Rewards (EUR)', color='#27ae60')
+            ax2r.tick_params(axis='y', labelcolor='#27ae60')
+            ax2r.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
             ax2.set_xticks(xp)
             ax2.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax2.set_title(f'{label} – Revenue Components', fontweight='bold')
-            ax2.set_ylabel('EUR')
-            ax2.legend(fontsize=9)
+            ax2.set_title(f'Revenue Components – {self.scenario_name}', fontweight='bold')
+            # Combined legend
+            h1, l1 = ax2.get_legend_handles_labels()
+            h2, l2 = ax2r.get_legend_handles_labels()
+            ax2.legend(h1 + h2, l1 + l2, fontsize=9, loc='upper left')
             ax2.grid(alpha=0.3, axis='y')
-            ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
 
         plt.tight_layout()
         plt.show()
@@ -1232,28 +1242,38 @@ class EnergyMarketOperations:
             ax.axhline(0, color='k', lw=1, alpha=0.7)
             ax.set_xticks(list(x))
             ax.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax.set_title(f'{label} – BG Position & Imbalance ({self.scenario_name})', fontweight='bold')
+            ax.set_title(f'BG Position & Imbalance – {self.scenario_name}', fontweight='bold')
             ax.set_ylabel('MWh')
             ax.legend()
             ax.grid(alpha=0.3)
 
-            # Right: cost breakdown
+            # Right: dual-axis bar (cost components)
             ax2 = axes[idx, 1]
-            bw = 0.25
+            ax2r = ax2.twinx()
+            bw = 0.35
             xp = np.arange(len(sd))
-            for i, (col, lbl, clr) in enumerate([
-                ('cost_energy_market_purchases_eur', 'Market Purchases', '#e74c3c'),
-                ('cost_balancing_penalties_eur', 'Balancing Penalties', '#8e44ad'),
-                ('cost_retail_purchases_eur', 'Retail Purchases', '#e67e22'),
-            ]):
-                ax2.bar(xp + (i - 1) * bw, sd[col].values, width=bw, label=lbl, color=clr, alpha=0.8)
+            # Primary axis (left): Market Purchases (dominant cost)
+            ax2.bar(xp - bw/2, sd['cost_energy_market_purchases_eur'].values, width=bw,
+                    label='Market Purchases', color='#e74c3c', alpha=0.8)
+            ax2.set_ylabel('Market Purchases (EUR)', color='#e74c3c')
+            ax2.tick_params(axis='y', labelcolor='#e74c3c')
+            ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
+            # Secondary axis (right): small components
+            ax2r.bar(xp + bw/2, sd['cost_balancing_penalties_eur'].values, width=bw/2,
+                     label='Balancing Penalties', color='#8e44ad', alpha=0.8)
+            ax2r.bar(xp + bw/2 + bw/2, sd['cost_retail_purchases_eur'].values, width=bw/2,
+                     label='Retail Purchases', color='#e67e22', alpha=0.8)
+            ax2r.set_ylabel('Bal. Penalties / Retail Purch. (EUR)', color='#8e44ad')
+            ax2r.tick_params(axis='y', labelcolor='#8e44ad')
+            ax2r.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
             ax2.set_xticks(xp)
             ax2.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax2.set_title(f'{label} – Cost Components', fontweight='bold')
-            ax2.set_ylabel('EUR')
-            ax2.legend(fontsize=9)
+            ax2.set_title(f'Cost Components – {self.scenario_name}', fontweight='bold')
+            # Combined legend
+            h1, l1 = ax2.get_legend_handles_labels()
+            h2, l2 = ax2r.get_legend_handles_labels()
+            ax2.legend(h1 + h2, l1 + l2, fontsize=9, loc='upper left')
             ax2.grid(alpha=0.3, axis='y')
-            ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
 
         plt.tight_layout()
         plt.show()

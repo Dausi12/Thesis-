@@ -1,0 +1,100 @@
+\subsection{Scenario A1: Single Supplier, No REC (Net Generators)}
+\label{sec:results_A1_netgen}
+
+The net generator configuration assigns all community members to a single balancing group (BG\_A) under Supplier~A. In this variant, generation and consumption are treated asymmetrically: the prosumer nodes carry only photovoltaic generation with no co-located local loads, acting as pure net generators. Their output first offsets the aggregate consumer demand within the balancing group; any surplus that exceeds the consumers' instantaneous load is fed back to the supplier, who compensates it at the regulated feed-in tariff and may resell it on the wholesale market.
+
+Table~\ref{tab:A1_netgen_balancing} summarises the annual balancing statistics. The actual metered net position (91.6541\,MWh) differs from the intra-day forecast position (91.6467\,MWh) by only +0.0075\,MWh, resulting in virtually zero net annual imbalance. The marginal system position is classified as \textsc{short} (deficit), producing a small net balancing settlement of +\euro{}0.58 (balancing rewards \euro{}71.15 minus penalties \euro{}70.57). Because the prosumers inject generation without consuming locally, a larger share of PV output flows directly into the balancing group, offsetting consumer loads and reducing wholesale procurement needs. Forecasting remains straightforward in the absence of REC sharing, and the quarter-hourly deviations largely cancel over the year.
+
+Figure~\ref{fig:imbalance_annual_results_A1_netgen} illustrates the monthly balancing group positions (actual metered versus forecast). Both series track each other closely, exhibiting a pronounced seasonal pattern driven by variations in net load demand. Peak values occur during winter months (November--December), with December recording the annual maximum of approximately 12.50\,MWh (actual 12.5029\,MWh, forecast 12.5087\,MWh). A steady decline follows from January through May, reaching the annual minimum in August (actual 1.37\,MWh, forecast 1.37\,MWh), reflecting strong offset from solar generation in the net generator portfolio. In autumn (September--October), both curves recover, rising from approximately 7.88\,MWh in September to around 8.38\,MWh in October as net load demand increases with shorter days.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A1 (Net Generators) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:A1_netgen_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & 91.6541           & MWh \\
+Forecast BG net position (ID)      & 91.6467           & MWh \\
+Net imbalance volume               & +0.0075           & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual)          & 71.15             & \euro{} \\
+Imbalance penalty (annual)         & 70.57             & \euro{} \\
+Net balancing settlement           & +0.58             & \euro{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert imbalance plot for A1 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly balancing group position and imbalance: Scenario A1 -- Net Generators (Supplier~A).}
+    \label{fig:imbalance_annual_results_A1_netgen}
+\end{figure}
+
+Retail billing dominates the financial outcome. Supplier~A generated annual retail sales revenue of \euro{}29{,}814.30 from the consumer nodes, while feed-in compensation to the net generator prosumers amounted to \euro{}4{,}670.08. Because the prosumers carry no local load, their entire PV output that is not absorbed by coincident consumer demand constitutes surplus and must be compensated at the feed-in tariff. This explains why feed-in costs are notably higher than in the mixed prosumer baseline (\euro{}3{,}357.64), where prosumers first self-consume a portion of their generation locally before exporting the remainder.
+
+Figure~\ref{fig:costsA_netgen} decomposes the supplier's total annual costs of \euro{}8{,}204.21 into three principal components with contrasting seasonal profiles:
+
+Market purchases (\euro{}3{,}464; 42.22\%) reflect wholesale procurement to cover residual consumer demand not met by the prosumers' generation. Costs peak in winter (e.g., December \euro{}525, November \euro{}494) when consumer loads are high and solar offset minimal, and reach minima in summer (e.g., August \euro{}125, May \euro{}151), where the net generators' output absorbs most of the consumer demand. Retail feed-in costs (\euro{}4{,}670; 56.92\%) compensate the pure-generation prosumers for surplus energy that exceeds coincident consumer loads within the balancing group. These costs exhibit the opposite seasonal pattern, peaking in summer (e.g., May \euro{}671, August \euro{}612) when photovoltaic surplus is greatest, and declining in winter (e.g., December \euro{}105, January \euro{}134). Notably, in the net generator configuration feed-in costs \emph{exceed} market purchases -- the inverse of the mixed prosumer baseline. This structural shift arises because the prosumers inject their entire output without any local self-consumption, so a larger volume of energy must be compensated at the feed-in tariff. Balancing penalties (\euro{}70.57; 0.86\%) are negligible, ranging from \euro{}3.47 to \euro{}8.75 monthly. The slight summer increase reflects marginally higher short-term variability in photovoltaic output. Monthly total costs remain relatively stable (\euro{}493--\euro{}828), as the opposing seasonal patterns of market purchases and feed-in costs partially offset each other.
+
+Figures~\ref{fig:revenue_componets_netgen} and \ref{fig:finacial_overview_netgen} illustrate the monthly revenue components and overall profit/loss trajectory, respectively. Revenue is overwhelmingly dominated by retail sales (98.83\%; \euro{}29{,}814.30), with energy market sales (\euro{}283.12; 0.94\%) and balancing rewards (\euro{}71.15; 0.24\%) contributing only marginally. Market sales are higher than in the mixed prosumer configuration (\euro{}174.75), consistent with the greater volume of surplus generation available for wholesale export. Costs are primarily driven by retail feed-in payments (56.92\%; \euro{}4{,}670.08) and market purchases (42.22\%; \euro{}3{,}463.56), with balancing penalties (0.86\%; \euro{}70.57) remaining negligible.
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert revenue components plot for A1 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue components: Scenario A1 -- Net Generators (Supplier~A).}
+    \label{fig:revenue_componets_netgen}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert financial overview plot for A1 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue, costs, and profit/loss: Scenario A1 -- Net Generators (Supplier~A).}
+    \label{fig:finacial_overview_netgen}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert cost components plot for A1 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly cost components: Scenario A1 -- Net Generators (Supplier~A).}
+    \label{fig:costsA_netgen}
+\end{figure}
+
+The annual profit-and-loss statement (Table~\ref{tab:A1_netgen_pnl}) shows total revenue of \euro{}30{,}168.57 and total costs of \euro{}8{,}204.21, resulting in an annual profit of \euro{}21{,}964.36 (monthly average \euro{}1{,}830.36; range \euro{}1{,}097.03--\euro{}2{,}244.91). Overall, the net generator configuration demonstrates excellent forecast alignment, near-zero imbalance exposure, and robust profitability driven overwhelmingly by retail sales, with feed-in payments and wholesale procurement as the primary cost drivers. Compared to the mixed prosumer baseline (profit \euro{}29{,}515.86), the net generator scenario yields lower profit (\euro{}21{,}964.36). The reduction is driven by two effects of the pure-generation prosumer design: (i)~lower retail sales revenue, since the consumers alone generate less billing volume than the mixed portfolio of consumers and prosumers-with-load, and (ii)~higher feed-in costs, since the prosumers export their full output without any local self-consumption offset. Seasonal variations in individual components are largely offset, yielding stable monthly financial performance.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A1 (Net Generators) -- Annual profit and loss statement (Supplier~A).}
+\label{tab:A1_netgen_pnl}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 283.12              & 0.94 \\
+\quad Balancing rewards              & 71.15               & 0.24 \\
+\quad Retail sales                   & 29{,}814.30         & 98.83 \\
+\textbf{Total Revenue}               & \textbf{30{,}168.57} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 3{,}463.56          & 42.22 \\
+\quad Imbalance penalties            & 70.57               & 0.86 \\
+\quad Retail purchases (feed-in)     & 4{,}670.08          & 56.92 \\
+\textbf{Total Costs}                 & \textbf{8{,}204.21}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}21{,}964.36} & \\
+Monthly average                      & \euro{}1{,}830.36         & \\
+Monthly minimum                      & \euro{}1{,}097.03         & \\
+Monthly maximum                      & \euro{}2{,}244.91         & \\
+\bottomrule
+\end{tabular}
+\end{table}

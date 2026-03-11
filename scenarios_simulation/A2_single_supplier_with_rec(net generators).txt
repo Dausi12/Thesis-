@@ -1,0 +1,106 @@
+\subsection{Scenario A2: Single Supplier, With REC (Net Generators)}
+\label{sec:results_A2_netgen}
+
+Scenario~A2 (Net Generators) introduces a Renewable Energy Community (REC) into the single-supplier, net-generator framework. All nine community members remain assigned to a single balancing group (BG\_A) under Supplier~A. The prosumer nodes carry only photovoltaic generation with no co-located local loads, acting as pure net generators. Their output is first shared internally with consumers via the REC proportional allocation mechanism; any surplus that exceeds the consumers' instantaneous demand after REC sharing is fed back to the supplier at the regulated feed-in tariff. Over the simulation year, the REC shared a total of 86.47\,MWh of energy internally --- representing 4.61\% of total community load (1{,}873.82\,MWh) and 13.08\% of total community generation (660.92\,MWh). The REC reduced both the corrected load and corrected generation seen by the supplier by 43.24\,MWh each.
+
+Table~\ref{tab:A2_netgen_balancing} summarises the annual balancing statistics for Supplier~A's balancing group. The actual metered net position (91.6541\,MWh) differs from the intra-day forecast position (91.6467\,MWh) by only +0.0075\,MWh, resulting in virtually zero net annual imbalance. The marginal system position is classified as \textsc{short} (deficit), producing a small net balancing settlement of +\euro{}0.58 (balancing rewards \euro{}71.15 minus penalties \euro{}70.57). The balancing group position is identical to the A1 net generator baseline (91.65\,MWh) because the REC settlement reallocates energy internally among community members without changing the aggregate balancing group position seen by the system operator. Consequently, the imbalance profile, penalties, and rewards are unchanged relative to A1.
+
+Figure~\ref{fig:imbalance_annual_results_A2_netgen} illustrates the monthly balancing group positions (actual metered versus forecast). Both series track each other closely, exhibiting a pronounced seasonal pattern driven by variations in net load demand. Peak values occur during winter months (November--December), with December recording the annual maximum of approximately 12.50\,MWh (actual 12.5029\,MWh, forecast 12.5087\,MWh). A steady decline follows from January through May, reaching the annual minimum in August (actual 1.37\,MWh, forecast 1.37\,MWh), reflecting strong offset from solar generation in the net generator portfolio. In autumn (September--October), both curves recover, rising from approximately 7.88\,MWh in September to around 8.38\,MWh in October as net load demand increases with shorter days.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A2 (With REC, Net Generators) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:A2_netgen_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & 91.6541           & MWh \\
+Forecast BG net position (ID)      & 91.6467           & MWh \\
+Net imbalance volume               & +0.0075           & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual)          & 71.15             & \euro{} \\
+Imbalance penalty (annual)         & 70.57             & \euro{} \\
+Net balancing settlement           & +0.58             & \euro{} \\
+\addlinespace
+REC shared energy (annual)         & 86.47             & MWh \\
+Shared / community load            & 4.61              & \% \\
+Shared / community generation      & 13.08             & \% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert imbalance plot for A2 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly balancing group position and imbalance: Scenario A2 -- With REC, Net Generators (Supplier~A).}
+    \label{fig:imbalance_annual_results_A2_netgen}
+\end{figure}
+
+The REC mechanism significantly reshapes the supplier's cost structure while leaving the balancing group position unchanged. Supplier~A generated annual retail sales revenue of \euro{}21{,}123.93 from the community members. Because prosumer generation is now partly shared with consumers via the REC --- reducing the volume of energy that flows through the supplier's retail billing --- retail sales decline by \euro{}8{,}690.37 relative to the A1 net generator baseline (\euro{}29{,}814.30). This reduction is larger than the corresponding decline in the mixed prosumer A2 scenario (\euro{}6{,}325.13), reflecting the net generators' greater volume of sharable surplus energy. Feed-in compensation to the pure-generation prosumers falls to \euro{}1{,}107.46, a reduction of \euro{}3{,}562.62 from the A1 net generator baseline (\euro{}4{,}670.08), since the locally shared energy no longer appears as surplus exports requiring feed-in compensation.
+
+Monthly REC shared energy exhibits a clear seasonal pattern, peaking in summer when photovoltaic output is highest (July 10.69\,MWh, April 10.42\,MWh, May 10.05\,MWh) and reaching minima in winter (December 2.43\,MWh, January 2.83\,MWh). This seasonal variation directly modulates the feed-in cost reduction: summer months see the largest savings from internal sharing, while winter months with minimal PV surplus show negligible REC activity.
+
+Figure~\ref{fig:costsA2_netgen} decomposes the supplier's total annual costs of \euro{}4{,}641.59 into three principal components with contrasting seasonal profiles:
+
+Market purchases (\euro{}3{,}464; 74.62\%) remain unchanged from the A1 net generator baseline because the REC does not alter the aggregate balancing group position or the wholesale procurement schedule. Costs peak in winter (e.g., December \euro{}525, November \euro{}494) and reach minima in summer (e.g., August \euro{}125, May \euro{}151). Retail feed-in costs (\euro{}1{,}107; 23.86\%) are substantially reduced from the A1 net generator baseline (\euro{}4{,}670; 56.92\%), reflecting the REC's absorption of prosumer surplus before it reaches the supplier's feed-in obligation. These costs now peak modestly in summer (e.g., May \euro{}257, August \euro{}231) and are near zero in winter (e.g., December \euro{}5.41, January \euro{}17.45). The cost composition has shifted: market purchases now dominate at 74.62\% (versus 42.22\% in A1), as the REC has absorbed much of the feed-in volume. Balancing penalties (\euro{}70.57; 1.52\%) are unchanged from the baseline. Monthly total costs range from \euro{}296 to \euro{}534, substantially lower than the A1 net generator range (\euro{}493--\euro{}828).
+
+Figures~\ref{fig:revenue_componets_A2_netgen} and \ref{fig:finacial_overview_A2_netgen} illustrate the monthly revenue components and overall profit/loss trajectory, respectively. Revenue is overwhelmingly dominated by retail sales (98.35\%; \euro{}21{,}123.93), with energy market sales (\euro{}283.12; 1.32\%) and balancing rewards (\euro{}71.15; 0.33\%) contributing only marginally. Both market sales and balancing rewards are identical to the A1 net generator baseline, as these derive from the aggregate balancing group position which the REC does not alter. Total costs decrease substantially to \euro{}4{,}641.59 from \euro{}8{,}204.21 in A1, driven almost entirely by the reduction in feed-in payments.
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert revenue components plot for A2 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue components: Scenario A2 -- With REC, Net Generators (Supplier~A).}
+    \label{fig:revenue_componets_A2_netgen}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert financial overview plot for A2 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue, costs, and profit/loss: Scenario A2 -- With REC, Net Generators (Supplier~A).}
+    \label{fig:finacial_overview_A2_netgen}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert cost components plot for A2 Net Generators
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly cost components: Scenario A2 -- With REC, Net Generators (Supplier~A).}
+    \label{fig:costsA2_netgen}
+\end{figure}
+
+The annual profit-and-loss statement (Table~\ref{tab:A2_netgen_pnl}) shows total revenue of \euro{}21{,}478.19 and total costs of \euro{}4{,}641.59, resulting in an annual profit of \euro{}16{,}836.60 (monthly average \euro{}1{,}403.05; range \euro{}549.04--\euro{}1{,}998.12). Compared to the A1 net generator baseline (profit \euro{}21{,}964.36), introducing the REC reduces the supplier's annual profit by \euro{}5{,}127.76 ($-$23.3\%). The profit reduction is driven by the loss of retail sales revenue (\euro{}8{,}690.37), which is only partially offset by the reduction in feed-in costs (\euro{}3{,}562.62). The REC thus transfers economic value from the supplier to the community members, who benefit from reduced grid charges and internal energy sharing, while the supplier bears the financial consequence of reduced retail throughput. The profit penalty is more severe in the net generator configuration ($-$23.3\%) than in the mixed prosumer configuration ($-$12.6\%), because the pure-generation prosumers produce a larger volume of sharable surplus, amplifying the displacement of both retail sales and feed-in flows.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A2 (With REC, Net Generators) -- Annual profit and loss statement (Supplier~A).}
+\label{tab:A2_netgen_pnl}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 283.12              & 1.32 \\
+\quad Balancing rewards              & 71.15               & 0.33 \\
+\quad Retail sales                   & 21{,}123.93         & 98.35 \\
+\textbf{Total Revenue}               & \textbf{21{,}478.19} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 3{,}463.56          & 74.62 \\
+\quad Imbalance penalties            & 70.57               & 1.52 \\
+\quad Retail purchases (feed-in)     & 1{,}107.46          & 23.86 \\
+\textbf{Total Costs}                 & \textbf{4{,}641.59}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}16{,}836.60} & \\
+Monthly average                      & \euro{}1{,}403.05         & \\
+Monthly minimum                      & \euro{}549.04             & \\
+Monthly maximum                      & \euro{}1{,}998.12         & \\
+\bottomrule
+\end{tabular}
+\end{table}

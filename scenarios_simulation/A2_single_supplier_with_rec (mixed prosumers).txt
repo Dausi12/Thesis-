@@ -1,0 +1,106 @@
+\subsection{Scenario A2: Single Supplier, With REC (Mixed Prosumers)}
+\label{sec:results_A2}
+
+Scenario~A2 introduces a Renewable Energy Community (REC) into the single-supplier framework. All nine community members remain assigned to a single balancing group (BG\_A) under Supplier~A, but prosumer generation can now be shared internally with consumers via the REC mechanism before residual positions are settled through the wholesale and balancing markets. Over the simulation year, the REC shared a total of 94.79\,MWh of energy internally --- representing 5.06\% of total community load (1{,}873.82\,MWh) and 14.34\% of total community generation (660.92\,MWh).
+
+Table~\ref{tab:A2_balancing} summarises the annual balancing statistics for Supplier~A's balancing group. The actual metered net position (148.0748\,MWh) differs from the intra-day forecast position (148.0753\,MWh) by only $-$0.0005\,MWh, resulting in virtually zero net annual imbalance. The marginal system position is classified as \textsc{long} (surplus), producing a small net balancing settlement of +\euro{}0.35 (balancing rewards \euro{}72.08 minus penalties \euro{}71.73). The balancing group position is identical to the A1 baseline (148.07\,MWh) because the REC settlement reallocates energy internally among community members without changing the aggregate balancing group position seen by the system operator. Consequently, the imbalance profile, penalties, and rewards are unchanged relative to A1.
+
+Figure~\ref{fig:imbalance_annual_results_A2} illustrates the monthly balancing group positions (actual metered versus forecast). Both series track each other closely, exhibiting a pronounced seasonal pattern driven by variations in net load demand. Peak values occur during winter months (January--February and November--December), with December recording the annual maximum of approximately 18.07\,MWh (actual 18.0650\,MWh, forecast 18.0710\,MWh). A steady decline follows from March to May, reaching the annual minimum in May (actual 6.57\,MWh, forecast 6.55\,MWh). Summer months (June--August) remain consistently low, with the absolute trough in August (actual 4.97\,MWh, forecast 4.97\,MWh), reflecting strong offset from solar generation. In autumn (September--October), both curves recover, rising from approximately 12.12\,MWh in September to around 12.61\,MWh in October as net load demand increases with shorter days.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A2 (With REC, Mixed Prosumers) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:A2_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & 148.0748          & MWh \\
+Forecast BG net position (ID)      & 148.0753          & MWh \\
+Net imbalance volume               & $-$0.0005         & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
+\addlinespace
+Balancing reward (annual)          & 72.08             & \euro{} \\
+Imbalance penalty (annual)         & 71.73             & \euro{} \\
+Net balancing settlement           & +0.35             & \euro{} \\
+\addlinespace
+REC shared energy (annual)         & 94.79             & MWh \\
+Shared / community load            & 5.06              & \% \\
+Shared / community generation      & 14.34             & \% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert imbalance plot for A2
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly balancing group position and imbalance: Scenario A2 -- With REC, Mixed Prosumers (Supplier~A).}
+    \label{fig:imbalance_annual_results_A2}
+\end{figure}
+
+The REC mechanism significantly reshapes the supplier's cost structure while leaving the balancing group position unchanged. Supplier~A generated annual retail sales revenue of \euro{}31{,}628.26 from the community members. Because prosumer generation is now partly shared with consumers via the REC --- reducing the volume of energy that flows through the supplier's retail billing --- retail sales decline by \euro{}6{,}325.13 relative to the A1 baseline (\euro{}37{,}953.39). Feed-in compensation to prosumers falls sharply to \euro{}764.65, a reduction of \euro{}2{,}593.00 from the baseline (\euro{}3{,}357.64), since the locally shared energy no longer appears as surplus exports requiring feed-in compensation.
+
+Monthly REC shared energy exhibits a clear seasonal pattern, peaking in summer when photovoltaic output is highest (May 11.78\,MWh, August 11.34\,MWh, July 11.55\,MWh) and reaching minima in winter (December 2.53\,MWh, January 3.06\,MWh). This seasonal variation directly modulates the feed-in cost reduction: summer months see the largest savings from internal sharing, while winter months with minimal PV surplus show negligible REC activity.
+
+Figure~\ref{fig:costsA2} decomposes the supplier's total annual costs of \euro{}6{,}091.37 into three principal components with contrasting seasonal profiles:
+
+Market purchases (\euro{}5{,}255; 86.27\%) remain unchanged from the A1 baseline because the REC does not alter the aggregate balancing group position or the wholesale procurement schedule. The supplier still procures the same volume on day-ahead and intra-day markets to cover the net community demand. Costs peak in winter (e.g., December \euro{}776, November \euro{}738) and reach minima in summer (e.g., August \euro{}203, May \euro{}237). Retail feed-in costs (\euro{}765; 12.55\%) are drastically reduced from the baseline (\euro{}3{,}358; 38.66\%), reflecting the REC's absorption of prosumer surplus before it reaches the supplier's feed-in obligation. These costs now peak modestly in summer (e.g., May \euro{}185, August \euro{}145) and are near zero in winter (e.g., December \euro{}1.02, January \euro{}8.01). Balancing penalties (\euro{}71.73; 1.18\%) are unchanged from the baseline. Monthly total costs range from \euro{}356 to \euro{}782, with winter months now dominating costs almost entirely through market purchases.
+
+Figures~\ref{fig:revenue_componets_A2} and \ref{fig:finacial_overview_A2} illustrate the monthly revenue components and overall profit/loss trajectory, respectively. Revenue is overwhelmingly dominated by retail sales (99.23\%; \euro{}31{,}628.26), with energy market sales (\euro{}174.75; 0.55\%) and balancing rewards (\euro{}72.08; 0.23\%) contributing only marginally. Both market sales and balancing rewards are identical to the A1 baseline, as these derive from the aggregate balancing group position which the REC does not alter. Total costs decrease substantially to \euro{}6{,}091.37 from \euro{}8{,}684.37 in A1, driven almost entirely by the reduction in feed-in payments.
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert revenue components plot for A2
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue components: Scenario A2 -- With REC, Mixed Prosumers (Supplier~A).}
+    \label{fig:revenue_componets_A2}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert financial overview plot for A2
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue, costs, and profit/loss: Scenario A2 -- With REC, Mixed Prosumers (Supplier~A).}
+    \label{fig:finacial_overview_A2}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert cost components plot for A2
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly cost components: Scenario A2 -- With REC, Mixed Prosumers (Supplier~A).}
+    \label{fig:costsA2}
+\end{figure}
+
+The annual profit-and-loss statement (Table~\ref{tab:A2_pnl}) shows total revenue of \euro{}31{,}875.08 and total costs of \euro{}6{,}091.37, resulting in an annual profit of \euro{}25{,}783.71 (monthly average \euro{}2{,}148.64; range \euro{}1{,}042.39--\euro{}2{,}996.65). Compared to the A1 baseline (profit \euro{}29{,}515.86), introducing the REC reduces the supplier's annual profit by \euro{}3{,}732.14 ($-$12.6\%). The profit reduction is driven by the loss of retail sales revenue (\euro{}6{,}325.13), which is only partially offset by the reduction in feed-in costs (\euro{}2{,}593.00). The REC thus transfers economic value from the supplier to the community members, who benefit from reduced grid charges and internal energy sharing, while the supplier bears the financial consequence of reduced retail throughput.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A2 (With REC, Mixed Prosumers) -- Annual profit and loss statement (Supplier~A).}
+\label{tab:A2_pnl}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 174.75              & 0.55 \\
+\quad Balancing rewards              & 72.08               & 0.23 \\
+\quad Retail sales                   & 31{,}628.26         & 99.23 \\
+\textbf{Total Revenue}               & \textbf{31{,}875.08} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 5{,}255.00          & 86.27 \\
+\quad Imbalance penalties            & 71.73               & 1.18 \\
+\quad Retail purchases (feed-in)     & 764.65              & 12.55 \\
+\textbf{Total Costs}                 & \textbf{6{,}091.37}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}25{,}783.71} & \\
+Monthly average                      & \euro{}2{,}148.64         & \\
+Monthly minimum                      & \euro{}1{,}042.39         & \\
+Monthly maximum                      & \euro{}2{,}996.65         & \\
+\bottomrule
+\end{tabular}
+\end{table}

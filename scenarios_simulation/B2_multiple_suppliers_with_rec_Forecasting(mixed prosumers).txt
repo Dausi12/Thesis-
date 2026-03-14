@@ -1,0 +1,90 @@
+\subsection{Scenario B2-Forecasts: Multiple Suppliers, With REC -- REC-Aware Forecasting (Mixed Prosumers)}
+\label{sec:results_B2fm}
+
+This section reports the results of the REC-aware forecasting variant of Scenario~B2. In this configuration, suppliers adjust their day-ahead (DA) and intra-day (ID) market commitments to account for the expected volume of REC internal sharing. By incorporating this adjustment ex-ante, the scheduled market position reflects the residual demand after community energy exchanges, ensuring that any remaining imbalance arises primarily from forecast uncertainty rather than from structural REC settlement effects.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/corrected_finance1_overview.png}
+\caption{Monthly revenue, costs, and profit/loss for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Mixed Prosumers.}
+\label{fig:finacial_overview_B2fm}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/corrected_revenue1_overview.png}
+\caption{Monthly revenue components for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Mixed Prosumers.}
+\label{fig:revenue_components_B2fm}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/corrected_imbalance1_overview.png}
+\caption{Monthly balancing group position and imbalance for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Mixed Prosumers.}
+\label{fig:imbalance_B2fm}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/corrected_cost_overview.png}
+\caption{Monthly cost components for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Mixed Prosumers.}
+\label{fig:costs_B2fm}
+\end{figure}
+
+Figure~\ref{fig:imbalance_B2fm} highlights the principal effect of REC-aware forecasting. Once the expected internal REC exchanges are incorporated into the suppliers' market schedules, the forecasted and realised balancing group positions align closely throughout the year. Consequently, the imbalance profile becomes nearly flat, indicating that structural deviations introduced by REC settlement are effectively eliminated. In contrast to the standard Scenario~B2, where REC settlement created substantial balancing offsets between suppliers, the corrected forecasting approach confines deviations to minor forecast errors.
+
+This improved alignment directly affects the cost structure of both suppliers, as illustrated in Figure~\ref{fig:costs_B2fm}. Supplier~A continues to incur costs primarily through wholesale electricity procurement required to serve consumer demand. However, the balancing penalties observed in Scenario~B2 largely disappear because the systematic long position has been removed. Supplier~B experiences a similar effect: the supplier still compensates prosumers for residual feed-in and occasionally purchases electricity from the market, but balancing charges become negligible once the structural imbalance is eliminated.
+
+Turning to the revenue composition in Figure~\ref{fig:revenue_components_B2fm}, the underlying sources of income remain largely unchanged relative to Scenario~B2. Supplier~A continues to generate revenue predominantly from retail electricity sales to consumers. Supplier~B derives income from three complementary streams: retail billing for prosumer consumption, wholesale market sales of surplus generation, and small balancing rewards. The key difference is the disappearance of the substantial balancing revenues previously observed for Supplier~B, which in the standard scenario resulted from the structural forecast mismatch rather than genuine market performance.
+
+These adjustments ultimately reshape the financial outcomes shown in Figure~\ref{fig:finacial_overview_B2fm}. Supplier~A benefits from the removal of balancing penalties and therefore records higher profitability than in the standard REC configuration. Supplier~B, by contrast, experiences a modest reduction in profits because the structural balancing rewards that previously boosted its income are no longer present. Nevertheless, the supplier remains profitable due to the combined effect of retail billing for prosumer load and reduced feed-in obligations within the REC framework.
+
+\subsubsection{Supplier~A / BG\_A (Consumers Only)}
+
+Table~\ref{tab:B2fm_balancing_A} reports the annual balancing statistics for Supplier~A. The near-zero imbalance confirms that adjusting the market schedule for anticipated REC exchanges effectively aligns the supplier's scheduled and realised demand.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2-Forecasts (REC-Aware, Mixed Prosumers) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:B2fm_balancing_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & 114.8145 & MWh \\
+Forecast BG net position (ID) & 114.8316 & MWh \\
+Net imbalance volume & $-$0.0171 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
+\addlinespace
+Balancing reward (annual) & 38.62 & € \\
+Imbalance penalty (annual) & 39.59 & € \\
+Net balancing settlement & $-$0.97 & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Supplier~B / BG\_B (Mixed Prosumers Only)}
+
+Table~\ref{tab:B2fm_balancing_B} summarises the corresponding balancing results for Supplier~B. Once the expected REC exchanges are incorporated into the forecast, the supplier's scheduled market position aligns closely with realised generation and demand, leaving only negligible residual imbalance.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2-Forecasts (REC-Aware, Mixed Prosumers) -- Balancing group annual position (Supplier~B / BG\_B).}
+\label{tab:B2fm_balancing_B}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & 33.2603 & MWh \\
+Forecast BG net position (ID) & 33.2437 & MWh \\
+Net imbalance volume & +0.0166 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual) & 37.01 & € \\
+Imbalance penalty (annual) & 35.69 & € \\
+Net balancing settlement & +1.32 & € \\
+\bottomrule
+\end{tabular}
+\end{table}

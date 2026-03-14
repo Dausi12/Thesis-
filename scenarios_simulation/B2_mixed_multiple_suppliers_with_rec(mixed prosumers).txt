@@ -1,0 +1,90 @@
+\subsection{Scenario B2: Multiple Suppliers, With REC (Mixed Prosumers)}
+\label{sec:results_B2_mixed}
+
+This section presents the financial and balancing outcomes of Scenario~B2. The introduction of REC settlement redistributes part of the locally generated electricity among community members before supplier billing, thereby altering the balancing positions and financial structures of both suppliers.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{pdflatex template/img/B2_mix_rec_finance1_overview.png}
+    \caption{Monthly revenue, costs, and profit/loss for both suppliers: Scenario B2 -- With REC, Mixed Prosumers.}
+    \label{fig:finacial_overview_B2m}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{pdflatex template/img/B2_mix_rec_revenue_overview.png}
+    \caption{Monthly revenue components for both suppliers: Scenario B2 -- With REC, Mixed Prosumers.}
+    \label{fig:revenue_components_B2m}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{pdflatex template/img/B2_mix_rec_imbal1_overview.png}
+    \caption{Monthly balancing group position and imbalance for both suppliers: Scenario B2 -- With REC, Mixed Prosumers.}
+    \label{fig:imbalance_B2m}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{pdflatex template/img/B2_mix_rec_cost_overview.png}
+    \caption{Monthly cost components for both suppliers: Scenario B2 -- With REC, Mixed Prosumers.}
+    \label{fig:costs_B2m}
+\end{figure}
+
+Figure~\ref{fig:imbalance_B2m} illustrates how REC settlement alters the balancing group behaviour of both suppliers. Supplier~A experiences a reduction in its residual balancing group demand because part of the consumers' electricity needs is satisfied through REC-shared generation. As a result, the supplier procures less electricity from the wholesale market than originally forecast. Conversely, Supplier~B observes the opposite effect. A substantial portion of prosumer generation is absorbed within the REC before reaching the supplier's balancing group, shifting the supplier's net position toward positive values. This redistribution of energy between balancing groups introduces a forecast mismatch for both suppliers, increasing their imbalance volumes compared to the no-REC configuration.
+
+The cost structures shown in Figure~\ref{fig:costs_B2m} reflect these operational changes. Supplier~A continues to incur costs primarily through wholesale electricity procurement required to supply its consumers. However, the supplier now also faces significant balancing penalties because the intra-day forecast does not account for REC settlement, leading to systematic deviations between forecast and actual balancing positions. Supplier~B, in contrast, benefits from a substantial reduction in feed-in compensation costs. Because a portion of the prosumers' surplus generation is consumed within the REC, less electricity must be remunerated at the feed-in tariff. Instead, Supplier~B incurs a more diversified cost structure that includes smaller feed-in payments, moderate market purchases, and limited balancing penalties.
+
+The revenue structures shown in Figure~\ref{fig:revenue_components_B2m} further highlight the economic effects of REC participation. Supplier~A continues to earn most of its revenue from retail electricity sales to consumers. However, the total retail revenue declines relative to Scenario~B1 because part of the consumers' electricity demand is now met through REC energy sharing rather than supplier-delivered electricity. Supplier~B experiences the opposite effect. The mixed prosumer portfolio generates retail sales revenue from local consumption, while remaining surplus electricity can still be sold on the wholesale market. In addition, balancing rewards provide a small supplementary income stream.
+
+The overall financial performance is shown in Figure~\ref{fig:finacial_overview_B2m}. Supplier~A remains profitable but experiences lower profits compared to Scenario~B1. The reduction in retail sales volumes and the emergence of balancing penalties both contribute to this decline. Supplier~B, however, benefits significantly from the REC configuration. The presence of prosumer load generates retail billing revenue, while REC energy sharing reduces feed-in obligations. As a result, the supplier transitions from the structural losses observed in Scenario~B1 to consistent profitability across all months.
+
+\subsubsection{Supplier~A / BG\_A (Consumers Only)}
+
+Table~\ref{tab:B2m_balancing_A} summarises the annual balancing statistics for Supplier~A. The results show that REC settlement systematically reduces the supplier's actual balancing group demand relative to the forecast, leading to imbalance costs that were largely absent in the no-REC scenario.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 (With REC, Mixed Prosumers) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:B2m_balancing_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & 114.8145 & MWh \\
+Forecast BG net position (ID) & 148.3263 & MWh \\
+Net imbalance volume & $-$33.5118 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
+\addlinespace
+Balancing reward (annual) & 154.89 & € \\
+Imbalance penalty (annual) & 1{,}137.92 & € \\
+Net balancing settlement & $-$983.03 & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Supplier~B / BG\_B (Mixed Prosumers Only)}
+
+Table~\ref{tab:B2m_balancing_B} reports the balancing outcomes for Supplier~B. REC settlement redirects part of the prosumers' generation to community consumers, shifting the supplier's balancing group position and producing balancing revenues that partially offset its operating costs.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 (With REC, Mixed Prosumers) -- Balancing group annual position (Supplier~B / BG\_B).}
+\label{tab:B2m_balancing_B}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & 33.2603 & MWh \\
+Forecast BG net position (ID) & $-$0.2510 & MWh \\
+Net imbalance volume & +33.5113 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual) & 1{,}132.99 & € \\
+Imbalance penalty (annual) & 149.60 & € \\
+Net balancing settlement & +983.39 & € \\
+\bottomrule
+\end{tabular}
+\end{table}

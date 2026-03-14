@@ -1,0 +1,228 @@
+\subsection{Scenario B1: Multiple Suppliers, Without REC (Mixed Prosumers)}
+\label{sec:results_B1}
+
+Scenario~B1 (Mixed Prosumers) transitions from the single-supplier framework of the A-scenarios to a multi-supplier configuration, introducing supply-side competition while retaining the absence of a Renewable Energy Community. The nine community members are split across two independent suppliers, each operating its own balancing group with \emph{homogeneous member types}: Supplier~A (BG\_A) serves all six consumers exclusively, while Supplier~B (BG\_B) serves all three prosumers exclusively. Prosumers carry both co-located PV generation and local load (mixed prosumer design). No REC is configured, so all energy flows are settled bilaterally between each participant and its respective supplier. Total community load is 204.75\,MWh and total community generation is 56.68\,MWh, identical to the A1 mixed prosumer scenario, confirming that the participant allocation across suppliers preserves the aggregate energy balance. The homogeneous BG design isolates the distinct economic characteristics of pure-consumer and pure-prosumer portfolios, enabling a clean comparison of supplier economics by member type.
+
+\subsubsection{Supplier~A / BG\_A (Consumers Only)}
+
+Table~\ref{tab:B1_balancing_A} summarises the annual balancing statistics for Supplier~A's balancing group. Because BG\_A contains exclusively consumers (six participants, zero PV generation), the balancing group is entirely consumption-driven with 148.33\,MWh of load and no generation offset. The actual metered net position (148.3299\,MWh) closely matches the intra-day forecast position (148.3263\,MWh), with a marginal imbalance of +0.0035\,MWh, resulting in a \textsc{short} (deficit) classification. The net balancing settlement is $-$\euro{}0.36 (rewards \euro{}18.51 minus penalties \euro{}18.87), reflecting near-perfect forecast accuracy.
+
+Figure~\ref{fig:imbalance_annual_results_B1_A} illustrates the monthly balancing group positions for Supplier~A. Both actual and forecast series track closely, exhibiting moderately seasonal behaviour driven purely by consumption patterns. BG\_A peaks in February (actual 13.6674\,MWh, forecast 13.6704\,MWh) and December (actual 13.7818\,MWh), and reaches its annual minimum in August (actual 8.7990\,MWh, forecast 8.7992\,MWh). Monthly positions range between 8.80 and 13.78\,MWh, reflecting BG\_A's entirely consumption-driven profile with no PV capacity to create seasonal generation offsets.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Mixed Prosumers) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:B1_balancing_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & 148.3299          & MWh \\
+Forecast BG net position (ID)      & 148.3263          & MWh \\
+Net imbalance volume               & +0.0035           & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual)          & 18.51             & \euro{} \\
+Imbalance penalty (annual)         & 18.87             & \euro{} \\
+Net balancing settlement           & $-$0.36           & \euro{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert imbalance plot for B1 Supplier A
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly balancing group position and imbalance: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~A / BG\_A).}
+    \label{fig:imbalance_annual_results_B1_A}
+\end{figure}
+
+Figure~\ref{fig:costsB1_A} decomposes Supplier~A's total annual costs of \euro{}4{,}768.22 into two effective components. Market purchases (\euro{}4{,}749.35; 99.60\%) dominate the cost structure almost entirely, reflecting BG\_A's complete reliance on wholesale procurement with no internal generation to offset demand. Market purchase costs peak in November (\euro{}581) and December (\euro{}579) during the winter demand season, and reach minima in August (\euro{}255) and May (\euro{}278). Retail feed-in costs are exactly \euro{}0.00 because BG\_A contains no prosumers --- no generation means no surplus exports requiring feed-in compensation. Balancing penalties (\euro{}18.87; 0.40\%) are negligible. Monthly total costs range from \euro{}256 (August) to \euro{}583 (November).
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert cost components plot for B1 Supplier A
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly cost components: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~A / BG\_A).}
+    \label{fig:costsB1_A}
+\end{figure}
+
+Figures~\ref{fig:revenue_componets_B1_A} and \ref{fig:finacial_overview_B1_A} illustrate the monthly revenue components and profit/loss trajectory for Supplier~A. Revenue is almost exclusively retail sales (\euro{}29{,}814.30; 99.94\%), with energy market sales (\euro{}0.00; 0.00\%) and balancing rewards (\euro{}18.51; 0.06\%) contributing only marginally. BG\_A's pure-consumer portfolio generates strong retail revenue with zero wholesale market sales, since the balancing group never holds net generation surpluses.
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert revenue components plot for B1 Supplier A
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue components: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~A / BG\_A).}
+    \label{fig:revenue_componets_B1_A}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert financial overview plot for B1 Supplier A
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue, costs, and profit/loss: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~A / BG\_A).}
+    \label{fig:finacial_overview_B1_A}
+\end{figure}
+
+The annual profit-and-loss statement for Supplier~A (Table~\ref{tab:B1_pnl_A}) shows total revenue of \euro{}29{,}832.81 and total costs of \euro{}4{,}768.22, yielding an annual profit of \euro{}25{,}064.59 (monthly average \euro{}2{,}088.72; range \euro{}1{,}513.39--\euro{}2{,}400.50). The profit profile is remarkably stable across months, reflecting the steady consumption-driven revenue stream of BG\_A's pure-consumer portfolio with no feed-in cost volatility.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Mixed Prosumers) -- Annual profit and loss statement (Supplier~A / BG\_A).}
+\label{tab:B1_pnl_A}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 0.00                & 0.00 \\
+\quad Balancing rewards              & 18.51               & 0.06 \\
+\quad Retail sales                   & 29{,}814.30         & 99.94 \\
+\textbf{Total Revenue}               & \textbf{29{,}832.81} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 4{,}749.35          & 99.60 \\
+\quad Imbalance penalties            & 18.87               & 0.40 \\
+\quad Retail purchases (feed-in)     & 0.00                & 0.00 \\
+\textbf{Total Costs}                 & \textbf{4{,}768.22}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}25{,}064.59} & \\
+Monthly average                      & \euro{}2{,}088.72         & \\
+Monthly minimum                      & \euro{}1{,}513.39         & \\
+Monthly maximum                      & \euro{}2{,}400.50         & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Supplier~B / BG\_B (Prosumers Only)}
+
+Table~\ref{tab:B1_balancing_B} summarises the annual balancing statistics for Supplier~B's balancing group. BG\_B contains exclusively three prosumers with 56.68\,MWh of PV generation against 56.42\,MWh of prosumer load, yielding a nearly balanced annual net position. The actual metered net position ($-$0.2551\,MWh) is nearly zero and slightly negative, indicating that annual generation marginally exceeds consumption. The intra-day forecast ($-$0.2510\,MWh) closely matches, with an imbalance of $-$0.0040\,MWh, resulting in a \textsc{long} (surplus) classification. The net balancing settlement is +\euro{}0.71 (rewards \euro{}64.23 minus penalties \euro{}63.52).
+
+Figure~\ref{fig:imbalance_annual_results_B1_B} illustrates the monthly balancing group positions for Supplier~B. The seasonal pattern is extremely pronounced, driven by BG\_B's high PV penetration relative to load. Monthly BG positions range from $-$4.22\,MWh (May) to +4.28\,MWh (December). BG\_B operates as a \emph{net generator} for six months of the year (April through September), achieving its most negative position in May (actual $-$4.2180\,MWh) and August (actual $-$3.8291\,MWh) when PV surplus substantially exceeds prosumer demand. Winter months show positive net positions: December (4.28\,MWh), January (3.74\,MWh), and February (3.39\,MWh), when minimal solar output leaves the balancing group reliant on wholesale procurement. The transition from winter to summer shows a steep decline: March (+0.23\,MWh), April ($-$1.54\,MWh), May ($-$4.22\,MWh), with recovery beginning in October (+0.69\,MWh).
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Mixed Prosumers) -- Balancing group annual position (Supplier~B / BG\_B).}
+\label{tab:B1_balancing_B}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric}          & \textbf{Value}    & \textbf{Unit} \\
+\midrule
+Actual BG net position             & $-$0.2551         & MWh \\
+Forecast BG net position (ID)      & $-$0.2510         & MWh \\
+Net imbalance volume               & $-$0.0040         & MWh \\
+System position                    & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
+\addlinespace
+Balancing reward (annual)          & 64.23             & \euro{} \\
+Imbalance penalty (annual)         & 63.52             & \euro{} \\
+Net balancing settlement           & +0.71             & \euro{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert imbalance plot for B1 Supplier B
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly balancing group position and imbalance: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~B / BG\_B).}
+    \label{fig:imbalance_annual_results_B1_B}
+\end{figure}
+
+Figure~\ref{fig:costsB1_B} decomposes Supplier~B's total annual costs of \euro{}4{,}493.64 into three components. The cost structure is dominated by retail feed-in costs (\euro{}3{,}357.64; 74.72\%), reflecting the three prosumers' substantial surplus PV exports that the supplier must compensate. Feed-in costs peak in May (\euro{}529), August (\euro{}472), and July (\euro{}455) during the highest solar production months, and fall to minima in December (\euro{}54) and January (\euro{}74). Market purchases (\euro{}1{,}072.47; 23.87\%) constitute the second-largest cost component, peaking in December (\euro{}211) and November (\euro{}174) and reaching minima in August (\euro{}31) and May (\euro{}33). The inverted seasonal profiles of market purchases and feed-in costs reflect BG\_B's seasonal reversal: a net consumer in winter requiring wholesale procurement, and a net generator in summer requiring feed-in compensation. Balancing penalties (\euro{}63.52; 1.41\%) are negligible. Monthly total costs range from \euro{}229 (January) to \euro{}568 (May).
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert cost components plot for B1 Supplier B
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly cost components: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~B / BG\_B).}
+    \label{fig:costsB1_B}
+\end{figure}
+
+Figures~\ref{fig:revenue_componets_B1_B} and \ref{fig:finacial_overview_B1_B} illustrate the monthly revenue components and profit/loss for Supplier~B. Revenue is predominantly retail sales (\euro{}8{,}139.09; 90.99\%), with energy market sales (\euro{}741.57; 8.29\%) contributing substantially more than in BG\_A --- this arises from BG\_B's frequent net generation surpluses (six months per year) that are sold on the wholesale market. Balancing rewards (\euro{}64.23; 0.72\%) are marginal.
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert revenue components plot for B1 Supplier B
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue components: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~B / BG\_B).}
+    \label{fig:revenue_componets_B1_B}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % TODO: Insert financial overview plot for B1 Supplier B
+    % \includegraphics[width=0.8\linewidth]{pdflatex template/img/<PLACEHOLDER>.png}
+    \caption{Monthly revenue, costs, and profit/loss: Scenario B1 -- Without REC, Mixed Prosumers (Supplier~B / BG\_B).}
+    \label{fig:finacial_overview_B1_B}
+\end{figure}
+
+The annual profit-and-loss statement for Supplier~B (Table~\ref{tab:B1_pnl_B}) shows total revenue of \euro{}8{,}944.90 and total costs of \euro{}4{,}493.64, yielding an annual profit of \euro{}4{,}451.26 (monthly average \euro{}370.94; range $-$\euro{}12.50--\euro{}760.42). Supplier~B's profit is substantially lower than Supplier~A's (\euro{}25{,}064.59) due to two compounding effects: the prosumer-only portfolio generates far less retail revenue (prosumers self-consume a significant portion of their load from local PV), and the feed-in obligations are large (\euro{}3{,}357.64 versus \euro{}0.00 for Supplier~A). Notably, Supplier~B's profit turns marginally negative in two months (May $-$\euro{}12.50, August $-$\euro{}0.72), when peak solar production drives feed-in costs above revenue, demonstrating the financial risk of serving a pure-prosumer portfolio in high-PV months.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Mixed Prosumers) -- Annual profit and loss statement (Supplier~B / BG\_B).}
+\label{tab:B1_pnl_B}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 741.57              & 8.29 \\
+\quad Balancing rewards              & 64.23               & 0.72 \\
+\quad Retail sales                   & 8{,}139.09          & 90.99 \\
+\textbf{Total Revenue}               & \textbf{8{,}944.90}  & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 1{,}072.47          & 23.87 \\
+\quad Imbalance penalties            & 63.52               & 1.41 \\
+\quad Retail purchases (feed-in)     & 3{,}357.64          & 74.72 \\
+\textbf{Total Costs}                 & \textbf{4{,}493.64}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}4{,}451.26} & \\
+Monthly average                      & \euro{}370.94              & \\
+Monthly minimum                      & $-$\euro{}12.50           & \\
+Monthly maximum                      & \euro{}760.42              & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Cross-Supplier Comparison}
+
+Table~\ref{tab:B1_comparison} compares the two suppliers side by side. The combined annual profit across both suppliers is \euro{}29{,}515.86, which is identical to the A1 single-supplier mixed prosumer baseline. This confirms that partitioning the community across two suppliers --- with independent balancing groups, separate wholesale market positions, and bilateral retail contracts --- preserves the aggregate system economics when no REC is present. However, the homogeneous-BG design redistributes profits extremely asymmetrically: Supplier~A captures 84.9\% of the combined profit (\euro{}25{,}064.59) while Supplier~B captures only 15.1\% (\euro{}4{,}451.26). This stark asymmetry directly reflects the economic polarity of the two member types: the pure-consumer portfolio generates high retail revenue with no feed-in obligations, while the pure-prosumer portfolio bears the full feed-in cost burden with reduced retail throughput.
+
+The balancing groups exhibit fundamentally different characters under homogeneous allocation. BG\_A's position (148.33\,MWh) is entirely consumption-driven with moderate seasonal variation (8.80--13.78\,MWh), while BG\_B's annual net position is near zero ($-$0.26\,MWh) and swings between net consumption in winter (+4.28\,MWh in December) and net generation in summer ($-$4.22\,MWh in May). Despite this divergence, both BGs achieve near-zero imbalances (+0.0035 and $-$0.0040\,MWh respectively), confirming that forecast accuracy is robust regardless of portfolio composition.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Mixed Prosumers) -- Cross-supplier comparison.}
+\label{tab:B1_comparison}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Metric}                        & \textbf{SUP\_A / BG\_A} & \textbf{SUP\_B / BG\_B} & \textbf{Combined} \\
+\midrule
+Participants                            & 6                       & 3                       & 9 \\
+\quad Consumers                         & 6                       & 0                       & 6 \\
+\quad Prosumers                         & 0                       & 3                       & 3 \\
+\addlinespace
+Load (MWh)                              & 148.33                  & 56.42                   & 204.75 \\
+Generation (MWh)                        & 0.00                    & 56.68                   & 56.68 \\
+BG net position (MWh)                   & 148.33                  & $-$0.26                 & 148.07 \\
+Imbalance (MWh)                         & +0.0035                 & $-$0.0040               & $-$0.0005 \\
+\addlinespace
+Total revenue (\euro{})                 & 29{,}832.81             & 8{,}944.90              & 38{,}777.71 \\
+Total costs (\euro{})                   & 4{,}768.22              & 4{,}493.64              & 9{,}261.86 \\
+\textbf{Annual profit (\euro{})}        & \textbf{25{,}064.59}    & \textbf{4{,}451.26}     & \textbf{29{,}515.86} \\
+Profit share (\%)                       & 84.9                    & 15.1                    & 100.0 \\
+\addlinespace
+Market purchases (\euro{})              & 4{,}749.35              & 1{,}072.47              & 5{,}821.82 \\
+Feed-in costs (\euro{})                 & 0.00                    & 3{,}357.64              & 3{,}357.64 \\
+Balancing penalties (\euro{})           & 18.87                   & 63.52                   & 82.39 \\
+\bottomrule
+\end{tabular}
+\end{table}

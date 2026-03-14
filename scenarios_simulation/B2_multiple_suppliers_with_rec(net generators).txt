@@ -1,0 +1,90 @@
+\subsection{Scenario B2: Multiple Suppliers, With REC (Net Generators)}
+\label{sec:results_B2n}
+
+This section presents the results of the standard Scenario~B2 under the net generators configuration. All six consumers are served by Supplier~A / BG\_A, while all three prosumers---modelled as pure net generators with no local consumption---belong to Supplier~B / BG\_B. A single cross-supplier REC (REC\_01) performs proportional energy sharing across all nine participants. Crucially, in this standard variant, neither supplier adjusts its market schedule to anticipate REC settlement: the DA and ID commitments are based on gross forecasts, and REC internal sharing is applied only after market positions have been finalised. Any mismatch between the committed schedule and the post-REC residual position therefore appears as an imbalance in the balancing market.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2n_finance_overview.png}
+\caption{Monthly revenue, costs, and profit/loss for both suppliers: Scenario B2 -- Standard REC, Net Generators.}
+\label{fig:finacial_overview_B2n}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2n_revenue_overview.png}
+\caption{Monthly revenue components for both suppliers: Scenario B2 -- Standard REC, Net Generators.}
+\label{fig:revenue_components_B2n}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2n_imbalance_overview.png}
+\caption{Monthly balancing group position and imbalance for both suppliers: Scenario B2 -- Standard REC, Net Generators.}
+\label{fig:imbalance_B2n}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2n_cost_overview.png}
+\caption{Monthly cost components for both suppliers: Scenario B2 -- Standard REC, Net Generators.}
+\label{fig:costs_B2n}
+\end{figure}
+
+Figure~\ref{fig:imbalance_B2n} reveals the defining feature of this scenario: large, persistent, and nearly symmetric imbalances across both balancing groups. Supplier~A schedules market purchases based on the gross consumer load forecast (148.33~MWh), but after REC settlement absorbs 43.24~MWh of that demand through shared prosumer generation, the realised BG position drops to 105.09~MWh. The resulting $-$43.23~MWh surplus constitutes a systematic long position. Conversely, Supplier~B commits market sales based on the full prosumer generation forecast (56.68~MWh), yet only 13.44~MWh remains after the REC redirects 43.24~MWh to consumers. This produces a $+$43.24~MWh structural short position. The two imbalances are almost perfectly mirror images, both originating from the same REC shared energy volume that neither supplier anticipated in its schedule.
+
+This structural mismatch dominates the cost landscape, as shown in Figure~\ref{fig:costs_B2n}. Supplier~A faces two main cost components: wholesale market purchases (\EUR{4{,}749.35}) reflecting the full pre-REC demand, and balancing penalties (\EUR{1{,}472.87}) incurred because the purchased energy exceeds the post-REC residual demand. The penalties are substantial---nearly a third of the wholesale procurement cost---because the surplus volume is large and persistent throughout the year. Supplier~B, by contrast, incurs only modest penalties (\EUR{197.91}) despite the equally large short position, because the dual pricing mechanism treats generation-side shortfalls more leniently. Its primary cost remains the feed-in compensation paid to prosumers for residual generation (\EUR{1{,}107.46}).
+
+The revenue structure in Figure~\ref{fig:revenue_components_B2n} exposes a notable asymmetry. Supplier~A earns the majority of its income from retail electricity sales to consumers (\EUR{21{,}123.93}), supplemented by a small balancing reward (\EUR{206.03}). Supplier~B, however, derives a significant portion of its total revenue (\EUR{3{,}034.24}) not from core market activity but from balancing rewards (\EUR{1{,}465.33}). These rewards arise because the structural short position frequently coincides with system states in which deficit positions are rewarded under the dual pricing regime. Wholesale market sales contribute \EUR{1{,}568.91}, reflecting the full pre-REC generation sold on the DA/ID markets before the REC redirects most of that generation to consumers.
+
+The financial outcomes in Figure~\ref{fig:finacial_overview_B2n} summarise the net effect. Supplier~A records a profit of \EUR{15{,}107.73}, materially lower than the \EUR{25{,}064.59} achieved in Scenario~B1: Multiple Suppliers, Without REC (Net Generators), where no REC settlement occurs and therefore no structural imbalance arises. The \EUR{9{,}956.86} reduction is driven predominantly by the balancing penalties incurred from the systematic long position. Supplier~B, however, records a profit of \EUR{1{,}728.87}, which represents a substantial improvement over the $-$\EUR{3{,}100.24} loss in the B1 baseline. This turnaround is primarily attributable to the balancing rewards received from the structural short position, combined with the reduction in feed-in costs as the REC absorbs most prosumer generation (\EUR{1{,}107.46} versus \EUR{4{,}670.08} in Scenario~B1: Multiple Suppliers, Without REC (Net Generators)). On a combined basis, total system profit is \EUR{16{,}836.60}, compared with \EUR{21{,}964.36} in the B1 reference, indicating that the uncompensated forecast mismatch imposes an aggregate efficiency loss of \EUR{5{,}127.76} across both balancing groups.
+
+\subsubsection{Supplier~A / BG\_A (Consumers Only)}
+
+Table~\ref{tab:B2n_balancing_A} reports the annual balancing statistics for Supplier~A. The imbalance of $-$43.23~MWh confirms the systematic long position created by REC settlement: the supplier procured energy based on the full consumer demand forecast, but a substantial share of that demand was satisfied by shared prosumer generation within the REC.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 (Standard REC, Net Generators) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:B2n_balancing_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & 105.0942 & MWh \\
+Forecast BG net position (ID) & 148.3263 & MWh \\
+Net imbalance volume & $-$43.2322 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
+\addlinespace
+Balancing reward (annual) & 206.03 & € \\
+Imbalance penalty (annual) & 1{,}472.87 & € \\
+Net balancing settlement & $-$1{,}266.84 & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Supplier~B / BG\_B (Net Generators Only)}
+
+Table~\ref{tab:B2n_balancing_B} summarises the corresponding balancing results for Supplier~B. The $+$43.24~MWh deficit mirrors Supplier~A's surplus, both driven by the same REC shared energy volume. Under dual pricing, Supplier~B's short position generates substantial balancing rewards (\EUR{1{,}465.33}) that exceed its penalties (\EUR{197.91}), yielding a net positive balancing settlement of \EUR{1{,}267.42}.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 (Standard REC, Net Generators) -- Balancing group annual position (Supplier~B / BG\_B).}
+\label{tab:B2n_balancing_B}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & $-$13.4400 & MWh \\
+Forecast BG net position (ID) & $-$56.6797 & MWh \\
+Net imbalance volume & +43.2396 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual) & 1{,}465.33 & € \\
+Imbalance penalty (annual) & 197.91 & € \\
+Net balancing settlement & +1{,}267.42 & € \\
+\bottomrule
+\end{tabular}
+\end{table}

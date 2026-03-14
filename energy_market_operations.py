@@ -1069,10 +1069,18 @@ class EnergyMarketOperations:
     def _supplier_names(self):
         return {s['supplier_id']: s['supplier_name'] for s in self.config['suppliers']}
 
+    def _supplier_bgs(self):
+        """Return {supplier_id: [bg_id, ...]} mapping."""
+        return {
+            s['supplier_id']: [bg['balancing_group_id'] for bg in s['balancing_groups']]
+            for s in self.config['suppliers']
+        }
+
     def plot_financials(self, figsize=(18, 6)):
         """Plot financial overview (revenue / cost / profit) per supplier."""
         df = self.es_monthly_analysis_df
         supplier_names = self._supplier_names()
+        supplier_bgs = self._supplier_bgs()
         supplier_ids = list(supplier_names.keys())
         n = len(supplier_ids)
 
@@ -1089,7 +1097,8 @@ class EnergyMarketOperations:
             sd = df[df['supplier_id'] == sid].sort_values('datetime')
             if sd.empty:
                 continue
-            label = f"{sid} ({supplier_names[sid]})"
+            bg_str = ', '.join(supplier_bgs.get(sid, []))
+            label = f"{sid} / {bg_str} ({supplier_names[sid]})"
             x = range(len(sd))
 
             # Left: line chart
@@ -1133,6 +1142,7 @@ class EnergyMarketOperations:
         """Plot balancing group position & imbalance per supplier."""
         df = self.es_monthly_analysis_df
         supplier_names = self._supplier_names()
+        supplier_bgs = self._supplier_bgs()
         supplier_ids = list(supplier_names.keys())
         n = len(supplier_ids)
 
@@ -1144,7 +1154,8 @@ class EnergyMarketOperations:
             sd = df[df['supplier_id'] == sid].sort_values('datetime')
             if sd.empty:
                 continue
-            label = f"{sid} ({supplier_names[sid]})"
+            bg_str = ', '.join(supplier_bgs.get(sid, []))
+            label = f"{sid} / {bg_str} ({supplier_names[sid]})"
             x = range(len(sd))
 
             # Left: BG actual vs forecast vs imbalance

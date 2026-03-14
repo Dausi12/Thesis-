@@ -94,8 +94,8 @@
       "name": "Fire Fighting Station",
       "node_id": 2,
       "supplier": {
-        "supplier_id": "SUP_A",
-        "balancing_group_id": "BG_A"
+        "supplier_id": "SUP_B",
+        "balancing_group_id": "BG_B"
       },
       "res": {
         "id": "LV3.101 SGen 1 [PV7]",
@@ -219,8 +219,8 @@
       "name": "Bank",
       "node_id": 7,
       "supplier": {
-        "supplier_id": "SUP_B",
-        "balancing_group_id": "BG_B"
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
       },
       "load": {
         "id": "LV3.101 Load 62 [G5-A]",
@@ -237,8 +237,8 @@
       "name": "Household",
       "node_id": 9,
       "supplier": {
-        "supplier_id": "SUP_B",
-        "balancing_group_id": "BG_B"
+        "supplier_id": "SUP_A",
+        "balancing_group_id": "BG_A"
       },
       "load": {
         "id": "LV3.101 Load 2 [H0-C]",
@@ -255,6 +255,7 @@
     "type": "with_rec",
     "description": "Energy community settlement occurs after DA and ID markets but before balancing market. Internal sharing reduces external grid dependency.",
     "internal_sharing": true,
+    "rec_aware_forecasting": true,
     "rec_bonuses": true,
     "balancing_responsibility": "supplier_balancing_group",
     "metering": {

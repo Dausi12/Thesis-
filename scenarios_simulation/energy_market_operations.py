@@ -343,6 +343,63 @@ class EnergyMarketOperations:
 
         return result
 
+    def _correct_forecasts_for_rec_sharing(self, load_forecast_df, gen_forecast_df):
+        """
+        Apply anticipated REC sharing correction to forecast DataFrames.
+
+        Mirrors run_rec_settlement() proportional sharing logic but uses
+        forecast data instead of actuals.  For each REC, the anticipated
+        shared energy is min(total_gen_forecast, total_load_forecast).
+        Each member's forecast is proportionally reduced by their share.
+
+        Returns corrected (load_forecast_df, gen_forecast_df) copies.
+        """
+        cfg = self.config
+        corrected_load = load_forecast_df.copy()
+        corrected_gen = gen_forecast_df.copy()
+
+        for rec in cfg.get('recs', []):
+            rec_id = rec['rec_id']
+
+            # Gather member columns for this REC
+            rec_load_cols = []
+            rec_gen_cols = []
+
+            for p in cfg.get('prosumers', []):
+                if p.get('rec', '') == rec_id:
+                    if 'res' in p and p['res'] and p['res']['id'] in gen_forecast_df.columns:
+                        rec_gen_cols.append(p['res']['id'])
+                    if 'load' in p and p['load'] and p['load']['id'] in load_forecast_df.columns:
+                        rec_load_cols.append(p['load']['id'])
+
+            for c in cfg.get('consumers', []):
+                if c.get('rec', '') == rec_id:
+                    lid = c['load']['id']
+                    if lid in load_forecast_df.columns:
+                        rec_load_cols.append(lid)
+
+            if not rec_load_cols or not rec_gen_cols:
+                continue
+
+            # REC-level forecast totals
+            gen_total = gen_forecast_df[rec_gen_cols].sum(axis=1)
+            load_total = load_forecast_df[rec_load_cols].sum(axis=1)
+            anticipated_shared = np.minimum(gen_total, load_total)
+
+            # Proportional correction for load members
+            for col in rec_load_cols:
+                orig = load_forecast_df[col]
+                frac = np.where(load_total > 0, orig / load_total, 0)
+                corrected_load[col] = orig - frac * anticipated_shared
+
+            # Proportional correction for gen members
+            for col in rec_gen_cols:
+                orig = gen_forecast_df[col]
+                frac = np.where(gen_total > 0, orig / gen_total, 0)
+                corrected_gen[col] = orig - frac * anticipated_shared
+
+        return corrected_load, corrected_gen
+
     # ------------------------------------------------------------------ #
     #  Step (i) – Day-Ahead Market                                         #
     # ------------------------------------------------------------------ #
@@ -368,6 +425,12 @@ class EnergyMarketOperations:
         if gen_da.empty:
             print("  ⚠ Using res_actual as DA forecast fallback") 
             gen_da = self.es_data['res_actual']
+
+        # REC-aware forecasting: subtract anticipated REC sharing from forecasts
+        rec_aware = self.config.get('settlement_approach', {}).get('rec_aware_forecasting', False)
+        if rec_aware and self.has_rec:
+            load_da, gen_da = self._correct_forecasts_for_rec_sharing(load_da, gen_da)
+            print("  ✓ DA forecasts corrected for anticipated REC sharing")
 
         bg_agg = self._aggregate_by_bg(load_da, gen_da)
 
@@ -419,6 +482,12 @@ class EnergyMarketOperations:
         if gen_id.empty:
             print("  ⚠ Using res_actual as ID forecast fallback")
             gen_id = self.es_data['res_actual']
+
+        # REC-aware forecasting: subtract anticipated REC sharing from forecasts
+        rec_aware = self.config.get('settlement_approach', {}).get('rec_aware_forecasting', False)
+        if rec_aware and self.has_rec:
+            load_id, gen_id = self._correct_forecasts_for_rec_sharing(load_id, gen_id)
+            print("  ✓ ID forecasts corrected for anticipated REC sharing")
 
         bg_agg = self._aggregate_by_bg(load_id, gen_id)
 
@@ -1146,10 +1215,18 @@ class EnergyMarketOperations:
     def _supplier_names(self):
         return {s['supplier_id']: s['supplier_name'] for s in self.config['suppliers']}
 
+    def _supplier_bgs(self):
+        """Return {supplier_id: [bg_id, ...]} mapping."""
+        return {
+            s['supplier_id']: [bg['balancing_group_id'] for bg in s['balancing_groups']]
+            for s in self.config['suppliers']
+        }
+
     def plot_financials(self, figsize=(18, 6)):
         """Plot financial overview (revenue / cost / profit) per supplier."""
         df = self.es_monthly_analysis_df
         supplier_names = self._supplier_names()
+        supplier_bgs = self._supplier_bgs()
         supplier_ids = list(supplier_names.keys())
         n = len(supplier_ids)
 
@@ -1166,7 +1243,8 @@ class EnergyMarketOperations:
             sd = df[df['supplier_id'] == sid].sort_values('datetime')
             if sd.empty:
                 continue
-            label = f"{sid} ({supplier_names[sid]})"
+            bg_str = ', '.join(supplier_bgs.get(sid, []))
+            label = f"{sid} / {bg_str} ({supplier_names[sid]})"
             x = range(len(sd))
 
             # Left: line chart
@@ -1177,7 +1255,7 @@ class EnergyMarketOperations:
             ax.axhline(0, color='k', lw=0.5, alpha=0.3)
             ax.set_xticks(list(x))
             ax.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax.set_title(f'Financial Overview – {self.scenario_name}', fontweight='bold')
+            ax.set_title(f'{label} – Financial Overview ({self.scenario_name})', fontweight='bold')
             ax.set_ylabel('EUR')
             ax.legend()
             ax.grid(alpha=0.3)
@@ -1205,7 +1283,7 @@ class EnergyMarketOperations:
             ax2r.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
             ax2.set_xticks(xp)
             ax2.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax2.set_title(f'Revenue Components – {self.scenario_name}', fontweight='bold')
+            ax2.set_title(f'{label} – Revenue Components ({self.scenario_name})', fontweight='bold')
             # Combined legend
             h1, l1 = ax2.get_legend_handles_labels()
             h2, l2 = ax2r.get_legend_handles_labels()
@@ -1220,6 +1298,7 @@ class EnergyMarketOperations:
         """Plot balancing group position & imbalance per supplier."""
         df = self.es_monthly_analysis_df
         supplier_names = self._supplier_names()
+        supplier_bgs = self._supplier_bgs()
         supplier_ids = list(supplier_names.keys())
         n = len(supplier_ids)
 
@@ -1231,7 +1310,8 @@ class EnergyMarketOperations:
             sd = df[df['supplier_id'] == sid].sort_values('datetime')
             if sd.empty:
                 continue
-            label = f"{sid} ({supplier_names[sid]})"
+            bg_str = ', '.join(supplier_bgs.get(sid, []))
+            label = f"{sid} / {bg_str} ({supplier_names[sid]})"
             x = range(len(sd))
 
             # Left: BG actual vs forecast vs imbalance
@@ -1242,7 +1322,7 @@ class EnergyMarketOperations:
             ax.axhline(0, color='k', lw=1, alpha=0.7)
             ax.set_xticks(list(x))
             ax.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax.set_title(f'BG Position & Imbalance – {self.scenario_name}', fontweight='bold')
+            ax.set_title(f'{label} – BG Position & Imbalance ({self.scenario_name})', fontweight='bold')
             ax.set_ylabel('MWh')
             ax.legend()
             ax.grid(alpha=0.3)
@@ -1268,7 +1348,7 @@ class EnergyMarketOperations:
             ax2r.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'€{v:,.0f}'))
             ax2.set_xticks(xp)
             ax2.set_xticklabels(sd['datetime'].values, rotation=45, ha='right')
-            ax2.set_title(f'Cost Components – {self.scenario_name}', fontweight='bold')
+            ax2.set_title(f'{label} – Cost Components ({self.scenario_name})', fontweight='bold')
             # Combined legend
             h1, l1 = ax2.get_legend_handles_labels()
             h2, l2 = ax2r.get_legend_handles_labels()

@@ -1,0 +1,90 @@
+\subsection{Scenario B1: Multiple Suppliers, Without REC (Net Generators)}
+\label{sec:results_B1_netgen}
+
+This section presents the financial and balancing outcomes of Scenario~B1. The results illustrate how the economic performance of each supplier is determined by the composition of its balancing group portfolio.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/b1supAsupB_finances_overview.png}
+\caption{Monthly revenue, costs, and profit/loss for both suppliers: Scenario B1 -- Without REC, Net Generators.}
+\label{fig:finacial_overview_B1ng}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/b1supAsupB_revenue.png}
+\caption{Monthly revenue components for both suppliers: Scenario B1 -- Without REC, Net Generators.}
+\label{fig:revenue_components_B1ng}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/b1supAsupBnet_imbal.png}
+\caption{Monthly balancing group position and imbalance for both suppliers: Scenario B1 -- Without REC, Net Generators.}
+\label{fig:imbalance_B1ng}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/b1supAsupB_costs.png}
+\caption{Monthly cost components for both suppliers: Scenario B1 -- Without REC, Net Generators.}
+\label{fig:costs_B1ng}
+\end{figure}
+
+Figure~\ref{fig:imbalance_B1ng} shows the balancing group behaviour of both suppliers. Supplier~A maintains consistently positive balancing group positions throughout the year, reflecting the net electricity demand of its consumer portfolio. The supplier therefore procures electricity from the wholesale market to satisfy this demand. Supplier~B, in contrast, maintains strictly negative balancing group positions because its portfolio consists exclusively of net generators exporting photovoltaic surplus. The magnitude of these negative positions increases during spring and summer when solar generation is highest. In both cases, the suppliers experience only very small annual imbalance volumes, indicating that the aggregated consumption and generation profiles can be forecast with high accuracy.
+
+The cost structures shown in Figure~\ref{fig:costs_B1ng} differ substantially between the two suppliers. Supplier~A incurs costs primarily through wholesale electricity purchases required to supply its consumers. These procurement costs increase during winter months when demand is higher and decline during summer when consumption is lower. Because the supplier's portfolio contains no prosumers, it incurs no feed-in compensation costs. Supplier~B, by contrast, incurs costs almost entirely through feed-in payments to its prosumers. Since the generators export their entire photovoltaic output without local consumption, the supplier must compensate every unit of generated electricity at the feed-in tariff. As a result, Supplier~B does not incur wholesale procurement costs, but instead faces a cost structure dominated by feed-in obligations. For both suppliers, imbalance penalties remain negligible.
+
+The revenue streams shown in Figure~\ref{fig:revenue_components_B1ng} reflect these portfolio differences. Supplier~A earns nearly all of its revenue from retail electricity sales to consumers. This revenue stream remains relatively stable throughout the year and closely follows seasonal demand patterns. Supplier~B, on the other hand, earns revenue primarily from wholesale market sales of surplus photovoltaic generation. Because the supplier has no retail consumers, it does not generate retail sales revenue and instead depends entirely on wholesale market prices for its income. Small balancing rewards provide only a marginal contribution to total revenue for both suppliers.
+
+The overall financial performance of the suppliers is illustrated in Figure~\ref{fig:finacial_overview_B1ng}. Supplier~A generates consistent profits across all months because retail sales revenue substantially exceeds the cost of wholesale electricity procurement. In contrast, Supplier~B incurs persistent financial losses throughout the year. The supplier must compensate its prosumers for the full volume of photovoltaic generation at the feed-in tariff, while it can recover only a smaller portion of this value through wholesale electricity sales. Without retail consumers in the portfolio, the supplier lacks a stable revenue stream capable of offsetting these feed-in obligations, resulting in a structurally unprofitable generator-only portfolio.
+
+\subsubsection{Supplier~A / BG\_A (Consumers Only)}
+
+Table~\ref{tab:B1ng_balancing_A} summarises the annual balancing statistics for Supplier~A. The supplier records a very small net imbalance volume and a nearly neutral balancing settlement, indicating that the aggregated demand portfolio can be forecast with high accuracy.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Net Generators) -- Balancing group annual position (Supplier~A / BG\_A).}
+\label{tab:B1ng_balancing_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & 148.3299 & MWh \\
+Forecast BG net position (ID) & 148.3263 & MWh \\
+Net imbalance volume & +0.0035 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual) & 18.51 & € \\
+Imbalance penalty (annual) & 18.87 & € \\
+Net balancing settlement & $-$0.36 & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Supplier~B / BG\_B (Net Generators Only)}
+
+Table~\ref{tab:B1ng_balancing_B} summarises the balancing outcomes for Supplier~B. Although the supplier manages a generator-only portfolio, the aggregated PV production can still be forecast with reasonable accuracy, resulting in only minor imbalance settlements.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B1 (Without REC, Net Generators) -- Balancing group annual position (Supplier~B / BG\_B).}
+\label{tab:B1ng_balancing_B}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\midrule
+Actual BG net position & $-$56.6757 & MWh \\
+Forecast BG net position (ID) & $-$56.6797 & MWh \\
+Net imbalance volume & +0.0039 & MWh \\
+System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
+\addlinespace
+Balancing reward (annual) & 60.70 & € \\
+Imbalance penalty (annual) & 59.76 & € \\
+Net balancing settlement & +0.94 & € \\
+\bottomrule
+\end{tabular}
+\end{table}

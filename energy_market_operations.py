@@ -325,28 +325,28 @@ class EnergyMarketOperations:
         prices = self.es_data['prices']
 
         bg_agg = self._aggregate_by_bg(load_da, gen_da)
+        da_price = prices['DA_price']
 
-        rows = []
+        frames = []
         for sid, bg_id, _ in self._iter_balancing_groups():
             agg = bg_agg[bg_id]
             net = agg['gen'] - agg['load']
-            net_load = net.clip(upper=0).abs()   # purchase
-            net_gen = net.clip(lower=0)           # sale
-            da_price = prices['DA_price']
+            net_load = net.clip(upper=0).abs()
+            net_gen = net.clip(lower=0)
 
-            for ts in load_da.index:
-                rows.append({
-                    'datetime': ts,
-                    'supplier_id': sid,
-                    'balancing_group_id': bg_id,
-                    'da_net_load_forecast_mwh': net_load.loc[ts],
-                    'da_net_gen_forecast_mwh': net_gen.loc[ts],
-                    'da_price_eur_per_mwh': da_price.loc[ts],
-                    'da_purchase_commitment_eur': net_load.loc[ts] * da_price.loc[ts],
-                    'da_sale_commitment_eur': net_gen.loc[ts] * da_price.loc[ts],
-                })
+            bg_df = pd.DataFrame({
+                'datetime': load_da.index,
+                'supplier_id': sid,
+                'balancing_group_id': bg_id,
+                'da_net_load_forecast_mwh': net_load.values,
+                'da_net_gen_forecast_mwh': net_gen.values,
+                'da_price_eur_per_mwh': da_price.values,
+                'da_purchase_commitment_eur': (net_load * da_price).values,
+                'da_sale_commitment_eur': (net_gen * da_price).values,
+            })
+            frames.append(bg_df)
 
-        self.es_timeseries_df = pd.DataFrame(rows)
+        self.es_timeseries_df = pd.concat(frames, ignore_index=True)
         print(f"✓ DA market: {self.es_timeseries_df.shape}")
         return self
 
@@ -367,7 +367,9 @@ class EnergyMarketOperations:
 
         bg_agg = self._aggregate_by_bg(load_id, gen_id)
 
-        id_rows = []
+        id_price = prices['ID_price']
+
+        id_frames = []
         for sid, bg_id, _ in self._iter_balancing_groups():
             agg = bg_agg[bg_id]
 
@@ -382,30 +384,29 @@ class EnergyMarketOperations:
             id_net_load = id_net.clip(upper=0).abs()
             id_net_gen = id_net.clip(lower=0)
 
-            # Adjustments
-            load_adj = id_net_load - da_data['da_net_load_forecast_mwh']
-            gen_adj = id_net_gen - da_data['da_net_gen_forecast_mwh']
-            id_price = prices['ID_price']
+            # Adjustments (vectorized)
+            da_nl = da_data['da_net_load_forecast_mwh']
+            da_ng = da_data['da_net_gen_forecast_mwh']
+            load_adj = id_net_load - da_nl
+            gen_adj = id_net_gen - da_ng
 
-            for ts in load_id.index:
-                id_rows.append({
-                    'datetime': ts,
-                    'supplier_id': sid,
-                    'balancing_group_id': bg_id,
-                    'id_net_load_forecast_mwh': id_net_load.loc[ts],
-                    'id_net_gen_forecast_mwh': id_net_gen.loc[ts],
-                    'id_net_load_adjustment_mwh': load_adj.loc[ts],
-                    'id_net_gen_adjustment_mwh': gen_adj.loc[ts],
-                    'id_price_eur_per_mwh': id_price.loc[ts],
-                    'id_purchase_adjustment_eur': load_adj.loc[ts] * id_price.loc[ts],
-                    'id_sale_adjustment_eur': gen_adj.loc[ts] * id_price.loc[ts],
-                    'closing_net_load_forecast_mwh':
-                        da_data['da_net_load_forecast_mwh'].loc[ts] + load_adj.loc[ts],
-                    'closing_net_gen_forecast_mwh':
-                        da_data['da_net_gen_forecast_mwh'].loc[ts] + gen_adj.loc[ts],
-                })
+            bg_df = pd.DataFrame({
+                'datetime': load_id.index,
+                'supplier_id': sid,
+                'balancing_group_id': bg_id,
+                'id_net_load_forecast_mwh': id_net_load.values,
+                'id_net_gen_forecast_mwh': id_net_gen.values,
+                'id_net_load_adjustment_mwh': load_adj.values,
+                'id_net_gen_adjustment_mwh': gen_adj.values,
+                'id_price_eur_per_mwh': id_price.values,
+                'id_purchase_adjustment_eur': (load_adj * id_price).values,
+                'id_sale_adjustment_eur': (gen_adj * id_price).values,
+                'closing_net_load_forecast_mwh': (da_nl + load_adj).values,
+                'closing_net_gen_forecast_mwh': (da_ng + gen_adj).values,
+            })
+            id_frames.append(bg_df)
 
-        id_df = pd.DataFrame(id_rows)
+        id_df = pd.concat(id_frames, ignore_index=True)
         merge_keys = ['datetime', 'supplier_id', 'balancing_group_id']
         drop_cols = [c for c in id_df.columns if c in self.es_timeseries_df.columns and c not in merge_keys]
         if drop_cols:
@@ -629,6 +630,61 @@ class EnergyMarketOperations:
         print(f"  Total energy charged: {self.battery_schedule_df['charge_kw'].sum() * delta_t:.1f} kWh")
         print(f"  Total energy discharged: {self.battery_schedule_df['discharge_kw'].sum() * delta_t:.1f} kWh")
 
+        # ── Apply battery effects to actual metered data ──────────────────
+        # The battery physically operates behind the meter:
+        #   Charging    → additional load at prosumer meters (draws power)
+        #   Discharging → additional generation at prosumer meters (injects power)
+        # Supplier forecasts remain UNCHANGED → structural imbalance deviation.
+        # This models the REC cost-minimisation vs supplier imbalance paradox.
+        prosumer_gen_cols = []
+        prosumer_load_cols = []
+        for p in cfg.get('prosumers', []):
+            if 'res' in p and p['res']:
+                gid = p['res']['id']
+                if gid in self.es_data['res_actual'].columns:
+                    prosumer_gen_cols.append(gid)
+            if 'load' in p and p['load']:
+                lid = p['load']['id']
+                if lid in self.es_data['load_actual'].columns:
+                    prosumer_load_cols.append(lid)
+
+        if prosumer_gen_cols or prosumer_load_cols:
+            gen_actual = self.es_data['res_actual']
+            load_actual = self.es_data['load_actual']
+
+            # Align battery schedule to actual data index
+            batt_charge = self.battery_schedule_df['charge_kw'].reindex(
+                gen_actual.index, fill_value=0.0)
+            batt_discharge = self.battery_schedule_df['discharge_kw'].reindex(
+                gen_actual.index, fill_value=0.0)
+
+            # Distribute charge as additional load across prosumer nodes
+            if prosumer_load_cols:
+                total_load_pros = load_actual[prosumer_load_cols].sum(axis=1)
+                load_shares = {}
+                for col in prosumer_load_cols:
+                    load_shares[col] = np.where(
+                        total_load_pros > 0,
+                        load_actual[col] / total_load_pros,
+                        1.0 / len(prosumer_load_cols))
+                for col in prosumer_load_cols:
+                    load_actual[col] = load_actual[col] + batt_charge * load_shares[col]
+
+            # Distribute discharge as additional generation across prosumer nodes
+            if prosumer_gen_cols:
+                total_gen_pros = gen_actual[prosumer_gen_cols].sum(axis=1)
+                gen_shares = {}
+                for col in prosumer_gen_cols:
+                    gen_shares[col] = np.where(
+                        total_gen_pros > 0,
+                        gen_actual[col] / total_gen_pros,
+                        1.0 / len(prosumer_gen_cols))
+                for col in prosumer_gen_cols:
+                    gen_actual[col] = gen_actual[col] + batt_discharge * gen_shares[col]
+
+            print(f"  ✓ Battery effects applied to actual metered data")
+            print(f"    (Supplier forecasts unchanged → structural imbalance deviation)")
+
         return self
 
     # ------------------------------------------------------------------ #
@@ -681,16 +737,15 @@ class EnergyMarketOperations:
         self.es_timeseries_df['internal_shared_energy_mwh'] = 0.0
         self.es_timeseries_df['corrected_net_load'] = 0.0
 
-        # Compute original net_load per BG
+        # Compute original net_load per BG (vectorized)
         bg_agg_orig = self._aggregate_by_bg(load_actual_df, gen_actual_df)
         for sid, bg_id, _ in self._iter_balancing_groups():
             agg = bg_agg_orig[bg_id]
             bg_net_load = agg['load'] - agg['gen']
             mask = ((self.es_timeseries_df['supplier_id'] == sid) &
                     (self.es_timeseries_df['balancing_group_id'] == bg_id))
-            for idx in self.es_timeseries_df[mask].index:
-                ts = self.es_timeseries_df.at[idx, 'datetime']
-                self.es_timeseries_df.at[idx, 'net_load'] = bg_net_load.loc[ts]
+            ts_vals = self.es_timeseries_df.loc[mask, 'datetime']
+            self.es_timeseries_df.loc[mask, 'net_load'] = bg_net_load.reindex(ts_vals).values
 
         # Process each REC defined in config
         for rec in cfg['recs']:
@@ -770,11 +825,10 @@ class EnergyMarketOperations:
 
                 mask = ((self.es_timeseries_df['supplier_id'] == sid) &
                         (self.es_timeseries_df['balancing_group_id'] == bg_id))
-                for idx in self.es_timeseries_df[mask].index:
-                    ts = self.es_timeseries_df.at[idx, 'datetime']
-                    self.es_timeseries_df.at[idx, 'rec_id'] = rec_id
-                    self.es_timeseries_df.at[idx, 'internal_shared_energy_mwh'] = shared_energy_bg.loc[ts]
-                    self.es_timeseries_df.at[idx, 'corrected_net_load'] = corrected_net_load_series.loc[ts]
+                ts_vals = self.es_timeseries_df.loc[mask, 'datetime']
+                self.es_timeseries_df.loc[mask, 'rec_id'] = rec_id
+                self.es_timeseries_df.loc[mask, 'internal_shared_energy_mwh'] = shared_energy_bg.reindex(ts_vals).values
+                self.es_timeseries_df.loc[mask, 'corrected_net_load'] = corrected_net_load_series.reindex(ts_vals).values
 
         self.corrected_load_df = corrected_load
         self.corrected_gen_df = corrected_gen
@@ -806,7 +860,9 @@ class EnergyMarketOperations:
         prices = self.es_data['prices']
         bg_agg = self._aggregate_by_bg(load_df, gen_df)
 
-        bal_rows = []
+        imb_price = prices['imbalance_price']
+
+        bal_frames = []
         for sid, bg_id, _ in self._iter_balancing_groups():
             agg = bg_agg[bg_id]
 
@@ -819,27 +875,26 @@ class EnergyMarketOperations:
             bg_actual = agg['load'] - agg['gen']
             bg_forecast = id_data['id_net_load_forecast_mwh'] - id_data['id_net_gen_forecast_mwh']
             imbalance = bg_actual - bg_forecast
-            imb_price = prices['imbalance_price']
             settlement = imbalance * imb_price
-            penalty = settlement.apply(lambda x: abs(x) if x < 0 else 0)
-            reward = settlement.apply(lambda x: x if x > 0 else 0)
+            penalty = settlement.clip(upper=0).abs()
+            reward = settlement.clip(lower=0)
 
-            for ts in load_df.index:
-                bal_rows.append({
-                    'datetime': ts,
-                    'supplier_id': sid,
-                    'balancing_group_id': bg_id,
-                    'actual_load_mwh': agg['load'].loc[ts],
-                    'actual_gen_mwh': agg['gen'].loc[ts],
-                    'balancing_group_actual_mwh': bg_actual.loc[ts],
-                    'balancing_group_forecast_mwh': bg_forecast.loc[ts],
-                    'imbalance_mwh': imbalance.loc[ts],
-                    'imbalance_price_eur_per_mwh': imb_price.loc[ts],
-                    'imbalance_penalty': penalty.loc[ts],
-                    'imbalance_reward': reward.loc[ts],
-                })
+            bg_df = pd.DataFrame({
+                'datetime': load_df.index,
+                'supplier_id': sid,
+                'balancing_group_id': bg_id,
+                'actual_load_mwh': agg['load'].values,
+                'actual_gen_mwh': agg['gen'].values,
+                'balancing_group_actual_mwh': bg_actual.values,
+                'balancing_group_forecast_mwh': bg_forecast.values,
+                'imbalance_mwh': imbalance.values,
+                'imbalance_price_eur_per_mwh': imb_price.values,
+                'imbalance_penalty': penalty.values,
+                'imbalance_reward': reward.values,
+            })
+            bal_frames.append(bg_df)
 
-        bal_df = pd.DataFrame(bal_rows)
+        bal_df = pd.concat(bal_frames, ignore_index=True)
         merge_keys = ['datetime', 'supplier_id', 'balancing_group_id']
         drop_cols = [c for c in bal_df.columns if c in self.es_timeseries_df.columns and c not in merge_keys]
         if drop_cols:

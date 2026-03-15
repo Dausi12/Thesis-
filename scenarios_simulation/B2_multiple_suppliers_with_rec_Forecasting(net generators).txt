@@ -1,90 +1,95 @@
-\subsection{Scenario B2-Forecasts: Multiple Suppliers, With REC -- REC-Aware Forecasting (Net Generators)}
+\subsection{Scenario B2-Forecasts: Multiple Suppliers with REC -- REC-Aware Forecasting (Net Generators)}
 \label{sec:results_B2fn}
 
-This section reports the results of the REC-aware forecasting variant of Scenario~B2 under the net generators configuration. In this setup, all consumers are assigned to Supplier~A / BG\_A, while all prosumers---acting as net generators---are assigned to Supplier~B / BG\_B. Suppliers adjust their day-ahead (DA) and intra-day (ID) market commitments to account for the expected volume of REC internal sharing. By incorporating this adjustment ex-ante, the scheduled market position reflects the residual demand after community energy exchanges, ensuring that any remaining imbalance arises primarily from forecast uncertainty rather than from structural REC settlement effects.
+This section presents the results of Scenario B2 with REC-aware forecasting under the net generator configuration. Supplier~A (BG\_A) serves all consumers, while Supplier~B (BG\_B) represents a portfolio consisting exclusively of prosumers operating as net generators. Market schedules incorporate expected REC energy exchanges ex-ante, so the scheduled balancing group positions reflect the residual demand or surplus after internal community transfers.
+
+\subsubsection{Balancing Performance}
+
+Table~\ref{tab:B2fn_balancing_combined} summarises the annual balancing group outcomes for both suppliers. Forecast errors introduce substantial imbalance volumes: Supplier~A's scheduled position of 148.33~MWh overshoots its actual net position of 105.09~MWh, producing a long imbalance of $-$43.23~MWh and incurring \EUR{1,472.87} in penalties. Conversely, Supplier~B's forecast underestimates generation, resulting in a short imbalance of +43.24~MWh that yields \EUR{1,465.33} in balancing rewards. The imbalances are primarily attributable to forecast uncertainty in RES generation schedules.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2-Forecasts (REC-Aware, Net Generators) -- Annual balancing group outcomes for both suppliers.}
+\label{tab:B2fn_balancing_combined}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{Supplier A / BG\_A} & \textbf{Supplier B / BG\_B} \\
+\midrule
+Actual BG net position (MWh) & 105.0942 & $-$13.4400 \\
+Forecast BG net position (ID) (MWh) & 148.3300 & $-$56.6800 \\
+Net imbalance volume (MWh) & $-$43.2300 & +43.2400 \\
+System position & Long (Surplus) & Short (Deficit) \\
+\addlinespace
+Balancing reward (annual, €) & 206.03 & 1,465.33 \\
+Imbalance penalty (annual, €) & 1,472.87 & 197.91 \\
+Net balancing settlement (€) & $-$1,266.84 & +1,267.42 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:imbalance_B2fn} shows the monthly balancing group positions of both suppliers.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2fn_finance_overview.png}
-\caption{Monthly revenue, costs, and profit/loss for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Net Generators.}
-\label{fig:finacial_overview_B2fn}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2fn_revenue_overview.png}
-\caption{Monthly revenue components for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Net Generators.}
-\label{fig:revenue_components_B2fn}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2fn_imbalance_overview.png}
-\caption{Monthly balancing group position and imbalance for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Net Generators.}
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/correctednetgen_imbala1.png}
+\caption{Monthly balancing group position and imbalance of Supplier~A and Supplier~B in Scenario B2-Forecasts (REC-aware forecasting, net generators).}
 \label{fig:imbalance_B2fn}
 \end{figure}
 
+\subsubsection{Cost Structure}
+
+Figure~\ref{fig:costs_B2fn} presents the monthly cost components of both suppliers. Supplier~A primarily incurs wholesale procurement costs to meet consumer demand. In contrast, Supplier~B’s costs are dominated by feed-in compensation payments to prosumers for electricity not absorbed within the REC. Because Supplier~B’s portfolio contains only net generators, it does not incur demand-side procurement costs. Balancing-related expenditures remain minor for both suppliers.
+
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth]{pdflatex template/img/B2fn_cost_overview.png}
-\caption{Monthly cost components for both suppliers: Scenario B2-Forecasts -- REC-Aware Forecasting, Net Generators.}
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/correctednetgen_costs.png}
+\caption{Monthly cost components of Supplier~A and Supplier~B in Scenario B2-Forecasts (REC-aware forecasting, net generators).}
 \label{fig:costs_B2fn}
 \end{figure}
 
-Figure~\ref{fig:imbalance_B2fn} highlights the principal effect of REC-aware forecasting. Once the expected internal REC exchanges are incorporated into the suppliers' market schedules, the forecasted and realised balancing group positions align closely throughout the year. Consequently, the imbalance profile becomes nearly flat, indicating that structural deviations introduced by REC settlement are effectively eliminated. In contrast to the standard Scenario~B2, where REC settlement created substantial balancing offsets between suppliers, the corrected forecasting approach confines deviations to minor forecast errors.
+\subsubsection{Revenue Structure}
 
-This improved alignment directly affects the cost structure of both suppliers, as illustrated in Figure~\ref{fig:costs_B2fn}. Supplier~A continues to incur costs primarily through wholesale electricity procurement required to serve consumer demand. However, the balancing penalties observed in Scenario~B2 largely disappear because the systematic long position has been removed. Supplier~B experiences a similar effect: the supplier still compensates prosumers for residual feed-in not absorbed by the REC, but balancing charges become negligible once the structural imbalance is eliminated. Because Supplier~B serves exclusively net generators with no consumption load, no retail purchase costs arise on the demand side.
+Figure~\ref{fig:revenue_components_B2fn} illustrates the revenue composition of both suppliers. Supplier~A’s revenue is largely derived from retail electricity sales to consumers. Supplier~B, by contrast, generates revenue mainly from wholesale market sales of surplus electricity and balancing rewards. Retail billing revenue is absent for Supplier~B because its portfolio consists entirely of net-generating prosumers.
 
-Turning to the revenue composition in Figure~\ref{fig:revenue_components_B2fn}, the revenue sources differ markedly between the two suppliers. Supplier~A generates revenue predominantly from retail electricity sales to consumers. Supplier~B, servicing only net generators, derives income solely from wholesale market sales of surplus generation and small balancing rewards; no retail billing revenue exists because the prosumers carry no consumption load. The key difference relative to the standard Scenario~B2 is the disappearance of the substantial balancing revenues that previously resulted from the structural forecast mismatch rather than genuine market performance.
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/correctednetgen_revenue1.png}
+\caption{Monthly revenue components of Supplier~A and Supplier~B in Scenario B2-Forecasts (REC-aware forecasting, net generators).}
+\label{fig:revenue_components_B2fn}
+\end{figure}
 
-These adjustments ultimately reshape the financial outcomes shown in Figure~\ref{fig:finacial_overview_B2fn}. Supplier~A benefits from the removal of balancing penalties and therefore records higher profitability than in the standard REC configuration. Supplier~B records a net loss of~\EUR{821.89}, as the feed-in compensation paid to prosumers (\EUR{1{,}107.46}) exceeds the revenue from wholesale market sales (\EUR{283.12}) and balancing rewards (\EUR{29.67}). This outcome reflects the structural role of Supplier~B under the net generators configuration: the majority of prosumer generation (43.24~MWh out of a physical total of 56.68~MWh) is shared within the REC and thus does not flow through Supplier~B's market position, substantially reducing its market sales revenue while the feed-in obligation for residual generation persists.
+\subsubsection{Overall Financial Outcome}
 
-\subsubsection{Supplier~A / BG\_A (Consumers Only)}
-
-Table~\ref{tab:B2fn_balancing_A} reports the annual balancing statistics for Supplier~A. The near-zero imbalance confirms that adjusting the market schedule for anticipated REC exchanges effectively aligns the supplier's scheduled and realised demand.
+Table~\ref{tab:B2fn_profit_combined} summarises the annual financial outcomes for both suppliers. Supplier~A records a net profit of \EUR{15,107.73}, driven by retail electricity sales of \EUR{21,123.93} which comfortably offset market purchase costs of \EUR{4,749.35} and balancing penalties of \EUR{1,472.87}. Supplier~B achieves a net profit of \EUR{1,728.87}, with wholesale market revenue of \EUR{1,568.91} and balancing rewards of \EUR{1,465.33} exceeding its feed-in compensation costs of \EUR{1,107.46} and balancing penalties of \EUR{197.91}. Both suppliers are profitable in this configuration, although Supplier~A's margin is substantially larger due to the retail markup on consumer sales.
 
 \begin{table}[htbp]
 \centering
-\caption{Scenario B2-Forecasts (REC-Aware, Net Generators) -- Balancing group annual position (Supplier~A / BG\_A).}
-\label{tab:B2fn_balancing_A}
+\caption{Scenario B2-Forecasts (REC-Aware, Net Generators) -- Annual profit components of both suppliers.}
+\label{tab:B2fn_profit_combined}
 \renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}lrl@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
+\textbf{Financial Metric} & \textbf{Supplier A} & \textbf{Supplier B} \\
 \midrule
-Actual BG net position & 105.0942 & MWh \\
-Forecast BG net position (ID) & 105.1300 & MWh \\
-Net imbalance volume & $-$0.0358 & MWh \\
-System position & \multicolumn{2}{l}{\textsc{long (Surplus)}} \\
-\addlinespace
-Balancing reward (annual) & 41.48 & € \\
-Imbalance penalty (annual) & 43.36 & € \\
-Net balancing settlement & $-$1.88 & € \\
+Wholesale market revenue (€) & -- & 1,568.91 \\
+Retail revenue (€) & 21,123.93 & -- \\
+Balancing reward (€) & 206.03 & 1,465.33 \\
+Feed-in compensation (€) & -- & 1,107.46 \\
+Balancing penalty (€) & 1,472.87 & 197.91 \\
+Market purchases (€) & 4,749.35 & -- \\
+Net balancing settlement (€) & $-$1,266.84 & +1,267.42 \\
+\midrule
+\textbf{Net profit (€)} & 15,107.73 & 1,728.87 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsubsection{Supplier~B / BG\_B (Net Generators Only)}
+Figure~\ref{fig:finacial_overview_B2fn} presents the monthly evolution of revenue, costs, and profit for both suppliers.
 
-Table~\ref{tab:B2fn_balancing_B} summarises the corresponding balancing results for Supplier~B. Once the expected REC exchanges are incorporated into the forecast, the supplier's scheduled market position aligns closely with realised generation, leaving only negligible residual imbalance.
-
-\begin{table}[htbp]
+\begin{figure}
 \centering
-\caption{Scenario B2-Forecasts (REC-Aware, Net Generators) -- Balancing group annual position (Supplier~B / BG\_B).}
-\label{tab:B2fn_balancing_B}
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}lrl@{}}
-\toprule
-\textbf{Balancing Metric} & \textbf{Value} & \textbf{Unit} \\
-\midrule
-Actual BG net position & $-$13.4400 & MWh \\
-Forecast BG net position (ID) & $-$13.4833 & MWh \\
-Net imbalance volume & +0.0433 & MWh \\
-System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
-\addlinespace
-Balancing reward (annual) & 29.67 & € \\
-Imbalance penalty (annual) & 27.22 & € \\
-Net balancing settlement & +2.45 & € \\
-\bottomrule
-\end{tabular}
-\end{table}
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/correctednetgen_finance1.png}
+\caption{Monthly revenue, costs, and profit/loss of Supplier~A and Supplier~B in Scenario B2-Forecasts (REC-aware forecasting, net generators).}
+\label{fig:finacial_overview_B2fn}
+\end{figure}

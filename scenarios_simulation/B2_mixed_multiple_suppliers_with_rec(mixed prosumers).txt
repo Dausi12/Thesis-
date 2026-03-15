@@ -1,6 +1,5 @@
 \subsection{Scenario B2: Multiple Suppliers, With REC (Mixed Prosumers)}
 \label{sec:results_B2_mixed}
-
 This section presents the financial and balancing outcomes of Scenario~B2. The introduction of REC settlement redistributes part of the locally generated electricity among community members before supplier billing, thereby altering the balancing positions and financial structures of both suppliers.
 
 \begin{figure}
@@ -33,7 +32,7 @@ This section presents the financial and balancing outcomes of Scenario~B2. The i
 
 Figure~\ref{fig:imbalance_B2m} illustrates how REC settlement alters the balancing group behaviour of both suppliers. Supplier~A experiences a reduction in its residual balancing group demand because part of the consumers' electricity needs is satisfied through REC-shared generation. As a result, the supplier procures less electricity from the wholesale market than originally forecast. Conversely, Supplier~B observes the opposite effect. A substantial portion of prosumer generation is absorbed within the REC before reaching the supplier's balancing group, shifting the supplier's net position toward positive values. This redistribution of energy between balancing groups introduces a forecast mismatch for both suppliers, increasing their imbalance volumes compared to the no-REC configuration.
 
-The cost structures shown in Figure~\ref{fig:costs_B2m} reflect these operational changes. Supplier~A continues to incur costs primarily through wholesale electricity procurement required to supply its consumers. However, the supplier now also faces significant balancing penalties because the intra-day forecast does not account for REC settlement, leading to systematic deviations between forecast and actual balancing positions. Supplier~B, in contrast, benefits from a substantial reduction in feed-in compensation costs. Because a portion of the prosumers' surplus generation is consumed within the REC, less electricity must be remunerated at the feed-in tariff. Instead, Supplier~B incurs a more diversified cost structure that includes smaller feed-in payments, moderate market purchases, and limited balancing penalties.
+The cost structures shown in Figure~\ref{fig:costs_B2m} reflect these operational changes. Supplier~A continues to incur costs primarily through wholesale electricity procurement required to supply its consumers. However, the supplier now also faces significant balancing penalties because the intra-day forecast does not account for REC settlement, leading to deviations between forecast and actual balancing positions. Supplier~B, in contrast, benefits from a substantial reduction in feed-in compensation costs. Because a portion of the prosumers' surplus generation is consumed within the REC, less electricity must be remunerated at the feed-in tariff. Instead, Supplier~B incurs a more diversified cost structure that includes smaller feed-in payments, moderate market purchases, and limited balancing penalties.
 
 The revenue structures shown in Figure~\ref{fig:revenue_components_B2m} further highlight the economic effects of REC participation. Supplier~A continues to earn most of its revenue from retail electricity sales to consumers. However, the total retail revenue declines relative to Scenario~B1 because part of the consumers' electricity demand is now met through REC energy sharing rather than supplier-delivered electricity. Supplier~B experiences the opposite effect. The mixed prosumer portfolio generates retail sales revenue from local consumption, while remaining surplus electricity can still be sold on the wholesale market. In addition, balancing rewards provide a small supplementary income stream.
 
@@ -64,6 +63,37 @@ Net balancing settlement & $-$983.03 & € \\
 \end{tabular}
 \end{table}
 
+The annual profit-and-loss statement for Supplier~A (Table~\ref{tab:B2m_pnl_A}) shows total revenue of \euro{}23{,}232.61 and total costs of \euro{}5{,}887.27, yielding an annual profit of \euro{}17{,}345.34 (monthly average \euro{}1{,}445.44; range \euro{}607.78--\euro{}1{,}993.69). Compared to Scenario~B1, retail sales revenue declines from \euro{}29{,}814.30 to \euro{}23{,}077.72 because part of the consumers' demand is now met through REC energy sharing. Simultaneously, imbalance penalties increase substantially from \euro{}18.87 to \euro{}1{,}137.92, as the intra-day forecast does not account for the REC-induced reduction in balancing group demand. Despite these effects, Supplier~A remains profitable across all months.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 (With REC, Mixed Prosumers) -- Annual profit and loss statement (Supplier~A / BG\_A).}
+\label{tab:B2m_pnl_A}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 0.00                & 0.00 \\
+\quad Balancing rewards              & 154.89              & 0.67 \\
+\quad Retail sales                   & 23{,}077.72         & 99.33 \\
+\textbf{Total Revenue}               & \textbf{23{,}232.61} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 4{,}749.35          & 80.67 \\
+\quad Imbalance penalties            & 1{,}137.92          & 19.33 \\
+\quad Retail purchases (feed-in)     & 0.00                & 0.00 \\
+\textbf{Total Costs}                 & \textbf{5{,}887.27}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}17{,}345.34} & \\
+Monthly average                      & \euro{}1{,}445.44         & \\
+Monthly minimum                      & \euro{}607.78             & \\
+Monthly maximum                      & \euro{}1{,}993.69         & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsubsection{Supplier~B / BG\_B (Mixed Prosumers Only)}
 
 Table~\ref{tab:B2m_balancing_B} reports the balancing outcomes for Supplier~B. REC settlement redirects part of the prosumers' generation to community consumers, shifting the supplier's balancing group position and producing balancing revenues that partially offset its operating costs.
@@ -85,6 +115,37 @@ System position & \multicolumn{2}{l}{\textsc{short (Deficit)}} \\
 Balancing reward (annual) & 1{,}132.99 & € \\
 Imbalance penalty (annual) & 149.60 & € \\
 Net balancing settlement & +983.39 & € \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The annual profit-and-loss statement for Supplier~B (Table~\ref{tab:B2m_pnl_B}) shows total revenue of \euro{}10{,}425.10 and total costs of \euro{}1{,}986.72, yielding an annual profit of \euro{}8{,}438.38 (monthly average \euro{}703.20; range \euro{}399.21--\euro{}1{,}002.96). Compared to Scenario~B1, Supplier~B transitions from marginal profitability (\euro{}4{,}451.26) to robust profitability. The REC configuration generates retail sales revenue of \euro{}8{,}550.54 from prosumer self-consumption, while feed-in costs decrease from \euro{}3{,}357.64 to \euro{}764.65 because a substantial portion of surplus generation is absorbed within the community. Revenue diversification also improves, with market sales (\euro{}741.57, 7.11\%) and balancing rewards (\euro{}1{,}132.99, 10.87\%) contributing meaningful supplementary income.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B2 (With REC, Mixed Prosumers) -- Annual profit and loss statement (Supplier~B / BG\_B).}
+\label{tab:B2m_pnl_B}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{P\&L Component}             & \textbf{Amount (\euro{})} & \textbf{Share (\%)} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Revenue}} \\
+\quad Energy market sales            & 741.57              & 7.11 \\
+\quad Balancing rewards              & 1{,}132.99          & 10.87 \\
+\quad Retail sales                   & 8{,}550.54          & 82.02 \\
+\textbf{Total Revenue}               & \textbf{10{,}425.10} & \textbf{100.00} \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Costs}} \\
+\quad Energy market purchases        & 1{,}072.47          & 53.98 \\
+\quad Imbalance penalties            & 149.60              & 7.53 \\
+\quad Retail purchases (feed-in)     & 764.65              & 38.49 \\
+\textbf{Total Costs}                 & \textbf{1{,}986.72}  & \textbf{100.00} \\
+\addlinespace
+\textbf{Annual Profit}               & \textbf{\euro{}8{,}438.38} & \\
+Monthly average                      & \euro{}703.20              & \\
+Monthly minimum                      & \euro{}399.21              & \\
+Monthly maximum                      & \euro{}1{,}002.96          & \\
 \bottomrule
 \end{tabular}
 \end{table}

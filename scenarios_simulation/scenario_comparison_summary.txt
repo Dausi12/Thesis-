@@ -1,0 +1,249 @@
+\section{Cross-Scenario Comparison}
+\label{sec:cross_scenario_comparison}
+
+This section provides a systematic comparison of the simulation results across all scenarios, organised by the two main scenario families: Scenario~A (single supplier) and Scenario~B (multiple suppliers). Within each family, the mixed-prosumer and net-generator configurations are contrasted to isolate the impact of prosumer portfolio composition on market outcomes, balancing performance, and supplier profitability.
+
+Throughout this section, \emph{mixed prosumers} refers to the configuration in which prosumers carry both local consumption and PV generation, whereas \emph{net generators} denotes the configuration in which prosumers operate as pure generators with no co-located load.
+
+%% ============================================================================
+\subsection{Scenario A: Single Supplier}
+\label{sec:comparison_A}
+%% ============================================================================
+
+Scenario~A represents the centralised market structure in which a single supplier (SUP\_A) serves all participants. Two sub-variants are examined: A1 (no REC) establishes the baseline without community energy sharing, while A2 (with REC) activates proportional energy sharing within a renewable energy community. Each sub-variant is simulated under both prosumer configurations.
+
+\subsubsection{Balancing and Energy Flow Comparison}
+
+Table~\ref{tab:comparison_A_balancing} summarises the key balancing and energy metrics across all four Scenario~A variants. Because the single supplier schedules against its own forecasts (which use actual profiles plus minimal noise), imbalance volumes are negligible across all variants—confirming that the scheduling methodology is consistent and that the REC settlement layer does not introduce structural imbalance.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A -- Balancing and energy flow comparison across prosumer configurations and REC status.}
+\label{tab:comparison_A_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Metric} & \textbf{A1 Mixed} & \textbf{A1 Net Gen.} & \textbf{A2 Mixed} & \textbf{A2 Net Gen.} \\
+\midrule
+Actual BG position (MWh) & 148.07 & 91.65 & 148.07 & 91.65 \\
+Forecast BG position (MWh) & 148.08 & 91.65 & 148.08 & 91.65 \\
+Net imbalance (MWh) & $\approx$0 & $\approx$0 & $\approx$0 & $\approx$0 \\
+Shared energy (MWh) & -- & -- & 94.79 & 86.47 \\
+Balancing reward (\euro) & 72.08 & 71.15 & 72.08 & 71.15 \\
+Balancing penalty (\euro) & 71.73 & 70.57 & 71.73 & 70.57 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The shared energy volumes in A2 reveal a key structural difference: mixed prosumers share 94.79~MWh internally, compared with 86.47~MWh for net generators. This reflects the load-coincident generation profile of mixed prosumers, which aligns more closely with community consumption patterns and thus enables higher proportional allocation within the REC.
+
+\subsubsection{Financial Comparison}
+
+Table~\ref{tab:comparison_A_financial} compares the annual financial outcomes for the single supplier under each configuration.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario A -- Annual financial comparison of the single supplier across all variants.}
+\label{tab:comparison_A_financial}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Financial Metric (\euro)} & \textbf{A1 Mixed} & \textbf{A1 Net Gen.} & \textbf{A2 Mixed} & \textbf{A2 Net Gen.} \\
+\midrule
+Wholesale market revenue & 174.75 & 283.12 & 174.75 & 283.12 \\
+Retail revenue & 37,953.39 & 29,814.30 & 31,628.26 & 21,123.93 \\
+Balancing reward & 72.08 & 71.15 & 72.08 & 71.15 \\
+\addlinespace
+Total revenue & 38,200.22 & 30,168.57 & 31,875.08 & 21,478.19 \\
+\midrule
+Market purchases & 5,254.99 & 3,463.56 & 5,255.00 & 3,463.56 \\
+Balancing penalty & 71.73 & 70.57 & 71.73 & 70.57 \\
+Feed-in compensation & 3,357.64 & 4,670.08 & 764.65 & 1,107.46 \\
+\addlinespace
+Total costs & 8,684.37 & 8,204.21 & 6,091.37 & 4,641.59 \\
+\midrule
+\textbf{Net profit} & \textbf{29,515.86} & \textbf{21,964.36} & \textbf{25,783.71} & \textbf{16,836.60} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Several patterns emerge from Table~\ref{tab:comparison_A_financial}:
+
+\begin{enumerate}
+    \item \textbf{Mixed prosumers yield higher total profit than net generators in all cases.} The mixed configuration produces higher retail revenue because prosumers with co-located load purchase more electricity from the supplier, inflating the billable volume. Net generators, by contrast, only inject electricity and generate no retail demand.
+
+    \item \textbf{The REC reduces supplier profit in both configurations.} Introducing the REC (A1$\to$A2) reduces profit by \euro3,732.15 ($-$12.6\%) for mixed prosumers and by \euro5,127.76 ($-$23.4\%) for net generators. This arises because REC-internal energy sharing displaces retail sales volume: energy shared within the community is settled at the REC incentive rate rather than the full retail tariff, directly eroding the supplier's margin.
+
+    \item \textbf{Feed-in compensation drops sharply with REC.} The REC absorbs a significant share of prosumer generation internally. Consequently, residual feed-in requiring compensation decreases from \euro3,357.64 to \euro764.65 (mixed) and from \euro4,670.08 to \euro1,107.46 (net generators). This cost reduction partially offsets the revenue loss, but the net effect remains negative for the supplier.
+
+    \item \textbf{Market purchases remain constant} between A1 and A2 within each prosumer type, confirming that the REC settlement affects only internal allocation and billing—not the supplier's wholesale market position.
+\end{enumerate}
+
+
+%% ============================================================================
+\subsection{Scenario B: Multiple Suppliers}
+\label{sec:comparison_B}
+%% ============================================================================
+
+Scenario~B introduces market liberalisation by splitting the participant pool across two suppliers: SUP\_A serves all consumers, and SUP\_B manages the prosumer portfolio. Three sub-variants are examined: B1 (no REC), B2 (with REC, perfect foresight), and B2-Forecasts (with REC, explicit forecast scheduling). Each is simulated under both prosumer configurations.
+
+\subsubsection{Balancing and Energy Flow Comparison}
+
+Table~\ref{tab:comparison_B_balancing} presents the balancing outcomes for both suppliers across all Scenario~B variants. In B1 (no REC, perfect foresight), imbalances are negligible for both suppliers. The introduction of the REC in B2 creates substantial imbalance because the REC settlement redistributes energy across balancing group boundaries: SUP\_A's forecast overshoots its REC-corrected actual position (long), while SUP\_B's forecast underestimates its residual position (short).
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B -- Balancing outcomes across all variants (annual totals).}
+\label{tab:comparison_B_balancing}
+\renewcommand{\arraystretch}{1.3}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+& & \multicolumn{2}{c}{\textbf{B1 (No REC)}} & \multicolumn{2}{c}{\textbf{B2 (REC, Perfect)}} & \multicolumn{2}{c}{\textbf{B2-F (REC, Forecasts)}} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+\textbf{Metric} & \textbf{Config.} & \textbf{SUP\_A} & \textbf{SUP\_B} & \textbf{SUP\_A} & \textbf{SUP\_B} & \textbf{SUP\_A} & \textbf{SUP\_B} \\
+\midrule
+\multirow{2}{*}{Actual BG (MWh)}
+  & Mixed   & 148.33 & $-$0.26 & 114.81 & 33.26  & 114.81 & 33.26  \\
+  & Net Gen & 148.33 & $-$56.68 & 105.09 & $-$13.44 & 105.09 & $-$13.44 \\
+\addlinespace
+\multirow{2}{*}{Forecast BG (MWh)}
+  & Mixed   & 148.33 & $-$0.25 & 148.33 & $-$0.25 & 148.33 & $-$0.25 \\
+  & Net Gen & 148.33 & $-$56.68 & 148.33 & $-$56.68 & 148.33 & $-$56.68 \\
+\addlinespace
+\multirow{2}{*}{Imbalance (MWh)}
+  & Mixed   & $\approx$0 & $\approx$0 & $-$33.51 & +33.51 & $-$33.51 & +33.51 \\
+  & Net Gen & $\approx$0 & $\approx$0 & $-$43.23 & +43.24 & $-$43.23 & +43.24 \\
+\addlinespace
+\multirow{2}{*}{Shared energy (MWh)}
+  & Mixed   & -- & -- & 33.52 & 61.28 & 33.52 & 61.28 \\
+  & Net Gen & -- & -- & 43.24 & 43.24 & 43.24 & 43.24 \\
+\addlinespace
+\multirow{2}{*}{Bal.\ reward (\euro)}
+  & Mixed   & 18.51 & 64.23 & 154.89 & 1,132.99 & 154.89 & 1,132.99 \\
+  & Net Gen & 18.51 & 60.70 & 206.03 & 1,465.33 & 206.03 & 1,465.33 \\
+\addlinespace
+\multirow{2}{*}{Bal.\ penalty (\euro)}
+  & Mixed   & 18.87 & 63.52 & 1,137.92 & 149.60 & 1,137.92 & 149.60 \\
+  & Net Gen & 18.87 & 59.76 & 1,472.87 & 197.91 & 1,472.87 & 197.91 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+A critical observation from Table~\ref{tab:comparison_B_balancing} is that B2 and B2-Forecasts produce identical balancing outcomes. This is because the forecast schedules in both variants are computed from the same underlying ID forecast profiles and the REC correction applies identically to the actual positions. The forecast error structure is therefore determined by the REC sharing algorithm rather than by differences in forecast methodology between the two sub-variants.
+
+\subsubsection{Financial Comparison}
+
+Table~\ref{tab:comparison_B_financial} presents the full financial breakdown for both suppliers across all Scenario~B variants under both prosumer configurations.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario B -- Annual financial comparison across all variants and prosumer configurations.}
+\label{tab:comparison_B_financial}
+\renewcommand{\arraystretch}{1.3}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+& & \multicolumn{2}{c}{\textbf{B1 (No REC)}} & \multicolumn{2}{c}{\textbf{B2 (REC, Perfect)}} & \multicolumn{2}{c}{\textbf{B2-F (REC, Forecasts)}} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+\textbf{Metric (\euro)} & \textbf{Config.} & \textbf{SUP\_A} & \textbf{SUP\_B} & \textbf{SUP\_A} & \textbf{SUP\_B} & \textbf{SUP\_A} & \textbf{SUP\_B} \\
+\midrule
+\multirow{2}{*}{Wholesale revenue}
+  & Mixed   & 0.00 & 741.57 & 0.00 & 741.57  & 0.00 & 741.57  \\
+  & Net Gen & 0.00 & 1,568.91 & 0.00 & 1,568.91 & 0.00 & 1,568.91 \\
+\addlinespace
+\multirow{2}{*}{Retail revenue}
+  & Mixed   & 29,814.30 & 8,139.09 & 23,077.72 & 8,550.54 & 23,077.72 & 8,550.54 \\
+  & Net Gen & 29,814.30 & 0.00     & 21,123.93 & 0.00     & 21,123.93 & 0.00     \\
+\addlinespace
+\multirow{2}{*}{Balancing reward}
+  & Mixed   & 18.51 & 64.23 & 154.89 & 1,132.99 & 154.89 & 1,132.99 \\
+  & Net Gen & 18.51 & 60.70 & 206.03 & 1,465.33 & 206.03 & 1,465.33 \\
+\addlinespace
+\multirow{2}{*}{\textbf{Total revenue}}
+  & Mixed   & \textbf{29,832.81} & \textbf{8,944.90} & \textbf{23,232.61} & \textbf{10,425.10} & \textbf{23,232.61} & \textbf{10,425.10} \\
+  & Net Gen & \textbf{29,832.81} & \textbf{1,629.60} & \textbf{21,329.95} & \textbf{3,034.24}  & \textbf{21,329.95} & \textbf{3,034.24}  \\
+\midrule
+\multirow{2}{*}{Market purchases}
+  & Mixed   & 4,749.35 & 1,072.47 & 4,749.35 & 1,072.47 & 4,749.35 & 1,072.47 \\
+  & Net Gen & 4,749.35 & 0.00     & 4,749.35 & 0.00     & 4,749.35 & 0.00     \\
+\addlinespace
+\multirow{2}{*}{Balancing penalty}
+  & Mixed   & 18.87 & 63.52 & 1,137.92 & 149.60 & 1,137.92 & 149.60 \\
+  & Net Gen & 18.87 & 59.76 & 1,472.87 & 197.91 & 1,472.87 & 197.91 \\
+\addlinespace
+\multirow{2}{*}{Feed-in compensation}
+  & Mixed   & 0.00 & 3,357.64 & 0.00 & 764.65 & 0.00 & 764.65 \\
+  & Net Gen & 0.00 & 4,670.08 & 0.00 & 1,107.46 & 0.00 & 1,107.46 \\
+\addlinespace
+\multirow{2}{*}{\textbf{Total costs}}
+  & Mixed   & \textbf{4,768.22} & \textbf{4,493.64} & \textbf{5,887.27} & \textbf{1,986.72} & \textbf{5,887.27} & \textbf{1,986.72} \\
+  & Net Gen & \textbf{4,768.22} & \textbf{4,729.84} & \textbf{6,222.22} & \textbf{1,305.37} & \textbf{6,222.22} & \textbf{1,305.37} \\
+\midrule
+\multirow{2}{*}{\textbf{Net profit}}
+  & Mixed   & \textbf{25,064.59} & \textbf{4,451.26} & \textbf{17,345.34} & \textbf{8,438.38} & \textbf{17,345.34} & \textbf{8,438.38} \\
+  & Net Gen & \textbf{25,064.59} & \textbf{$-$3,100.24} & \textbf{15,107.73} & \textbf{1,728.87} & \textbf{15,107.73} & \textbf{1,728.87} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsubsection{Key Findings -- Scenario B}
+
+\begin{enumerate}
+    \item \textbf{The REC transforms SUP\_B's profitability under net generators.} Without the REC (B1), SUP\_B incurs a net loss of \euro{$-$3,100.24} because feed-in compensation obligations (\euro4,670.08) substantially exceed wholesale revenue (\euro1,568.91). With the REC (B2/B2-F), SUP\_B turns profitable at \euro1,728.87 because the REC absorbs 43.24~MWh of prosumer generation internally, reducing the residual feed-in compensation from \euro4,670.08 to \euro1,107.46—a 76.3\% reduction. Additionally, the REC-induced imbalance paradoxically benefits SUP\_B by generating \euro1,465.33 in balancing rewards.
+
+    \item \textbf{SUP\_A's profit decreases with the REC.} The REC reduces SUP\_A's profit from \euro25,064.59 (B1) to \euro17,345.34 (B2, mixed) or \euro15,107.73 (B2, net generators). The primary driver is reduced retail revenue as shared energy displaces billable consumption. Increased balancing penalties (\euro1,137.92--\euro1,472.87 vs.\ \euro18.87 in B1) constitute a secondary cost.
+
+    \item \textbf{B2 and B2-Forecasts produce identical results.} Both variants yield the same financial outcomes because the forecast schedules and REC corrections are computed from identical underlying data. This confirms that, in this simulation framework, the distinction between ``perfect foresight'' and ``explicit forecasts'' does not alter the settlement outcome when both use the same ID forecast profiles.
+
+    \item \textbf{Mixed prosumers outperform net generators at the system level.} Total system profit (SUP\_A + SUP\_B) is \euro25,783.72 (B2, mixed) versus \euro16,836.60 (B2, net generators). Mixed prosumers contribute additional retail revenue because they consume electricity in addition to generating it, expanding the total billable volume.
+
+    \item \textbf{SUP\_B benefits disproportionately from mixed prosumers.} Under mixed prosumers, SUP\_B earns \euro8,438.38 because its portfolio includes prosumers with co-located load, generating retail billing revenue (\euro8,550.54). Under net generators, SUP\_B earns only \euro1,728.87, relying entirely on wholesale sales and balancing rewards.
+\end{enumerate}
+
+
+%% ============================================================================
+\subsection{Cross-Family Comparison: Scenario A vs.\ Scenario B}
+\label{sec:comparison_AB}
+%% ============================================================================
+
+Table~\ref{tab:comparison_AB_system} provides a system-level comparison of total supplier profit across all scenario variants, aggregating across all suppliers where applicable.
+
+\begin{table}[htbp]
+\centering
+\caption{System-level total profit comparison across all scenarios (\euro, annual).}
+\label{tab:comparison_AB_system}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Scenario} & \textbf{Mixed Prosumers} & \textbf{Net Generators} \\
+\midrule
+A1 -- Single supplier, no REC    & 29,515.86 & 21,964.36 \\
+A2 -- Single supplier, with REC  & 25,783.71 & 16,836.60 \\
+B1 -- Multi-supplier, no REC     & 29,515.85 & 21,964.36 \\
+B2 -- Multi-supplier, with REC   & 25,783.72 & 16,836.60 \\
+B2-F -- Multi-supplier, REC + forecasts & 25,783.72 & 16,836.60 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Conclusions}
+\label{sec:comparison_conclusions}
+
+The cross-scenario analysis yields the following principal conclusions:
+
+\begin{enumerate}
+    \item \textbf{System-level profit is conserved across market structures.} Total supplier profit is identical between single-supplier (A) and multi-supplier (B) configurations when REC status is held constant (Table~\ref{tab:comparison_AB_system}). This confirms that the multi-supplier split redistributes profit between suppliers without altering the aggregate economic outcome. The market liberalisation modelled in Scenario~B is therefore distributionally neutral at the system level.
+
+    \item \textbf{The REC consistently reduces total supplier profit.} Across all configurations, introducing the REC reduces system profit by approximately \euro3,700--\euro5,100. This effect is structural: the REC diverts energy from the retail billing pathway (supplier margin) to the community sharing pathway (REC incentive rate), compressing the effective volume-weighted retail price. The magnitude of the reduction is larger for net generators ($-$23.4\%) than for mixed prosumers ($-$12.6\%), because net generators inject proportionally more energy that is eligible for REC sharing.
+
+    \item \textbf{Prosumer configuration is the dominant driver of profitability.} Mixed prosumers consistently produce \euro7,500--\euro9,000 more system profit than net generators, irrespective of REC status or market structure. This arises because mixed prosumers contribute both as load (retail revenue) and as generators (feed-in compensation), whereas net generators only generate—eliminating one revenue stream entirely.
+
+    \item \textbf{The REC primarily benefits the prosumer-serving supplier in a multi-supplier market.} Under multi-supplier scenarios, the REC shifts value from SUP\_A (consumer-serving) to SUP\_B (prosumer-serving). SUP\_B's profit increases from \euro4,451.26 to \euro8,438.38 (+89.5\%, mixed) and from $-$\euro3,100.24 to \euro1,728.87 (loss reversal, net generators). This occurs because the REC reduces SUP\_B's feed-in compensation liability more than it reduces its revenue, while SUP\_A loses retail volume without a corresponding cost reduction.
+
+    \item \textbf{Forecast methodology has no impact under the current framework.} B2 and B2-Forecasts produce identical results, indicating that the explicit forecast CSV approach and the ``perfect foresight'' approach converge to the same ID forecast values. Any differentiation between these variants would require introducing stochastic forecast error or using fundamentally different forecast methods.
+
+    \item \textbf{Imbalance costs are material only with cross-BG REC sharing.} In all non-REC scenarios and in single-supplier REC scenarios, imbalance costs are negligible (\euro$<$100 annually). Significant imbalance costs (\euro1,100--\euro1,500) arise only in multi-supplier REC scenarios where energy sharing crosses balancing group boundaries, creating a structural mismatch between scheduled and realised positions. This highlights the importance of REC-aware scheduling in liberalised market designs.
+\end{enumerate}

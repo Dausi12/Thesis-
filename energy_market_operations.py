@@ -308,6 +308,63 @@ class EnergyMarketOperations:
 
         return result
 
+    def _correct_forecasts_for_rec_sharing(self, load_forecast_df, gen_forecast_df):
+        """
+        Apply anticipated REC sharing correction to forecast DataFrames.
+
+        Mirrors run_rec_settlement() proportional sharing logic but uses
+        forecast data instead of actuals.  For each REC, the anticipated
+        shared energy is min(total_gen_forecast, total_load_forecast).
+        Each member's forecast is proportionally reduced by their share.
+
+        Returns corrected (load_forecast_df, gen_forecast_df) copies.
+        """
+        cfg = self.config
+        corrected_load = load_forecast_df.copy()
+        corrected_gen = gen_forecast_df.copy()
+
+        for rec in cfg.get('recs', []):
+            rec_id = rec['rec_id']
+
+            # Gather member columns for this REC
+            rec_load_cols = []
+            rec_gen_cols = []
+
+            for p in cfg.get('prosumers', []):
+                if p.get('rec', '') == rec_id:
+                    if 'res' in p and p['res'] and p['res']['id'] in gen_forecast_df.columns:
+                        rec_gen_cols.append(p['res']['id'])
+                    if 'load' in p and p['load'] and p['load']['id'] in load_forecast_df.columns:
+                        rec_load_cols.append(p['load']['id'])
+
+            for c in cfg.get('consumers', []):
+                if c.get('rec', '') == rec_id:
+                    lid = c['load']['id']
+                    if lid in load_forecast_df.columns:
+                        rec_load_cols.append(lid)
+
+            if not rec_load_cols or not rec_gen_cols:
+                continue
+
+            # REC-level forecast totals
+            gen_total = gen_forecast_df[rec_gen_cols].sum(axis=1)
+            load_total = load_forecast_df[rec_load_cols].sum(axis=1)
+            anticipated_shared = np.minimum(gen_total, load_total)
+
+            # Proportional correction for load members
+            for col in rec_load_cols:
+                orig = load_forecast_df[col]
+                frac = np.where(load_total > 0, orig / load_total, 0)
+                corrected_load[col] = orig - frac * anticipated_shared
+
+            # Proportional correction for gen members
+            for col in rec_gen_cols:
+                orig = gen_forecast_df[col]
+                frac = np.where(gen_total > 0, orig / gen_total, 0)
+                corrected_gen[col] = orig - frac * anticipated_shared
+
+        return corrected_load, corrected_gen
+
     # ------------------------------------------------------------------ #
     #  Step (i) – Day-Ahead Market                                         #
     # ------------------------------------------------------------------ #
@@ -323,6 +380,12 @@ class EnergyMarketOperations:
         load_da = self.es_data['load_forecast_da']
         gen_da = self.es_data['res_forecast_da']
         prices = self.es_data['prices']
+
+        # REC-aware forecasting: subtract anticipated REC sharing from forecasts
+        rec_aware = self.config.get('settlement_approach', {}).get('rec_aware_forecasting', False)
+        if rec_aware and self.has_rec:
+            load_da, gen_da = self._correct_forecasts_for_rec_sharing(load_da, gen_da)
+            print("  ✓ DA forecasts corrected for anticipated REC sharing")
 
         bg_agg = self._aggregate_by_bg(load_da, gen_da)
         da_price = prices['DA_price']
@@ -364,6 +427,12 @@ class EnergyMarketOperations:
         load_id = self.es_data['load_forecast_id']
         gen_id = self.es_data['res_forecast_id']
         prices = self.es_data['prices']
+
+        # REC-aware forecasting: subtract anticipated REC sharing from forecasts
+        rec_aware = self.config.get('settlement_approach', {}).get('rec_aware_forecasting', False)
+        if rec_aware and self.has_rec:
+            load_id, gen_id = self._correct_forecasts_for_rec_sharing(load_id, gen_id)
+            print("  ✓ ID forecasts corrected for anticipated REC sharing")
 
         bg_agg = self._aggregate_by_bg(load_id, gen_id)
 

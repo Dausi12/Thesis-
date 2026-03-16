@@ -1,0 +1,189 @@
+\subsection{Scenario C1: Single Supplier with REC and Battery Optimisation (Mixed Prosumers)}
+\label{sec:results_C1}
+
+This section presents the results of Scenario~C1, which extends the single-supplier REC configuration (Scenario~A2) with centralised battery storage optimisation. A two-stage Mixed-Integer Linear Programme (MILP), solved via Pyomo and Gurobi over a rolling 24-hour MPC horizon, determines optimal battery dispatch schedules subject to Pareto fairness constraints. Two battery assets are deployed: a 200~kWh community battery (BESS\_REC\_01, $\pm$68~kW) and an 80~kWh residential battery (BESS\_REC\_02, $\pm$25~kW), both with 95\% round-trip efficiency and SOC bounds of 20--100\%.
+
+The internal REC transfer price follows feed-in parity ($p^{\mathrm{p2p}}_t = p^{\mathrm{exp}}_t$), ensuring prosumer indifference between internal and external sales while providing consumers with a price advantage over the retail import tariff.
+
+\subsubsection{Battery Dispatch Performance}
+
+Table~\ref{tab:C1_battery_summary} summarises the annual battery throughput for both storage assets. The relatively modest throughput (4.03~MWh total charge, 3.65~MWh total discharge) reflects the conservative SOC bounds and the Pareto fairness constraint, which limits aggressive arbitrage that could disadvantage individual participants.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario C1 -- Annual battery throughput summary.}
+\label{tab:C1_battery_summary}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Battery Asset} & \textbf{Capacity (kWh)} & \textbf{Charge (MWh)} & \textbf{Discharge (MWh)} \\
+\midrule
+BESS\_REC\_01 (Community) & 200 & 2.03 & 1.84 \\
+BESS\_REC\_02 (Residential) & 80 & 2.00 & 1.81 \\
+\addlinespace
+\textbf{Total} & \textbf{280} & \textbf{4.03} & \textbf{3.65} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The difference between total charge (4.03~MWh) and total discharge (3.65~MWh) corresponds to round-trip efficiency losses of approximately 0.38~MWh (9.4\%), consistent with the specified 95\% charge and discharge efficiencies ($\eta^{\mathrm{ch}} \cdot \eta^{\mathrm{dis}} = 0.9025$).
+
+\subsubsection{REC Sharing and Self-Sufficiency}
+
+Battery storage substantially increases internal energy sharing within the REC. Table~\ref{tab:C1_rec_sharing} compares the shared energy volumes between C1 (with battery) and the A2 baseline (without battery).
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario C1 vs A2 -- REC internal sharing comparison.}
+\label{tab:C1_rec_sharing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Metric} & \textbf{A2 (No Battery)} & \textbf{C1 (With Battery)} \\
+\midrule
+Internal shared energy (MWh) & 94.79 & 128.87 \\
+Increase (MWh / \%) & -- & +34.08 / +35.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The 35.9\% increase in shared energy arises from the battery's ability to time-shift PV surplus into evening demand periods when direct PV-to-load matching is absent. This temporal arbitrage converts energy that would otherwise be exported to the grid at the feed-in tariff into internally shared energy settled at the reduced community grid access fee.
+
+\subsubsection{Battery Impact on REC Energy Costs}
+
+The battery reduces external energy costs for REC members through a three-stage mechanism embedded in the simulation pipeline. First, battery optimisation runs \emph{after} DA/ID market scheduling but \emph{before} REC settlement. The MILP dispatches batteries to minimise the community's aggregate grid cost, and the resulting charge/discharge profiles are applied directly to the metered actuals: battery discharge is added to generation profiles and battery charging is added to load profiles.
+
+Second, the REC settlement algorithm computes internally shared energy as $E^{\mathrm{shared}}_t = \min\!\big(\sum_i G_{i,t},\; \sum_j L_{j,t}\big)$, where generation $G$ now includes battery discharge. The inflated generation total increases the shared energy volume, meaning more consumer demand is covered internally rather than imported from the grid.
+
+Third, supplier billing uses the REC-corrected meters. Each consumer's billable grid import is reduced by their proportional share of the internally shared energy. Since shared energy is settled at the reduced community grid access fee rather than the full retail tariff, each additional MWh of battery-enabled sharing translates directly into consumer cost savings.
+
+In Scenario~C1, this mechanism redirects 34.08~MWh of energy from grid import (at retail price) to internal REC sharing, reducing the supplier's retail revenue by \EUR{178.04} relative to A2. The corresponding reduction in feed-in compensation ($-$\EUR{202.78}) confirms that the battery absorbs PV surplus that would otherwise be exported, converting an export-compensated flow into an internally shared flow. The net effect is a transfer of value from the supplier's margin to the REC members' energy bills.
+
+\subsubsection{Balancing Performance}
+\label{sec:C1_balancing}
+
+Table~\ref{tab:C1_balancing} summarises the annual balancing group outcomes. The battery creates a deliberate structural imbalance of +1.57~MWh because the supplier's DA/ID schedules are based on load and generation forecasts that do not incorporate battery dispatch. This reflects realistic market sequencing: the supplier commits positions on the wholesale market \emph{before} the battery optimisation runs intraday. Since the MILP minimises community grid cost by shifting PV surplus into evening demand peaks, the actual metered flows diverge from the forecast-based schedule. Despite this, the imbalance penalty (\EUR{554.64}) is nearly fully offset by balancing rewards (\EUR{557.46}), yielding a negligible net balancing settlement of +\EUR{2.82}.
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario C1 -- Annual balancing group outcomes.}
+\label{tab:C1_balancing}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Balancing Metric} & \textbf{SUP\_A / BG\_A} \\
+\midrule
+Actual BG net position (MWh) & 149.6500 \\
+Forecast BG net position (ID) (MWh) & 148.0753 \\
+Net imbalance volume (MWh) & +1.5700 \\
+System position & Short (Deficit) \\
+\addlinespace
+Balancing reward (annual, \euro) & 557.46 \\
+Imbalance penalty (annual, \euro) & 554.64 \\
+Net balancing settlement (\euro) & +2.82 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Compared with Scenario~A2 (single supplier with REC, mixed prosumers, no battery), where the imbalance is near-zero ($\approx$0~MWh), the +1.57~MWh structural imbalance in C1 is a direct consequence of the battery dispatch not being communicated back to the supplier's wholesale schedule. This is a deliberate modelling choice: in practice, REC-level battery optimisation operates on shorter time horizons (intraday) than the supplier's DA/ID commitments, creating an information asymmetry between the scheduled and actual balancing group positions. The dual-pricing balancing mechanism ensures that the financial impact remains symmetrically distributed---the supplier is rewarded when the imbalance helps the system and penalised when it does not, resulting in a near-zero net settlement.
+
+Figure~\ref{fig:imbalance_C1} shows the monthly balancing group positions.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/C1_imbalance.png}
+\caption{Monthly balancing group position and imbalance of the single supplier in Scenario C1 (REC + battery, mixed prosumers).}
+\label{fig:imbalance_C1}
+\end{figure}
+
+\subsubsection{Cost Structure}
+
+Figure~\ref{fig:costs_C1} presents the monthly cost composition. Wholesale market purchases (\EUR{5,255.00}) remain identical to A2 (single supplier with REC, mixed prosumers, no battery) because the DA/ID scheduling does not incorporate battery dispatch. Feed-in compensation costs decrease from \EUR{764.65} (A2) to \EUR{561.87} (C1) as the battery absorbs surplus PV generation that would otherwise require feed-in compensation, redirecting it to internal REC sharing. Balancing penalties increase from \EUR{71.73} (A2) to \EUR{554.64} (C1) as a direct consequence of the battery-induced structural imbalance discussed in Section~\ref{sec:C1_balancing}; however, this is offset by the corresponding increase in balancing rewards.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/C1_costs.png}
+\caption{Monthly cost components of the single supplier in Scenario C1 (REC + battery, mixed prosumers).}
+\label{fig:costs_C1}
+\end{figure}
+
+\subsubsection{Revenue Structure}
+
+Figure~\ref{fig:revenue_C1} illustrates the revenue composition. Retail sales (\EUR{31,450.22}) are slightly lower than A2 (\EUR{31,628.26}); the reduction of \EUR{178.04} reflects the battery's role in displacing grid-supplied retail energy with internally shared REC energy. Wholesale market revenue (\EUR{174.75}) is identical to A2, confirming that battery dispatch does not alter the supplier's wholesale trading activity. Balancing rewards increase substantially from \EUR{72.08} (A2) to \EUR{557.46} (C1) as a consequence of the battery-induced structural imbalance.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/C1_revenue.png}
+\caption{Monthly revenue components of the single supplier in Scenario C1 (REC + battery, mixed prosumers).}
+\label{fig:revenue_C1}
+\end{figure}
+
+\subsubsection{Overall Financial Outcome}
+
+Table~\ref{tab:C1_profit} summarises the annual financial outcomes and compares them with A2 (single supplier with REC, mixed prosumers, no battery).
+
+\begin{table}[htbp]
+\centering
+\caption{Scenario C1 -- Annual profit components of the single supplier, compared with A2 (no battery).}
+\label{tab:C1_profit}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Financial Metric} & \textbf{A2 (No Battery)} & \textbf{C1 (With Battery)} \\
+\midrule
+Wholesale market revenue (\euro) & 174.75 & 174.75 \\
+Retail revenue (\euro) & 31,628.26 & 31,450.22 \\
+Balancing reward (\euro) & 72.08 & 557.46 \\
+\addlinespace
+Total revenue (\euro) & 31,875.08 & 32,182.43 \\
+\midrule
+Market purchases (\euro) & 5,255.00 & 5,255.00 \\
+Balancing penalty (\euro) & 71.73 & 554.64 \\
+Feed-in compensation (\euro) & 764.65 & 561.87 \\
+\addlinespace
+Total costs (\euro) & 6,091.37 & 6,371.51 \\
+\midrule
+\textbf{Net profit (\euro)} & \textbf{25,783.71} & \textbf{25,810.92} \\
+\textbf{Profit change (\euro / \%)} & -- & \textbf{+27.21 / +0.11\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The net profit increase of \EUR{27.21} (+0.11\%) relative to A2 is modest and primarily reflects two offsetting effects:
+
+\begin{enumerate}
+    \item \textbf{Revenue uplift (+\EUR{307.35}):} Higher balancing rewards (+\EUR{485.38}) partially offset slightly lower retail sales ($-$\EUR{178.04}). Wholesale revenue is unchanged.
+
+    \item \textbf{Cost increase (+\EUR{280.14}):} Higher balancing penalties (+\EUR{482.91}) partially offset lower feed-in compensation ($-$\EUR{202.78}). Market purchases are unchanged.
+\end{enumerate}
+
+The small net improvement suggests that, under the current market design and pricing parameters, the battery's primary contribution is to increase community self-sufficiency (shared energy +35.9\%) and reduce REC members' external energy costs rather than to improve supplier profitability directly. The Pareto fairness constraint prevents the battery from pursuing aggressive wholesale arbitrage strategies that might increase supplier profit at the expense of individual participants. The negligible net balancing settlement (+\EUR{2.82}) confirms that the deliberate structural imbalance introduced by battery dispatch carries no meaningful financial risk for the supplier.
+
+Figure~\ref{fig:financial_overview_C1} presents the monthly evolution of revenue, costs, and profit.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/C1_finance.png}
+\caption{Monthly revenue, costs, and profit/loss of the single supplier in Scenario C1 (REC + battery, mixed prosumers).}
+\label{fig:financial_overview_C1}
+\end{figure}
+
+\subsubsection{Battery SOC and Dispatch Profiles}
+
+Figure~\ref{fig:C1_bess01_soc} and Figure~\ref{fig:C1_bess02_soc} show the state-of-charge trajectories and charge/discharge profiles for both battery assets over the simulation year.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/C1_bess01_soc.png}
+\caption{BESS\_REC\_01 (Community Battery, 200~kWh) -- Annual SOC trajectory and charge/discharge profile in Scenario C1.}
+\label{fig:C1_bess01_soc}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{pdflatex template/img/C1_bess02_soc.png}
+\caption{BESS\_REC\_02 (Residential Battery, 80~kWh) -- Annual SOC trajectory and charge/discharge profile in Scenario C1.}
+\label{fig:C1_bess02_soc}
+\end{figure}
+
+Both batteries exhibit the expected daily cycling pattern: charging during midday hours when PV surplus is available (low-cost windows) and discharging during evening peak demand periods (high-cost windows). Seasonal variation is evident, with higher utilisation during summer months (May--August) when PV generation surplus is greatest, and minimal cycling during winter months when PV output is insufficient to exceed community load.
